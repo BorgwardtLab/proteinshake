@@ -7,8 +7,8 @@ from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import pdist, squareform
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 
-from pyg_pdb.utils.resi_atoms import RESI_THREE_TO_1, AA_TO_INDEX
-from pyg_pdb.utils.aaindex import get_aaindex_features
+from pdb_pyg.utils.resi_atoms import RESI_THREE_TO_1, AA_TO_INDEX
+from pdb_pyg.utils.aaindex import get_aaindex_features
 
 
 BOND_TYPES = {'backbone': 0, 'structure': 1}

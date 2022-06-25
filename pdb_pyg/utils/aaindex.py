@@ -2,9 +2,11 @@ import os
 import json
 import numpy as np
 
+aaindex_path = os.path.join(os.path.dirname(__file__), '..', 'pkg_data', 'aaindex.json')
+
 PATH = os.path.realpath(os.path.dirname(__file__))
 
-with open('{}/_aaindex/aaindex.json'.format(PATH),'r') as file:
+with open(aaindex_path, 'r') as file:
     aaindex = json.load(file)
 
 def get_aaindex_features(amino_acid, format='array'):

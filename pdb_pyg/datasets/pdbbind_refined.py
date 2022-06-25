@@ -12,7 +12,6 @@ from torch_geometric.utils import from_networkx
 from torch_geometric.data import Dataset
 from biopandas.pdb import PandasPdb
 
-from pdb_pyg.datasets import ProteinGraph
 from pdb_pyg.utils import pdb2pyg
 
 class PDBBindRefined(Dataset):
