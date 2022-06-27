@@ -1,4 +1,4 @@
-# pdb-pyg: simple torch-geometric graph datasets taken from PDB structures. 
+# pdb-pyg: build torch and torch-geometric datasets from the PDB
 
 ```
 pip install .
