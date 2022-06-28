@@ -63,7 +63,7 @@ class PDBBindRefined(Dataset):
         """ Each graph will have an is_site tensor with 1 if the
         residue is in the binding site, 0 else.
         """
-        todo_pdbs = os.listdir(self.raw_dir)
+        todo_pdbs = self.raw_file_names 
         data_list = []
         for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
             pdb_dir = osp.join(self.raw_dir, pdb)

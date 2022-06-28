@@ -1,6 +1,8 @@
-# pdb-pyg: build torch and torch-geometric datasets from the PDB
+# `torch-pdb`: torch-geometric datasets built from the PDB
 
 ```
+git clone https://github.com/BorgwardtLab/torch-pdb
+cd torch-pdb
 pip install .
 ```
 

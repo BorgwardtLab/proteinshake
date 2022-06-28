@@ -13,7 +13,7 @@ requirements = ["torch",
                 ]
 
 setuptools.setup(
-    name="pdb_pyg",
+    name="torch-pdb",
     version="0.0.1",
     author="Carlos Oliver, Dexiong Chen, Leslie O'Bray, Tim Kucera,",
     author_email="carlos.oliver@bsse.ethz.ch",
