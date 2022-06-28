@@ -66,6 +66,8 @@ If you want to compute some of the datasets we host (e.g. TM-score) follow these
 
 ** [TM score benchmark dataset](https://zhanggroup.org/TM-align/benchmark/)
 
+0. Install `TMalign` and add executable to `PATH` [download](https://zhanggroup.org/TM-align/)
+
 1. Download the list of structures
 
 ```
@@ -78,4 +80,4 @@ $ python scripts/get_tmlist.py
 $  python scripts/tmscore_precompute.py --custom-urls torch_pdb/pkg_data/tm_pdblist.txt --dest data/tm-bench 
 ```
 
-Move the `tm-bench` folder to your `data` directory so that the `download()` method is skipped when creating the dataset.
+3. Move the `tm-bench` folder to your `data` directory so that the `download()` method is skipped when creating the dataset.

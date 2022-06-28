@@ -68,8 +68,6 @@ def launch(args):
     if not args.custom_urls is None:
         with open(args.custom_urls, 'r') as urls:
             for i, url in enumerate(urls):
-                if i > 10:
-                    break
                 r = wget.download(url.strip(), out=pdb_dump)
     else:
         for pdbid in args.pdblist:
