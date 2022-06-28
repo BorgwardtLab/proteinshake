@@ -21,7 +21,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    package_data={'pdb_pyg.pkg_data': ['*.json']},
+    package_data={'pdb_pyg.pkg_data': ['*.json', '*.txt']},
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -1,1 +1,1 @@
-from .pdbbind_refined import PDBBindRefined
+from .pdbbind_refined import PDBBindRefined as PDBBindRefined
