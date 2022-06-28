@@ -40,7 +40,9 @@ This is a summary of available datasets.
 
 | Dataset | # of graphs | graph attributes | node attributes | edge attributes |
 |---------|-------------|------------------|-----------------|-----------------|
+| `PDBRepresentative`         |  XXXX           |                  |                 |                 |
 | `PDBBindRefined`         |  5316           |     `is_site (binary)`             |                 |                 |
+| `TMScoreBenchmark`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
 
 ## Graph Building
 
@@ -57,3 +59,23 @@ from pdb_pyg.datasets import PDBBindRefined
 
 dataset = PDBBindRefined(name='pdbbind', node_type='residue')
 ```
+
+## Building dataset backends
+
+If you want to compute some of the datasets we host (e.g. TM-score) follow these steps:
+
+** [TM score benchmark dataset](https://zhanggroup.org/TM-align/benchmark/)
+
+1. Download the list of structures
+
+```
+$ python scripts/get_tmlist.py
+```
+
+2. Fetch PDBs and Compute TM scores
+
+```
+$  python scripts/tmscore_precompute.py --custom-urls torch_pdb/pkg_data/tm_pdblist.txt --dest data/tm-bench 
+```
+
+Move the `tm-bench` folder to your `data` directory so that the `download()` method is skipped when creating the dataset.
