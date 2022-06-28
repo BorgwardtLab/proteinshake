@@ -23,7 +23,7 @@ pip install .
 ## Quickstart
 
 
-```
+```python
 from pdb_pyg.datasets import PDBBindRefined
 
 dataset = PDBBindRefined(name='pdbbind')
@@ -48,7 +48,7 @@ You can customize the way graphs are built grom protein 3D structures with the f
 *  `knn (int)`: Number of nearest neighbor residues to connect with an edge.
 
 
-```
+```python
 from pdb_pyg.datasets import PDBBindRefined
 
 dataset = PDBBindRefined(name='pdbbind', node_type='residue')
