@@ -10,14 +10,16 @@ After installing, datasets can be passed directly to torch loaders for model tra
 ```
 $ pip install torch-pdb
 ```
+
+Note: ensure that you are using the correct versions of `torch-[scatter,sparse]` according to your hardware and cuda version. See [this](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html#installation-via-pip-wheels) page for more info.
 		
 
 ### From source
 
 ```
-git clone https://github.com/BorgwardtLab/torch-pdb
-cd torch-pdb
-pip install .
+$ git clone https://github.com/BorgwardtLab/torch-pdb
+$ cd torch-pdb
+$ pip install .
 ```
 
 ## Quickstart
