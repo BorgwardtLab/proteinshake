@@ -134,25 +134,22 @@ class ProteinGraph(object):
             self.graph.add_edges_from(zip(node_i, node_j), bond_type=BOND_TYPES['backbone'])
 
         # add distance-based edges
-        # coords = self.graph.coords
-        # node_ids = df['node_id']
-        # if self.neighbor_type == "knn":
-        #     dist = kneighbors_graph(coords, n_neighbors=self.knn, mode='connectivity')
-        # elif self.neighbor_type == "radius":
-        #     dist = radius_neighbors_graph(coords, radius=self.radius, mode='connectivity')
+        coords = self.graph.coords
+        node_ids = df['node_id']
+        if self.neighbor_type == "knn":
+            dist = kneighbors_graph(coords, n_neighbors=self.knn, mode='connectivity')
+        elif self.neighbor_type == "radius":
+            dist = radius_neighbors_graph(coords, radius=self.radius, mode='connectivity')
 
-        # dist = dist.tocoo()
-        # # print(dist)
-        # # dist = squareform(pdist(coords))
-        # for i, j in zip(dist.row, dist.col):
-        #     node_i, node_j = node_ids[i], node_ids[j]
-        #     # if self.graph.has_edge(node_i, node_j):
-        #     #     self.graph.edges[node_i, node_j]['kind'].add("knn")
-        #     if not self.graph.has_edge(node_i, node_j):
-        #         self.graph.add_edge(node_i, node_j, bond_type=BOND_TYPES['structure'])
+        dist = dist.tocoo()
+        dist = squareform(pdist(coords))
+        for i, j in zip(range(dist.shape[0]), range(dist.shape[1])):
+            node_i, node_j = node_ids[i], node_ids[j]
+            if self.graph.has_edge(node_i, node_j):
+                self.graph.edges[node_i, node_j]['kind'].add("knn")
+            if not self.graph.has_edge(node_i, node_j):
+                self.graph.add_edge(node_i, node_j, bond_type=BOND_TYPES['structure'])
 
-
-        # other types of edges
 
     def _add_aaindex_node_features(self):
         # todo: check for natural amino acids
