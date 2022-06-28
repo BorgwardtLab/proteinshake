@@ -15,8 +15,8 @@ from torch_geometric.utils import from_networkx
 from torch_geometric.data import InMemoryDataset
 from torch_geometric.data import extract_tar, download_url
 
-from pdb_pyg.utils.resi_atoms import RESI_THREE_TO_1, AA_TO_INDEX
-from pdb_pyg.utils.aaindex import get_aaindex_features
+from torch_pdb.utils.resi_atoms import RESI_THREE_TO_1, AA_TO_INDEX
+from torch_pdb.utils.aaindex import get_aaindex_features
 
 
 BOND_TYPES = {'backbone': 0, 'structure': 1}

@@ -12,7 +12,7 @@ from torch_geometric.utils import from_networkx
 from torch_geometric.data import Dataset
 from biopandas.pdb import PandasPdb
 
-from pdb_pyg.utils.convert import pdb2pyg
+from torch_pdb.utils.convert import pdb2pyg
 
 class PDBBindRefined(Dataset):
     def __init__(self, name, root='/tmp/var', transform=None, pre_transform=None,
