@@ -1,17 +1,35 @@
 # -*- coding: utf-8 -*-
+import os, gzip
+import shutil
 import itertools
+import os.path as osp
+
+import torch
 import pandas as pd
 import networkx as nx
 import numpy as np
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import pdist, squareform
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
+from torch_geometric.utils import from_networkx
+from torch_geometric.data import InMemoryDataset
+from torch_geometric.data import extract_tar, download_url
 
 from pdb_pyg.utils.resi_atoms import RESI_THREE_TO_1, AA_TO_INDEX
 from pdb_pyg.utils.aaindex import get_aaindex_features
 
 
 BOND_TYPES = {'backbone': 0, 'structure': 1}
+
+def pdb2pyg(*args, **kwargs):
+    protein = ProteinGraph(*args, **kwargs)
+    graph = protein.get_graph()
+    graph = from_networkx(graph)
+    graph.coord = graph.coord.float()
+    if hasattr(graph, 'aa_idx'):
+        graph.aa_idx = graph.aa_idx.float()
+    graph.datapath = protein.datapath
+    return graph
 
 def pdb2df(filename):
     atomic_df = PandasPdb().read_pdb(filename).df['ATOM']

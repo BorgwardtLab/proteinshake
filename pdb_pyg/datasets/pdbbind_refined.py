@@ -12,7 +12,7 @@ from torch_geometric.utils import from_networkx
 from torch_geometric.data import Dataset
 from biopandas.pdb import PandasPdb
 
-from pdb_pyg.utils import pdb2pyg
+from pdb_pyg.utils.convert import pdb2pyg
 
 class PDBBindRefined(Dataset):
     def __init__(self, name, root='/tmp/var', transform=None, pre_transform=None,
@@ -51,7 +51,8 @@ class PDBBindRefined(Dataset):
 
     def download(self):
         print(f"Downloading to {self.root}...")
-        tarball = download_url(self.url, self.root)
+        tarball = wget.download(self.url, out=self.root)
+        # tarball = download_url(self.url, self.root)
         print("Extracting...")
         extract_tar(osp.join(self.root, tarball), osp.join(self.root))
         print("Renaming")
@@ -64,7 +65,7 @@ class PDBBindRefined(Dataset):
         """
         todo_pdbs = os.listdir(self.raw_dir)
         data_list = []
-        for i, pdb in tqdm(enumerate(todo_pdbs)):
+        for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
             pdb_dir = osp.join(self.raw_dir, pdb)
             graph = pdb2pyg(osp.join(pdb_dir, f'{pdb}_protein.pdb'), **self.kwargs)
             graph.name = pdb
