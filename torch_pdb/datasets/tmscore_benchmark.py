@@ -9,15 +9,14 @@ from tqdm import tqdm
 import torch
 from torch_geometric.data import download_url, extract_tar
 from torch_geometric.utils import from_networkx
-from torch_geometric.data import Dataset
+from torch_geometric.data import InMemoryDataset
 from biopandas.pdb import PandasPdb
 
 from torch_pdb.utils.convert import pdb2pyg
 
-class TMScoreBenchmark(Dataset):
+class TMScoreBenchmark(InMemoryDataset):
     def __init__(self, name, root='/tmp/var', transform=None, pre_transform=None,
-                 version='2020',
-                 server_address="https://zhanggroup.org/TM-align/benchmark/",
+                 url="https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz",
                  **kwargs):
         '''
             - name (str): name of the dataset
@@ -28,10 +27,11 @@ class TMScoreBenchmark(Dataset):
         '''
         # filename="PDBbind_v2020_refined.tar.gz",
         self.name = name ## original name, e.g., ecoli
-        self.url = server_address
+        self.url = url
         self.root = osp.join(root, name)
         self.kwargs = kwargs
         self.pdblist = os.path.join(os.path.dirname(__file__), '..', 'pkg_data', 'tm_pdblist.txt').readlines()
+        self.n_prots = len(self.pdblist)
 
         super(PDBBindRefined, self).__init__(self.root, transform, pre_transform)
 
@@ -39,43 +39,28 @@ class TMScoreBenchmark(Dataset):
     def raw_file_names(self):
         if not osp.exists(self.raw_dir):
             return []
-        data_list_names = [
-            p.split("/")[-1] for p in self.pdblist
-            ]
-        return data_list_names
+        return ['pdbs', 'tm_scores.pkl', 'rmsd.pkl']
 
     @property
     def processed_file_names(self):
-        return [f'data_{i}.pt' for i in range(len(self.raw_file_names))]
+        return [f'data_{i}.pt' for i in range(self.prots)]
 
     def download(self):
-        try:
-            os.mkdir(os.path.join(self.root, 'raw'))
-        except FileExistsError:
-            pass
-
         print(f"Downloading to {self.root}...")
-        for pdb in self.pdblist:
-            wget.download(pdb, out=os.path.join(self.root, 'raw'))
+        tarball = wget.download(self.url, out=os.path.join(self.root))
+        os.rename()
 
     def process(self):
         ### read pyg graph list
         """ Each graph will have an is_site tensor with 1 if the
         residue is in the binding site, 0 else.
         """
-        todo_pdbs = self.raw_file_names 
         data_list = []
+        todo_pdbs = osp.join(self.raw_dir, 'pdbs')
         for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
-            pdb_dir = osp.join(self.raw_dir, pdb)
-            graph = pdb2pyg(osp.join(pdb_dir, f'{pdb}_protein.pdb'), **self.kwargs)
+            pdb_dir = osp.join(self.raw_dir, 'pdbs')
+            graph = pdb2pyg(osp.join(pdb_dir, pdb), **self.kwargs)
             graph.name = pdb
-
-            is_site = torch.zeros_like(graph.residue_number)
-
-            # get binding site residues
-            struc = PandasPdb().read_pdb(osp.join(pdb_dir, f'{pdb}_pocket.pdb'))
-            binding_residues = torch.tensor(struc.df['ATOM']['residue_number'].unique())
-            is_site[(graph.residue_number.unsqueeze(1) == binding_residues).sum(dim=1).nonzero()] = 1.
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
