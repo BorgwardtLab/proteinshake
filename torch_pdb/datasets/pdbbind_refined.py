@@ -34,8 +34,6 @@ class PDBBindRefined(Dataset):
 
         super(PDBBindRefined, self).__init__(self.root, transform, pre_transform)
 
-        self.data, self.slices = torch.load(self.processed_paths[0])
-
     @property
     def raw_file_names(self):
         if not osp.exists(self.raw_dir):

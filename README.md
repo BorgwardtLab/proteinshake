@@ -24,9 +24,11 @@ pip install .
 
 
 ```python
-from pdb_pyg.datasets import PDBBindRefined
+>>> from pdb_pyg.datasets import PDBBindRefined
 
-dataset = PDBBindRefined(name='pdbbind')
+>>> dataset = PDBBindRefined(name='pdbbind')
+>>> d[0]
+Data(edge_index=[2, 512], chain_id=[257], residue_idx=[257], residue=[257], residue_name=[257], residue_number=[257], residue_position=[257], coord=[257, 3], aa_idx=[257, 553], bond_type=[512], num_nodes=257, datapath='/tmp/var/test/raw/6ugp/6ugp_protein.pdb', name='6ugp')
 ```
 
 ## Datasets
