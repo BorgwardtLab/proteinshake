@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, gzip
+import pickle
 import shutil
 import os.path as osp
 
@@ -9,14 +10,14 @@ from tqdm import tqdm
 import torch
 from torch_geometric.data import download_url, extract_tar
 from torch_geometric.utils import from_networkx
-from torch_geometric.data import InMemoryDataset
+from torch_geometric.data import Dataset
 from biopandas.pdb import PandasPdb
 
 from torch_pdb.utils.convert import pdb2pyg
 
-class TMScoreBenchmark(InMemoryDataset):
+class TMScoreBenchmark(Dataset):
     def __init__(self, name, root='/tmp/var', transform=None, pre_transform=None,
-                 url="https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz",
+                 url="https://github.com/cgoliver/testing/releases/download/1.0.0/tm-bench.tar.gz",
                  **kwargs):
         '''
             - name (str): name of the dataset
@@ -30,10 +31,12 @@ class TMScoreBenchmark(InMemoryDataset):
         self.url = url
         self.root = osp.join(root, name)
         self.kwargs = kwargs
-        self.pdblist = os.path.join(os.path.dirname(__file__), '..', 'pkg_data', 'tm_pdblist.txt').readlines()
+        self.pdblist = open(os.path.join(os.path.dirname(__file__), '..', 'pkg_data', 'tm_pdblist.txt'), 'r').readlines()
         self.n_prots = len(self.pdblist)
 
-        super(PDBBindRefined, self).__init__(self.root, transform, pre_transform)
+        super(TMScoreBenchmark, self).__init__(self.root, transform, pre_transform)
+
+        self.tm_scores = pickle.load(open(osp.join(self.raw_dir, 'tm_scores.pkl')), 'rb')
 
     @property
     def raw_file_names(self):
@@ -43,12 +46,13 @@ class TMScoreBenchmark(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return [f'data_{i}.pt' for i in range(self.prots)]
+        return [f'data_{i}.pt' for i in range(self.n_prots)]
 
     def download(self):
         print(f"Downloading to {self.root}...")
-        tarball = wget.download(self.url, out=os.path.join(self.root))
-        os.rename()
+        tarball = wget.download(self.url, out=self.root)
+        extract_tar(osp.join(self.root, tarball), self.root)
+        os.rename(osp.join(self.root, 'tm-bench'), self.raw_dir)
 
     def process(self):
         ### read pyg graph list
@@ -56,9 +60,10 @@ class TMScoreBenchmark(InMemoryDataset):
         residue is in the binding site, 0 else.
         """
         data_list = []
-        todo_pdbs = osp.join(self.raw_dir, 'pdbs')
+        todo_pdbs = os.listdir(osp.join(self.raw_dir, 'pdbs'))
         for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
             pdb_dir = osp.join(self.raw_dir, 'pdbs')
+            print(osp.join(pdb_dir, pdb))
             graph = pdb2pyg(osp.join(pdb_dir, pdb), **self.kwargs)
             graph.name = pdb
 

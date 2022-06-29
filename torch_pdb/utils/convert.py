@@ -24,6 +24,7 @@ BOND_TYPES = {'backbone': 0, 'structure': 1}
 def pdb2pyg(*args, **kwargs):
     protein = ProteinGraph(*args, **kwargs)
     graph = protein.get_graph()
+    print(type(graph))
     graph = from_networkx(graph)
     graph.coord = graph.coord.float()
     if hasattr(graph, 'aa_idx'):
