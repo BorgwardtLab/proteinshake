@@ -36,7 +36,7 @@ class TMScoreBenchmark(Dataset):
 
         super(TMScoreBenchmark, self).__init__(self.root, transform, pre_transform)
 
-        self.tm_scores = pickle.load(open(osp.join(self.raw_dir, 'tm_scores.pkl')), 'rb')
+        self.tm_scores = pickle.load(open(osp.join(self.raw_dir, 'tm_scores.pkl'), 'rb'))
 
     @property
     def raw_file_names(self):
@@ -51,7 +51,7 @@ class TMScoreBenchmark(Dataset):
     def download(self):
         print(f"Downloading to {self.root}...")
         tarball = wget.download(self.url, out=self.root)
-        extract_tar(osp.join(self.root, tarball), self.root)
+        extract_tar(tarball, self.root)
         os.rename(osp.join(self.root, 'tm-bench'), self.raw_dir)
 
     def process(self):
@@ -63,7 +63,6 @@ class TMScoreBenchmark(Dataset):
         todo_pdbs = os.listdir(osp.join(self.raw_dir, 'pdbs'))
         for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
             pdb_dir = osp.join(self.raw_dir, 'pdbs')
-            print(osp.join(pdb_dir, pdb))
             graph = pdb2pyg(osp.join(pdb_dir, pdb), **self.kwargs)
             graph.name = pdb
 

@@ -24,7 +24,6 @@ BOND_TYPES = {'backbone': 0, 'structure': 1}
 def pdb2pyg(*args, **kwargs):
     protein = ProteinGraph(*args, **kwargs)
     graph = protein.get_graph()
-    print(type(graph))
     graph = from_networkx(graph)
     graph.coord = graph.coord.float()
     if hasattr(graph, 'aa_idx'):
@@ -34,10 +33,20 @@ def pdb2pyg(*args, **kwargs):
 
 def pdb2df(filename):
     atomic_df = PandasPdb().read_pdb(filename).df['ATOM']
+    chains = set(atomic_df['chain_id'].unique())
+
+    # empty string chain names crash to_networkx()
+    valid_chains = {c for c in chains if c != ''}
+    chain_names = {}
+    for c in chains:
+        if c in valid_chains:
+            chain_names[c] = c
+        else:
+            chain_names[c] = 'XXX'
+    atomic_df['chain_id'] = [chain_names[c] for c in atomic_df['chain_id']]
     # sort the df
     atomic_df.sort_values('atom_number', inplace=True)
     return atomic_df
-
 
 class ProteinGraph(object):
     """Parse a pdb/mmcif file to a graph
