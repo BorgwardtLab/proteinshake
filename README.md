@@ -1,6 +1,8 @@
+![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
+
 # `torch-pdb`: torch-geometric datasets built from the PDB
 
-This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/). 
+This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/).
 After installing, datasets can be passed directly to torch loaders for model training.
 
 
@@ -12,7 +14,7 @@ $ pip install torch-pdb
 ```
 
 Note: ensure that you are using the correct versions of `torch-[scatter,sparse]` according to your hardware and cuda version. See [this](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html#installation-via-pip-wheels) page for more info.
-		
+
 
 ### From source
 
@@ -49,7 +51,7 @@ This is a summary of available datasets.
 You can customize the way graphs are built grom protein 3D structures with the following arguments to the dataset constructors:
 
 
-*  `node_type (str)`: Currently only `residue` is supported. 
+*  `node_type (str)`: Currently only `residue` is supported.
 *  `neighbor_type (str)`: We support `knn` and `radius`
 *  `knn (int)`: Number of nearest neighbor residues to connect with an edge.
 
@@ -77,7 +79,7 @@ $ python scripts/get_tmlist.py
 2. Fetch PDBs and Compute TM scores
 
 ```
-$  python scripts/tmscore_precompute.py --custom-urls torch_pdb/pkg_data/tm_pdblist.txt --dest data/tm-bench 
+$  python scripts/tmscore_precompute.py --custom-urls torch_pdb/pkg_data/tm_pdblist.txt --dest data/tm-bench
 ```
 
 3. Move the `tm-bench` folder to your `data` directory so that the `download()` method is skipped when creating the dataset.
