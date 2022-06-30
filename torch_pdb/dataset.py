@@ -93,7 +93,7 @@ class TorchPDBDataset(InMemoryDataset):
     def pdb2df(self, path):
         df = PandasPdb().read_pdb(path).df['ATOM']
         df = df[df['atom_name'] == 'CA']
-        df['residue_name'] = df['residue_name'].map(lambda x: three2one[x])
+        df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
         df = df.sort_values('residue_number')
         return df
 
@@ -103,6 +103,9 @@ class TorchPDBDataset(InMemoryDataset):
             return False
         # check if sequence and structure are consistent
         if self.check_sequence and not np.array_equal(df.index, np.arange(1,len(df)+1)):
+            return False
+        # check if all standard amino acids
+        if not all(df['residue_name'].map(lambda x: not x is None)):
             return False
         return True
 
