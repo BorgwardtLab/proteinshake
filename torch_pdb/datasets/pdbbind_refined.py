@@ -13,6 +13,7 @@ from torch_geometric.data import Dataset
 from biopandas.pdb import PandasPdb
 
 from torch_pdb.utils.convert import pdb2pyg
+from torch_pdb.utils.pdbbind import parse_pdbbind_index
 
 class PDBBindRefined(Dataset):
     def __init__(self, name, root='/tmp/var', transform=None, pre_transform=None,
@@ -28,6 +29,7 @@ class PDBBindRefined(Dataset):
         '''
         # filename="PDBbind_v2020_refined.tar.gz",
         self.name = name ## original name, e.g., ecoli
+        self.version = version
         self.url = server_address + f"PDBbind_v{version}_refined.tar.gz"
         self.root = osp.join(root, name)
         self.kwargs = kwargs
@@ -61,12 +63,20 @@ class PDBBindRefined(Dataset):
         """ Each graph will have an is_site tensor with 1 if the
         residue is in the binding site, 0 else.
         """
-        todo_pdbs = self.raw_file_names 
+        todo_pdbs = self.raw_file_names
+
+        index_data = parse_pdbbind_index(os.path.join(self.raw_dir,
+                                                      "index",
+                                                      f"INDEX_refined_set.{self.version}")
+                                         )
+        print(index_data)
+        print(len(index_data))
         data_list = []
         for i, pdb in tqdm(enumerate(todo_pdbs), total=len(todo_pdbs)):
             pdb_dir = osp.join(self.raw_dir, pdb)
             graph = pdb2pyg(osp.join(pdb_dir, f'{pdb}_protein.pdb'), **self.kwargs)
             graph.name = pdb
+            graph.bind_data = index_data[pdb]
 
             is_site = torch.zeros_like(graph.residue_number)
 
