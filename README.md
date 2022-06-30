@@ -1,4 +1,4 @@
-![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/test.yml/badge.svg)
+![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
 
 # `torch-pdb`: torch-geometric datasets built from the PDB
 
