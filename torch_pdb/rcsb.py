@@ -69,9 +69,9 @@ class RCSBDataset(TorchPDBDataset):
 
         for id in tqdm(ids, desc='Downloading PDBs'):
             try:
-                download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
                 r = requests.get(f'https://data.rcsb.org/rest/v1/core/polymer_entity/{id}/1')
                 obj = json.loads(r.text)
+                download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
                 with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
                     json.dump(obj, file)
             except KeyboardInterrupt:
