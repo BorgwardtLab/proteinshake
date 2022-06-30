@@ -74,8 +74,10 @@ class RCSBDataset(TorchPDBDataset):
                 obj = json.loads(r.text)
                 with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
                     json.dump(obj, file)
+            except KeyboardInterrupt:
+                exit()
             except:
-                print(f'Downloading PDB ID {id} failed.')    
+                print(f'Downloading PDB ID {id} failed.')
 
         self.download_complete()
 
