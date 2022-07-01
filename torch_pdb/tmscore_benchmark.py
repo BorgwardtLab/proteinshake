@@ -12,6 +12,23 @@ import os
 TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
 
 def tmalign_wrapper(pdb1, pdb2):
+    """Summary line.
+
+    Extended description of function.
+
+    Parameters
+    ----------
+    arg1 : int
+        Description of arg1
+    arg2 : str
+        Description of arg2
+
+    Returns
+    -------
+    bool
+        Description of return value
+
+    """
     try:
         out = subprocess.run([TMPATH,'-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
         path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
