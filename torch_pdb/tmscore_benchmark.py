@@ -12,22 +12,23 @@ import os
 TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
 
 def tmalign_wrapper(pdb1, pdb2):
-    """Summary line.
-
-    Extended description of function.
+    """Compute TM score with TMalign between two PDB structures.
 
     Parameters
     ----------
-    arg1 : int
-        Description of arg1
+    pdb1: str
+        Path to PDB.
     arg2 : str
-        Description of arg2
+        Path to PDB.
 
     Returns
     -------
-    bool
-        Description of return value
-
+    float
+        TM score from `pdb1` to `pdb2`
+    float
+        TM score from `pdb2` to `pdb1`
+    float
+        RMSD between structures
     """
     try:
         out = subprocess.run([TMPATH,'-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
@@ -39,12 +40,16 @@ def tmalign_wrapper(pdb1, pdb2):
 
 
 class TMScoreBenchmark(TorchPDBDataset):
-    """Benchmark dataset for TMalign.
+    """"Dataset conatining TM scores between pairs of proteins.
 
-    :param root: path to data folder.
-    :type root: class:`str`
-    :param name: custom name for dataset.
-    :type name: class: `str`,
+    Parameters
+    ----------
+    root: str
+        Root directory where the dataset should be saved.
+    name: str
+        The name of the dataset.
+    use_precomputed: bool
+        If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
     """
 
     def __init__(self, use_precomputed=True, **kwargs):
@@ -74,6 +79,16 @@ class TMScoreBenchmark(TorchPDBDataset):
         self.download_complete()
 
     def compute_distances(self, n_jobs=1):
+        """ Launch TMalign on all pairs of proteins in dataset.
+        Saves TMalign output to `self.raw_dir/tm-bench.pt`
+
+        Returns
+        -------
+        dict
+            TM score between all pairs of proteins as a dictionary.
+        dict
+            RMSD between all pairs of proteins as a dictionary.
+        """
         if os.path.exists(f'{self.root}/raw/tm-bench.pt'):
             return torch.load(f'{self.root}/raw/tm-bench.pt')
 
