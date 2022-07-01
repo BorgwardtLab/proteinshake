@@ -9,7 +9,9 @@ requirements = ["torch",
                 'seaborn',
                 'sklearn',
                 'tqdm',
-                'wget'
+                'wget',
+                'requests',
+                'joblib'
                 ]
 
 setuptools.setup(
@@ -29,4 +31,3 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ]
 )
-
