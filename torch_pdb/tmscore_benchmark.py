@@ -22,6 +22,13 @@ def tmalign_wrapper(pdb1, pdb2):
 
 
 class TMScoreBenchmark(TorchPDBDataset):
+    """Benchmark dataset for TMalign.
+
+    :param root: path to data folder.
+    :type root: class:`str`
+    :param name: custom name for dataset.
+    :type name: class: `str`,
+    """
 
     def __init__(self, use_precomputed=True, **kwargs):
         self.use_precomputed = use_precomputed
