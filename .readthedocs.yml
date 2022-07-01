@@ -1,7 +1,7 @@
 build:
   tools:
     python: "3.9"
-   commands:
+  commands:
     - pip install pytorch
     - export TORCH=`python -c "import torch; print(torch.__version__)"`
     - pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
@@ -9,5 +9,6 @@ build:
     - pip install torch-geometric
   
 python:
+  version: "3.9"
   install:
     - requirements: docs/requirements.txt
