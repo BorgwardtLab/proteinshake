@@ -1,9 +1,3 @@
-torch\_pdb package
-==================
-
-Submodules
-----------
-
 torch\_pdb.dataset module
 -------------------------
 
