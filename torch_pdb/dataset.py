@@ -26,8 +26,9 @@ class TorchPDBDataset(InMemoryDataset):
             use_precomputed     = True,
             ):
         if not use_precomputed and n_jobs == 1:
-            print('Downloading and processing an entire dataset with use_precompute = True is very slow. Consider increasing n_jobs.')
+            print('Downloading and processing an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         self.n_jobs = n_jobs
+        self.use_precomputed = use_precomputed
         self.root = root
         self.name = name
         self.node_embedding = node_embedding
@@ -75,7 +76,8 @@ class TorchPDBDataset(InMemoryDataset):
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [p for p in proteins if p is not None]
         convert = lambda p: self.graph2pyg(self.protein2graph(p), info=p)
-        data_list = Parallel(n_jobs=self.n_jobs)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
+        #data_list = Parallel(n_jobs=self.n_jobs)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
+        data_list = [convert(p) for p in tqdm(proteins)]
         print('Saving...')
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
@@ -90,7 +92,11 @@ class TorchPDBDataset(InMemoryDataset):
             'sequence': ''.join(df['residue_name']),
             'residue_index': torch.tensor(df['residue_number'].tolist()).int(),
             'chain_id': df['chain_id'].tolist(),
-            'coords': torch.tensor(df.apply(lambda row: (row['x_coord'], row['y_coord'], row['z_coord']), axis=1).to_list()).long(),
+            'coords': torch.stack([
+                torch.tensor(df['x_coord'].to_list()),
+                torch.tensor(df['y_coord'].to_list()),
+                torch.tensor(df['z_coord'].to_list())
+            ], dim=1).long(),
         }
         protein = self.add_protein_attributes(protein)
         return protein
