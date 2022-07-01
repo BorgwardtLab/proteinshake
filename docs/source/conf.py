@@ -1,6 +1,6 @@
 import datetime
 
-import torch_geometric
+import torch_pdb 
 
 author = "Kucera, Oliver, O'Bray, Chen"
 project = 'torch-pdb'
