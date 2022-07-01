@@ -49,7 +49,7 @@ class TMScoreBenchmark(TorchPDBDataset):
             extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
         self.download_complete()
 
-    def compute_distances(self, n_jobs=1):
+    def compute_distances(self):
         if os.path.exists(f'{self.root}/raw/tm-bench.pt'):
             return torch.load(f'{self.root}/raw/tm-bench.pt')
 
@@ -57,7 +57,7 @@ class TMScoreBenchmark(TorchPDBDataset):
         pairs = list(itertools.combinations(range(len(pdbs)), 2))
         todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
 
-        output = Parallel(n_jobs=n_jobs)(
+        output = Parallel(n_jobs=self.n_jobs)(
             delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
         )
 

@@ -1,40 +1,33 @@
-import os
+'''
+Script to generate all datasets for release.
+'''
+
+import os, shutil
 from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-
-print('RCSBDataset')
-ds = RCSBDataset(root=PATH+'/data/rcsb', name='test')
-print('test:', ds[0])
-print(len(ds))
-print()
-
-print('PfamDataset')
-ds = PfamDataset(root=PATH+'/data/pfam', name='test')
-print('test:', ds[0]['Pfam'])
-print(len(ds))
-print()
+n_jobs = 10
 
 print('ECDataset')
-ds = ECDataset(root=PATH+'/data/ec', name='test')
-print('test:', ds[0]['EC'])
-print(len(ds))
-print()
+ds = ECDataset(root=PATH+'/release/ec', name='ec', n_jobs=n_jobs)
+del ds
 
 print('GODataset')
-ds = GODataset(root=PATH+'/data/go', name='test')
-print('test:', ds[0]['GO'])
-print(len(ds))
-print()
+ds = GODataset(root=PATH+'/release/go', name='go', n_jobs=n_jobs)
+del ds
+
+print('PfamDataset')
+ds = PfamDataset(root=PATH+'/release/pfam', name='pfam', n_jobs=n_jobs)
+del ds
+
+print('RCSBDataset')
+ds = RCSBDataset(root=PATH+'/release/rcsb', name='rcsb', n_jobs=n_jobs)
+del ds
 
 print('PDBBindRefined')
-ds = PDBBindRefined(root=PATH+'/data/pdbbind', name='test')
-print('test:', ds[0])
-print(len(ds))
-print()
+ds = PDBBindRefined(root=PATH+'/release/pdbbind', name='pdbbind', n_jobs=n_jobs)
+del ds
 
 print('TMScoreBenchmark')
-ds = TMScoreBenchmark(root=PATH+'/data/tmscore', name='test', use_precomputed=False)
-print('test:', ds.tm_score['1adr_']['1aho_'])
-print(len(ds))
-print()
+ds = TMScoreBenchmark(root=PATH+'/release/tmscore', name='tmscore', use_precomputed=False, n_jobs=n_jobs)
+del ds

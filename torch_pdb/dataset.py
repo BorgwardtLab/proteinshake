@@ -22,7 +22,12 @@ class TorchPDBDataset(InMemoryDataset):
             weighted_edges      = False,
             only_single_chain   = False,
             check_sequence      = False,
+            n_jobs              = 1,
+            use_precomputed     = True,
             ):
+        if not use_precomputed and n_jobs == 1:
+            print('Downloading and processing an entire dataset with use_precompute = True is very slow. Consider increasing n_jobs.')
+        self.n_jobs = n_jobs
         self.root = root
         self.name = name
         self.node_embedding = node_embedding
@@ -67,10 +72,10 @@ class TorchPDBDataset(InMemoryDataset):
             file.write('done.')
 
     def process(self):
-        proteins = Parallel(n_jobs=10)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
+        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [p for p in proteins if p is not None]
         convert = lambda p: self.graph2pyg(self.protein2graph(p), info=p)
-        data_list = Parallel(n_jobs=10)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
+        data_list = Parallel(n_jobs=self.n_jobs)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
         print('Saving...')
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])

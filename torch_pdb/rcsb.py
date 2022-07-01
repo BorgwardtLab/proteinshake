@@ -67,7 +67,7 @@ class RCSBDataset(TorchPDBDataset):
             print(f'\rQuerying {min(i,total)} of {total}', end='')
         print()
 
-        _ = Parallel(n_jobs=10)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
 
         self.download_complete()
 
