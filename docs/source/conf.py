@@ -1,10 +1,10 @@
 import datetime
 
-import torch_pdb 
+import torch_pdb
 
 author = "Kucera, Oliver, O'Bray, Chen"
 project = 'torch-pdb'
-version = torch_pdb.__version__
+version = "0.0.1"
 copyright = f'{datetime.datetime.now().year}, {author}'
 
 extensions = [
