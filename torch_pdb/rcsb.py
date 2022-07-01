@@ -67,7 +67,10 @@ class RCSBDataset(TorchPDBDataset):
             print(f'\rQuerying {min(i,total)} of {total}', end='')
         print()
 
-        Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        failed = [f for f in failed if not f is True]
+        if len(failed)>0:
+            print(f'Failed to download {len(failed)} PDB files.')
 
         self.download_complete()
 
@@ -78,10 +81,11 @@ class RCSBDataset(TorchPDBDataset):
             download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
             with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
                 json.dump(obj, file)
+            return True
         except KeyboardInterrupt:
             exit()
         except:
-            print(f'Downloading PDB ID {id} failed.')
+            return id
 
 
 

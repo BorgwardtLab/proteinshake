@@ -23,8 +23,7 @@ def tmalign_wrapper(pdb1, pdb2):
 
 class TMScoreBenchmark(TorchPDBDataset):
 
-    def __init__(self, use_precomputed=True, **kwargs):
-        self.use_precomputed = use_precomputed
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tm_score, self.rmsd = self.compute_distances()
 
@@ -33,6 +32,12 @@ class TMScoreBenchmark(TorchPDBDataset):
 
     def get_id_from_filename(self, filename):
         return filename[:-4]
+
+    def download_precomputed(self):
+        super().download_precomputed()
+        if self.use_precomputed:
+            download_url('https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz', f'{self.root}/raw')
+            extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -44,9 +49,6 @@ class TMScoreBenchmark(TorchPDBDataset):
                 start, end = m.span()
                 pdbid = l[start-5:end]
                 download_url(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}", f'{self.root}/raw/files', log=False)
-        if self.use_precomputed:
-            download_url('https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz', f'{self.root}/raw')
-            extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
         self.download_complete()
 
     def compute_distances(self):

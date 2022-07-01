@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import torch, os
-from torch_geometric.data import InMemoryDataset, Data
+from torch_geometric.data import InMemoryDataset, Data, extract_tar, download_url
 from torch_geometric.utils import from_scipy_sparse_matrix
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
@@ -41,7 +41,7 @@ class TorchPDBDataset(InMemoryDataset):
         super().__init__(root)
         self._download() # some weird quirk requires this if .download() / .process() is not defined on the lowest inheritance level, might want to look into this at some point
         self._process()
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(f'{self.root}/processed/{self.name}.pt')
 
     def get_raw_files(self):
         ''' Implement me! '''
@@ -59,28 +59,43 @@ class TorchPDBDataset(InMemoryDataset):
         ''' Implement me! '''
         return protein
 
-    @property
-    def raw_file_names(self):
-        return ['done.txt']
-
-    @property
-    def processed_file_names(self):
-        return [f'{self.name}.pt']
-
     def download_complete(self):
         print('Download complete.')
-        with open(f'{self.root}/raw/{self.raw_file_names[0]}','w') as file:
+        with open(f'{self.root}/raw/done.txt','w') as file:
             file.write('done.')
 
-    def process(self):
+    def _process(self):
+        if os.path.exists(f'{self.root}/processed/{self.name}.pt'):
+            return
+        os.makedirs(f'{self.root}/processed', exist_ok=True)
+        self.process()
+
+    def _download(self):
+        if self.use_precomputed:
+            self.download_precomputed()
+        else:
+            if os.path.exists(f'{self.root}/raw/done.txt'):
+                return
+            os.makedirs(f'{self.root}/raw/files', exist_ok=True)
+            self.download()
+            self.parse()
+
+    def download_precomputed(self):
+        download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/{self.__class__.__name__}.pt', f'{self.root}/raw')
+        self.download_complete()
+
+    def parse(self):
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [p for p in proteins if p is not None]
+        torch.save(proteins, f'{self.root}/{self.__class__.__name__}.pt')
+
+    def process(self):
+        proteins = torch.load(f'{self.root}/{self.__class__.__name__}.pt')
         convert = lambda p: self.graph2pyg(self.protein2graph(p), info=p)
-        #data_list = Parallel(n_jobs=self.n_jobs)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
-        data_list = [convert(p) for p in tqdm(proteins)]
+        data_list = Parallel(n_jobs=self.n_jobs)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
         print('Saving...')
         data, slices = self.collate(data_list)
-        torch.save((data, slices), self.processed_paths[0])
+        torch.save((data, slices), f'{self.root}/processed/{self.name}.pt')
         print('Dataset ready.')
 
     def parse_pdb(self, path):
