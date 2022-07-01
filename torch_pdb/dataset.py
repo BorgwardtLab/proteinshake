@@ -13,8 +13,8 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 class TorchPDBDataset(InMemoryDataset):
     def __init__(self,
-            root,
-            name,
+            root                = './data',
+            name                = 'proteins',
             node_embedding      = one_hot,
             graph_construction  = 'eps',
             eps                 = 8,
