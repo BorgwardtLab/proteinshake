@@ -1,4 +1,4 @@
-torch\_pdb.dataset module
+torch\_pdb.dataset
 -------------------------
 
 .. automodule:: torch_pdb.dataset
@@ -6,7 +6,7 @@ torch\_pdb.dataset module
    :undoc-members:
    :show-inheritance:
 
-torch\_pdb.embeddings module
+torch\_pdb.embeddings
 ----------------------------
 
 .. automodule:: torch_pdb.embeddings
@@ -14,7 +14,7 @@ torch\_pdb.embeddings module
    :undoc-members:
    :show-inheritance:
 
-torch\_pdb.pdbbind\_refined module
+torch\_pdb.pdbbind\_refined
 ----------------------------------
 
 .. automodule:: torch_pdb.pdbbind_refined
@@ -22,7 +22,7 @@ torch\_pdb.pdbbind\_refined module
    :undoc-members:
    :show-inheritance:
 
-torch\_pdb.rcsb module
+torch\_pdb.rcsb
 ----------------------
 
 .. automodule:: torch_pdb.rcsb
@@ -30,18 +30,10 @@ torch\_pdb.rcsb module
    :undoc-members:
    :show-inheritance:
 
-torch\_pdb.tmscore\_benchmark module
+torch\_pdb.tmscore\_benchmark
 ------------------------------------
 
 .. automodule:: torch_pdb.tmscore_benchmark
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: torch_pdb
    :members:
    :undoc-members:
    :show-inheritance:
