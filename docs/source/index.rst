@@ -10,7 +10,7 @@ Welcome to torch-pdb's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+   torch_pdb
 
 
 
