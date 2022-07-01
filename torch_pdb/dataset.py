@@ -37,15 +37,18 @@ class TorchPDBDataset(InMemoryDataset):
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     def get_raw_files(self):
-        ''' Implement me! '''
+        ''' Returns a list of all valid PDB files.
+        Implement me! '''
         raise NotImplementedError
 
     def get_id_from_filename(self, filename):
-        ''' Implement me! '''
+        ''' Takes in raw filename `xyz_abc.pdb` and returns a PDBID.
+        Implement me! '''
         raise NotImplementedError
 
     def download(self):
-        ''' Implement me! '''
+        ''' Dumps data to /raw and /raw/files/*.pdb.
+        Implement me! '''
         raise NotImplementedError
 
     def add_protein_attributes(self, protein):
