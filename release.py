@@ -1,7 +1,13 @@
 import os
-from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset
+from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+
+print('RCSBDataset')
+ds = RCSBDataset(root=PATH+'/data/rcsb', name='test')
+print('test:', ds[0])
+print(len(ds))
+print()
 
 print('PfamDataset')
 ds = PfamDataset(root=PATH+'/data/pfam', name='test')
