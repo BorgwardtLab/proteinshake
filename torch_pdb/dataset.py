@@ -7,6 +7,7 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from torch_pdb.embeddings import one_hot
+from joblib import Parallel, delayed
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
@@ -66,29 +67,27 @@ class TorchPDBDataset(InMemoryDataset):
             file.write('done.')
 
     def process(self):
-        proteins = self.parse_pdbs()
+        proteins = Parallel(n_jobs=10)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
+        proteins = [p for p in proteins if p is not None]
         data_list = [self.graph2pyg(self.protein2graph(p), info=p) for p in tqdm(proteins, desc='Converting proteins to graphs')]
         print('Saving...')
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
         print('Dataset ready.')
 
-    def parse_pdbs(self):
-        structs = []
-        for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'):
-            df = self.pdb2df(path)
-            if not self.validate(df):
-                continue
-            protein = {
-                'ID': self.get_id_from_filename(os.path.basename(path)),
-                'sequence': ''.join(df['residue_name']),
-                'residue_index': torch.tensor(df['residue_number'].tolist()).int(),
-                'chain_id': df['chain_id'].tolist(),
-                'coords': torch.tensor(df.apply(lambda row: (row['x_coord'], row['y_coord'], row['z_coord']), axis=1).to_list()).long(),
-            }
-            protein = self.add_protein_attributes(protein)
-            structs.append(protein)
-        return structs
+    def parse_pdb(self, path):
+        df = self.pdb2df(path)
+        if not self.validate(df):
+            return None
+        protein = {
+            'ID': self.get_id_from_filename(os.path.basename(path)),
+            'sequence': ''.join(df['residue_name']),
+            'residue_index': torch.tensor(df['residue_number'].tolist()).int(),
+            'chain_id': df['chain_id'].tolist(),
+            'coords': torch.tensor(df.apply(lambda row: (row['x_coord'], row['y_coord'], row['z_coord']), axis=1).to_list()).long(),
+        }
+        protein = self.add_protein_attributes(protein)
+        return protein
 
     def pdb2df(self, path):
         df = PandasPdb().read_pdb(path).df['ATOM']
