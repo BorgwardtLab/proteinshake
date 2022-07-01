@@ -1,6 +1,6 @@
 build:
   tools:
-    python: "3.9"
+    python: "3.8"
   commands:
     - pip install pytorch
     - export TORCH=`python -c "import torch; print(torch.__version__)"`
@@ -9,6 +9,6 @@ build:
     - pip install torch-geometric
   
 python:
-  version: "3.9"
+  version: "3.8"
   install:
     - requirements: docs/requirements.txt
