@@ -17,7 +17,7 @@ extensions = [
 ]
 
 html_theme = 'pyg_sphinx_theme'
-html_logo = ('https://raw.githubusercontent.com/cgoliver/pyg_sphinx_theme/'
+html_logo = ('https://raw.githubusercontent.com/cgoliver/torch-pdb_sphinx_theme/'
              'master/pyg_sphinx_theme/static/img/torch-pdb.png')
 html_favicon = ('https://raw.githubusercontent.com/pyg-team/pyg_sphinx_theme/'
                 'master/pyg_sphinx_theme/static/img/favicon.png')
