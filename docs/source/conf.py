@@ -37,9 +37,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
 ]
 
 napoleon_google_docstring = False
