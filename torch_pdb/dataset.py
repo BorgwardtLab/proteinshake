@@ -33,7 +33,7 @@ class TorchPDBDataset(InMemoryDataset):
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         super().__init__(root)
-        self._download() # some weird quirk requires this if .process() is not defined on the lowest inheritance level, might want to look into this at some point
+        self._download() # some weird quirk requires this if .download() / .process() is not defined on the lowest inheritance level, might want to look into this at some point
         self._process()
         self.data, self.slices = torch.load(self.processed_paths[0])
 
