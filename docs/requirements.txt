@@ -1,6 +1,7 @@
-numpy
-scikit-learn
-torch
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.12.0+cpu
 torch-scatter
 torch-sparse
 torch-geometric
+numpy
+scikit-learn
