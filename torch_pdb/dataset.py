@@ -69,7 +69,8 @@ class TorchPDBDataset(InMemoryDataset):
     def process(self):
         proteins = Parallel(n_jobs=10)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [p for p in proteins if p is not None]
-        data_list = [self.graph2pyg(self.protein2graph(p), info=p) for p in tqdm(proteins, desc='Converting proteins to graphs')]
+        convert = lambda p: self.graph2pyg(self.protein2graph(p), info=p)
+        data_list = Parallel(n_jobs=10)(delayed(convert)(p) for p in tqdm(proteins, desc='Converting proteins to graphs'))
         print('Saving...')
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
