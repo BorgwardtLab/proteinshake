@@ -67,6 +67,8 @@ class TorchPDBDataset(InMemoryDataset):
     def _process(self):
         if os.path.exists(f'{self.root}/processed/{self.name}.pt'):
             return
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.pt'):
+            self.parse()
         os.makedirs(f'{self.root}/processed', exist_ok=True)
         self.process()
 
@@ -119,6 +121,9 @@ class TorchPDBDataset(InMemoryDataset):
     def pdb2df(self, path):
         df = PandasPdb().read_pdb(path).df['ATOM']
         df = df[df['atom_name'] == 'CA']
+        if df['residue_number'].duplicated().any():
+            df['res_num'] = df['residue_number']
+            df = df.groupby('res_num').first() # take only first model
         df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
         df = df.sort_values('residue_number')
         return df
