@@ -12,7 +12,7 @@ SCRATCH = args.scratch if args.scratch != '' else args.path
 n_jobs = args.njobs
 
 os.makedirs(f'{PATH}/release', exist_ok=True)
-for Dataset in [ECDataset, PDBBindRefined, TMScoreBenchmark, GODataset, PfamDataset, RCSBDataset]:
+for Dataset in [RCSBDataset, ECDataset, PDBBindRefined, TMScoreBenchmark, GODataset, PfamDataset]:
     name = Dataset.__name__
     print()
     print(name)

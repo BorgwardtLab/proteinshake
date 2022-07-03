@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import torch, os
+import torch, os, gzip
 from torch_geometric.data import InMemoryDataset, Data, extract_tar, download_url
 from torch_geometric.utils import from_scipy_sparse_matrix
 from biopandas.pdb import PandasPdb
@@ -87,7 +87,8 @@ class TorchPDBDataset(InMemoryDataset):
         self.download_complete()
 
     def parse(self):
-        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
+        #proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
+        proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
         proteins = [p for p in proteins if p is not None]
         torch.save(proteins, f'{self.root}/{self.__class__.__name__}.pt')
 
@@ -119,11 +120,25 @@ class TorchPDBDataset(InMemoryDataset):
         return protein
 
     def pdb2df(self, path):
-        df = PandasPdb().read_pdb(path).df['ATOM']
+        if path.endswith('.gz'):
+            with gzip.open(path, 'rb') as file:
+                lines = file.read().decode('utf-8').split('\n')
+        else:
+            with open(path, 'r') as file:
+                lines = file.read().split('\n')
+        # filter only the first model
+        filtered_lines, in_model, model_done = [], False, False
+        for line in lines:
+            if line.startswith('MODEL'):
+                in_model = True
+            if in_model and model_done:
+                continue
+            if line.startswith('ENDMDL'):
+                model_done = True
+                in_model = False
+            filtered_lines.append(line)
+        df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
         df = df[df['atom_name'] == 'CA']
-        if df['residue_number'].duplicated().any():
-            df['res_num'] = df['residue_number']
-            df = df.groupby('res_num').first() # take only first model
         df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
         df = df.sort_values('residue_number')
         return df
@@ -137,6 +152,9 @@ class TorchPDBDataset(InMemoryDataset):
             return False
         # check if all standard amino acids
         if not all(df['residue_name'].map(lambda x: not x is None)):
+            return False
+        # check if sequence is empty (e.g. with non-canonical amino acids)
+        if not sum(df['residue_name'].map(lambda x: not x is None)) > 0:
             return False
         return True
 
