@@ -36,8 +36,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download_precomputed(self):
         super().download_precomputed()
         if self.use_precomputed:
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v{self.release}/tm-bench.tar.gz', f'{self.root}/raw')
-            extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tm-bench.pt', f'{self.root}')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -52,8 +51,8 @@ class TMScoreBenchmark(TorchPDBDataset):
         self.download_complete()
 
     def compute_distances(self):
-        if os.path.exists(f'{self.root}/raw/tm-bench.pt'):
-            return torch.load(f'{self.root}/raw/tm-bench.pt')
+        if os.path.exists(f'{self.root}/tm-bench.pt'):
+            return torch.load(f'{self.root}/tm-bench.pt')
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
@@ -76,5 +75,5 @@ class TMScoreBenchmark(TorchPDBDataset):
         dist = dict(dist)
         rmsd = dict(rmsd)
 
-        torch.save((dist, rmsd), f'{self.root}/raw/tm-bench.pt')
+        torch.save((dist, rmsd), f'{self.root}/tm-bench.pt')
         return dist, rmsd

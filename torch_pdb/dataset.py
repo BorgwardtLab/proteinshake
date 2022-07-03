@@ -13,7 +13,7 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 class TorchPDBDataset(InMemoryDataset):
     def __init__(self,
-            root                = './data',
+            root                = 'data',
             name                = 'proteins',
             node_embedding      = one_hot,
             graph_construction  = 'eps',
@@ -24,7 +24,7 @@ class TorchPDBDataset(InMemoryDataset):
             check_sequence      = False,
             n_jobs              = 1,
             use_precomputed     = True,
-            release             = '1.0.1'
+            release             = 'JUL2022'
             ):
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
@@ -62,7 +62,6 @@ class TorchPDBDataset(InMemoryDataset):
         if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
             print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
             exit()
-        exit()
 
     def get_raw_files(self):
         ''' Implement me! '''
@@ -106,8 +105,8 @@ class TorchPDBDataset(InMemoryDataset):
             self.parse()
 
     def download_precomputed(self):
-        download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v{self.release}/{self.__class__.__name__}.pt', f'{self.root}/raw')
-        self.download_complete()
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.pt'):
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.pt', f'{self.root}')
 
     def parse(self):
         #proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
