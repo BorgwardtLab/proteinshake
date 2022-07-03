@@ -36,7 +36,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download_precomputed(self):
         super().download_precomputed()
         if self.use_precomputed:
-            download_url('https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz', f'{self.root}/raw')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v{self.release}/tm-bench.tar.gz', f'{self.root}/raw')
             extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
 
     def download(self):

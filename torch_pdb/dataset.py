@@ -24,6 +24,7 @@ class TorchPDBDataset(InMemoryDataset):
             check_sequence      = False,
             n_jobs              = 1,
             use_precomputed     = True,
+            release             = '1.0.1'
             ):
         if not use_precomputed and n_jobs == 1:
             print('Downloading and processing an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
@@ -94,7 +95,7 @@ class TorchPDBDataset(InMemoryDataset):
             self.parse()
 
     def download_precomputed(self):
-        download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/{self.__class__.__name__}.pt', f'{self.root}/raw')
+        download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/v{self.release}/{self.__class__.__name__}.pt', f'{self.root}/raw')
         self.download_complete()
 
     def parse(self):
