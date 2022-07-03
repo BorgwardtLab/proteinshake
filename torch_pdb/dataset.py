@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import torch, os, gzip
+import torch, os, gzip, inspect
 from torch_geometric.data import InMemoryDataset, Data, extract_tar, download_url
 from torch_geometric.utils import from_scipy_sparse_matrix
 from biopandas.pdb import PandasPdb
@@ -38,10 +38,21 @@ class TorchPDBDataset(InMemoryDataset):
         self.weighted_edges = weighted_edges
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
+        self.check_arguments_same_as_hosted()
         super().__init__(root)
         self._download() # some weird quirk requires this if .download() / .process() is not defined on the lowest inheritance level, might want to look into this at some point
         self._process()
         self.data, self.slices = torch.load(f'{self.root}/processed/{self.name}.pt')
+
+    def check_arguments_same_as_hosted(self):
+        signature = inspect.signature(self.__init__)
+        default_args = {
+            k: v.default
+            for k, v in signature.parameters.items()
+            if v.default is not inspect.Parameter.empty
+        }
+        if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
+            raise Exception('The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
 
     def get_raw_files(self):
         ''' Implement me! '''
