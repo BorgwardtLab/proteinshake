@@ -40,11 +40,14 @@ Data(edge_index=[2, 512], chain_id=[257], residue_idx=[257], residue=[257], resi
 This is a summary of available datasets.
 
 
-| Dataset | # of graphs | graph attributes | node attributes | edge attributes |
+| Dataset | # of graphs | graph attributes | node attributes | dataset attributes |
 |---------|-------------|------------------|-----------------|-----------------|
-| `PDBRepresentative`         |  XXXX           |                  |                 |                 |
-| `PDBBindRefined`         |  5316           |     `is_site (binary)`             |                 |                 |
-| `TMScoreBenchmark`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBDataset` | 9117 | | | |
+| `GODataset` | 7811 | `GO` (`list`) | | |
+| `ECDataset` | 1864 | `EC` (`list`) | | |
+| `PfamDataset` | 7173 | `Pfam` (`list`) | | |
+| `PDBBindRefined` | 5316 | | `is_site` (`binary`) | |
+| `TMScoreBenchmark` | 200 | | | `tm_score[i][j]` (`float`), `rmsd[i][j]` (`float`) |
 
 ## Graph Building
 
