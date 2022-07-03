@@ -54,6 +54,8 @@ class TMScoreBenchmark(TorchPDBDataset):
     def compute_distances(self):
         if os.path.exists(f'{self.root}/raw/tm-bench.pt'):
             return torch.load(f'{self.root}/raw/tm-bench.pt')
+        if self.n_jobs == 1:
+            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
         pdbs = self.get_raw_files()
         pairs = list(itertools.combinations(range(len(pdbs)), 2))

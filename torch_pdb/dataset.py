@@ -26,8 +26,6 @@ class TorchPDBDataset(InMemoryDataset):
             use_precomputed     = True,
             release             = '1.0.1'
             ):
-        if not use_precomputed and n_jobs == 1:
-            print('Downloading and processing an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
         self.root = root
@@ -90,6 +88,8 @@ class TorchPDBDataset(InMemoryDataset):
         else:
             if os.path.exists(f'{self.root}/raw/done.txt'):
                 return
+            if self.n_jobs == 1:
+                print('Downloading an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
             os.makedirs(f'{self.root}/raw/files', exist_ok=True)
             self.download()
             self.parse()

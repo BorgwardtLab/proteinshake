@@ -21,3 +21,7 @@ for Dataset in [RCSBDataset, ECDataset, PDBBindRefined, TMScoreBenchmark, GOData
     if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/{name}.pt'):
         print('Copying...')
         shutil.copyfile(f'{SCRATCH}/release/{name}/processed/{name}.pt', f'{PATH}/release/{name}.pt')
+
+if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/tm-bench.pt'):
+    print('Copying TM scores...')
+    shutil.copyfile(f'{SCRATCH}/release/TMScoreBenchmark/raw/tm-bench.pt', f'{PATH}/release/tm-bench.pt')
