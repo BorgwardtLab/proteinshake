@@ -37,6 +37,7 @@ class TorchPDBDataset(InMemoryDataset):
         self.weighted_edges = weighted_edges
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
+        self.release = release
         self.check_arguments_same_as_hosted()
         super().__init__(root)
         self._download() # some weird quirk requires this if .download() / .process() is not defined on the lowest inheritance level, might want to look into this at some point
@@ -50,8 +51,18 @@ class TorchPDBDataset(InMemoryDataset):
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
         }
+        if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
+            signature = inspect.signature(self.__class__.__bases__[0].__init__)
+            super_args = {
+                k: v.default
+                for k, v in signature.parameters.items()
+                if v.default is not inspect.Parameter.empty
+            }
+            default_args = {**super_args, **default_args}
         if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
-            raise Exception('The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
+            print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
+            exit()
+        exit()
 
     def get_raw_files(self):
         ''' Implement me! '''
