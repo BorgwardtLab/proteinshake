@@ -41,16 +41,16 @@ Data(edge_index=[2, 512], chain_id=[257], residue_idx=[257], residue=[257], resi
 This is a summary of available datasets.
 
 
-| Dataset | # of graphs | graph attributes | node attributes | edge attributes |
+| Dataset | # of graphs | graph attributes | node attributes | dataset attributes |
 |---------|-------------|------------------|-----------------|-----------------|
-| `RCSB`         |  XXXX           |                  |                 |                 |
+| `RCSB`         |  9117           |                  |                 |                 |
 | `PDBBindRefined`         |  5316           |     `is_site (binary)`             |                 |                 |
 | `PDBBindPPI`         |  5316           |     `is_site (binary)`             |                 |                 |
 | `TMScoreBenchmark`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBGO`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBEC`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBPfam`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `AF`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBGO`         |  7811 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBEC`         |  1864 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBPfam`         |  7173 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `AF`         |  ? |     `tm_score[i][j]` (`float`)             |                 |                 |
 
 ## Graph Building
 

@@ -3,7 +3,7 @@ import pandas as pd
 from torch_geometric.data import download_url
 from torch_pdb import TorchPDBDataset
 from tqdm import tqdm
-
+from joblib import Parallel, delayed
 
 class RCSBDataset(TorchPDBDataset):
 
@@ -67,19 +67,25 @@ class RCSBDataset(TorchPDBDataset):
             print(f'\rQuerying {min(i,total)} of {total}', end='')
         print()
 
-        for id in tqdm(ids, desc='Downloading PDBs'):
-            try:
-                download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
-                r = requests.get(f'https://data.rcsb.org/rest/v1/core/polymer_entity/{id}/1')
-                obj = json.loads(r.text)
-                with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
-                    json.dump(obj, file)
-            except KeyboardInterrupt:
-                exit()
-            except:
-                print(f'Downloading PDB ID {id} failed.')
+        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        failed = [f for f in failed if not f is True]
+        if len(failed)>0:
+            print(f'Failed to download {len(failed)} PDB files.')
 
         self.download_complete()
+
+    def download_from_rcsb(self, id):
+        try:
+            r = requests.get(f'https://data.rcsb.org/rest/v1/core/polymer_entity/{id}/1')
+            obj = json.loads(r.text)
+            download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
+            with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
+                json.dump(obj, file)
+            return True
+        except KeyboardInterrupt:
+            exit()
+        except:
+            return id
 
 
 
@@ -87,8 +93,8 @@ class RCSBDataset(TorchPDBDataset):
 
 class GODataset(RCSBDataset):
 
-    def __init__(self, **kwargs):
-        super().__init__(query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs)
+    def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs):
+        super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
         with open(f'{self.root}/raw/files/{protein["ID"]}.annot.json','r') as file:
@@ -103,8 +109,8 @@ class GODataset(RCSBDataset):
 
 class ECDataset(RCSBDataset):
 
-    def __init__(self, **kwargs):
-        super().__init__(query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs)
+    def __init__(self, query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs):
+        super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
         with open(f'{self.root}/raw/files/{protein["ID"]}.annot.json','r') as file:
@@ -115,8 +121,8 @@ class ECDataset(RCSBDataset):
 
 class PfamDataset(RCSBDataset):
 
-    def __init__(self, **kwargs):
-        super().__init__(query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs)
+    def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
+        super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
         with open(f'{self.root}/raw/files/{protein["ID"]}.annot.json','r') as file:

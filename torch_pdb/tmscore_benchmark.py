@@ -52,8 +52,7 @@ class TMScoreBenchmark(TorchPDBDataset):
         If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
     """
 
-    def __init__(self, use_precomputed=True, **kwargs):
-        self.use_precomputed = use_precomputed
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tm_score, self.rmsd = self.compute_distances()
 
@@ -62,6 +61,11 @@ class TMScoreBenchmark(TorchPDBDataset):
 
     def get_id_from_filename(self, filename):
         return filename[:-4]
+
+    def download_precomputed(self):
+        super().download_precomputed()
+        if self.use_precomputed:
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tm-bench.pt', f'{self.root}')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -73,9 +77,6 @@ class TMScoreBenchmark(TorchPDBDataset):
                 start, end = m.span()
                 pdbid = l[start-5:end]
                 download_url(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}", f'{self.root}/raw/files', log=False)
-        if self.use_precomputed:
-            download_url('https://github.com/BorgwardtLab/torch-pdb/releases/download/v1.0.0/tm-bench.tar.gz', f'{self.root}/raw')
-            extract_tar(f'{self.root}/raw/tm-bench.tar.gz', f'{self.root}/raw')
         self.download_complete()
 
     def compute_distances(self, n_jobs=1):
@@ -89,14 +90,16 @@ class TMScoreBenchmark(TorchPDBDataset):
         dict
             RMSD between all pairs of proteins as a dictionary.
         """
-        if os.path.exists(f'{self.root}/raw/tm-bench.pt'):
-            return torch.load(f'{self.root}/raw/tm-bench.pt')
+        if os.path.exists(f'{self.root}/tm-bench.pt'):
+            return torch.load(f'{self.root}/tm-bench.pt')
+        if self.n_jobs == 1:
+            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
         pdbs = self.get_raw_files()
         pairs = list(itertools.combinations(range(len(pdbs)), 2))
         todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
 
-        output = Parallel(n_jobs=n_jobs)(
+        output = Parallel(n_jobs=self.n_jobs)(
             delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
         )
 
@@ -111,5 +114,5 @@ class TMScoreBenchmark(TorchPDBDataset):
         dist = dict(dist)
         rmsd = dict(rmsd)
 
-        torch.save((dist, rmsd), f'{self.root}/raw/tm-bench.pt')
+        torch.save((dist, rmsd), f'{self.root}/tm-bench.pt')
         return dist, rmsd
