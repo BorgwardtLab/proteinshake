@@ -72,7 +72,6 @@ class RCSBDataset(TorchPDBDataset):
         if len(failed)>0:
             print(f'Failed to download {len(failed)} PDB files.')
 
-        self.download_complete()
 
     def download_from_rcsb(self, id):
         try:

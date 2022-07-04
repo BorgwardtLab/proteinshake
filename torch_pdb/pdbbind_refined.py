@@ -31,7 +31,6 @@ class PDBBindRefined(TorchPDBDataset):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_refined.tar.gz', f'{self.root}/raw')
         extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_refined.tar.gz', f'{self.root}/raw')
         os.rename(f'{self.root}/raw/refined-set', f'{self.root}/raw/files')
-        self.download_complete()
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["ID"]}/{protein["ID"]}_pocket.pdb')

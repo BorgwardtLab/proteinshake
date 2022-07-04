@@ -77,7 +77,6 @@ class TMScoreBenchmark(TorchPDBDataset):
                 start, end = m.span()
                 pdbid = l[start-5:end]
                 download_url(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}", f'{self.root}/raw/files', log=False)
-        self.download_complete()
 
     def compute_distances(self, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.

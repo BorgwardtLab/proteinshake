@@ -105,6 +105,7 @@ class TorchPDBDataset(InMemoryDataset):
                 print('Downloading an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
             os.makedirs(f'{self.root}/raw/files', exist_ok=True)
             self.download()
+            self.download_complete()
             self.parse()
 
     def download_precomputed(self):
