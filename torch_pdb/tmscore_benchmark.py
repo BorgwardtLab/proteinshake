@@ -12,6 +12,24 @@ import os
 TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
 
 def tmalign_wrapper(pdb1, pdb2):
+    """Compute TM score with TMalign between two PDB structures.
+
+    Parameters
+    ----------
+    pdb1: str
+        Path to PDB.
+    arg2 : str
+        Path to PDB.
+
+    Returns
+    -------
+    float
+        TM score from `pdb1` to `pdb2`
+    float
+        TM score from `pdb2` to `pdb1`
+    float
+        RMSD between structures
+    """
     try:
         out = subprocess.run([TMPATH,'-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
         path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
@@ -22,6 +40,17 @@ def tmalign_wrapper(pdb1, pdb2):
 
 
 class TMScoreBenchmark(TorchPDBDataset):
+    """"Dataset conatining TM scores between pairs of proteins.
+
+    Parameters
+    ----------
+    root: str
+        Root directory where the dataset should be saved.
+    name: str
+        The name of the dataset.
+    use_precomputed: bool
+        If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -50,7 +79,17 @@ class TMScoreBenchmark(TorchPDBDataset):
                 download_url(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}", f'{self.root}/raw/files', log=False)
         self.download_complete()
 
-    def compute_distances(self):
+    def compute_distances(self, n_jobs=1):
+        """ Launch TMalign on all pairs of proteins in dataset.
+        Saves TMalign output to `self.raw_dir/tm-bench.pt`
+
+        Returns
+        -------
+        dict
+            TM score between all pairs of proteins as a dictionary.
+        dict
+            RMSD between all pairs of proteins as a dictionary.
+        """
         if os.path.exists(f'{self.root}/tm-bench.pt'):
             return torch.load(f'{self.root}/tm-bench.pt')
         if self.n_jobs == 1:

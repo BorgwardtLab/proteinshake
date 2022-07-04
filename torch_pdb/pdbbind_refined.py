@@ -4,6 +4,18 @@ from torch_geometric.data import extract_tar, download_url
 from torch_pdb import TorchPDBDataset
 
 class PDBBindRefined(TorchPDBDataset):
+    """"Dataset conatining proteins bound to small molecules. Residues
+    in each protein are marked with a boolean `binding_site` to indicate
+    residues defined to be inside the binding pocket.
+
+    Parameters
+    ----------
+    root: str
+        Root directory where the dataset should be saved.
+    name: str
+        The name of the dataset.
+    """
+
 
     def __init__(self, version='2020', **kwargs):
         self.version = version

@@ -1,4 +1,5 @@
 ![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/torch-pdb/badge/?version=latest)](https://torch-pdb.readthedocs.io/en/latest/?badge=latest)
 
 # `torch-pdb`: torch-geometric datasets built from the PDB
 
@@ -42,12 +43,14 @@ This is a summary of available datasets.
 
 | Dataset | # of graphs | graph attributes | node attributes | dataset attributes |
 |---------|-------------|------------------|-----------------|-----------------|
-| `RCSBDataset` | 9117 | | | |
-| `GODataset` | 7811 | `GO` (`list`) | | |
-| `ECDataset` | 1864 | `EC` (`list`) | | |
-| `PfamDataset` | 7173 | `Pfam` (`list`) | | |
-| `PDBBindRefined` | 5316 | | `is_site` (`binary`) | |
-| `TMScoreBenchmark` | 200 | | | `tm_score[i][j]` (`float`), `rmsd[i][j]` (`float`) |
+| `RCSB`         |  9117           |                  |                 |                 |
+| `PDBBindRefined`         |  5316           |     `is_site (binary)`             |                 |                 |
+| `PDBBindPPI`         |  5316           |     `is_site (binary)`             |                 |                 |
+| `TMScoreBenchmark`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBGO`         |  7811 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBEC`         |  1864 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `RCSBPfam`         |  7173 |     `tm_score[i][j]` (`float`)             |                 |                 |
+| `AF`         |  ? |     `tm_score[i][j]` (`float`)             |                 |                 |
 
 ## Graph Building
 
