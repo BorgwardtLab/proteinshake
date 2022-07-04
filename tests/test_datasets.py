@@ -1,35 +1,31 @@
-import os
-from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset
+import unittest, tempfile
+from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
-PATH = os.path.dirname(os.path.realpath(__file__))
+class Dummy(unittest.TestCase):
 
-if False: # this takes too long, we should test it with hosted raw tarballs
-    print('PfamDataset')
-    ds = PfamDataset(root=PATH+'/data/pfam', name='test')
-    print('test:', ds[0]['Pfam'])
-    print(len(ds))
-    print()
+    def test_pdbbind(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = PDBBindRefined(root=tmp, name='test')
 
-    print('ECDataset')
-    ds = ECDataset(root=PATH+'/data/ec', name='test')
-    print('test:', ds[0]['EC'])
-    print(len(ds))
-    print()
+    def test_tm(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = TMScoreBenchmark(root=tmp, name='test')
 
-    print('GODataset')
-    ds = GODataset(root=PATH+'/data/go', name='test')
-    print('test:', ds[0]['GO'])
-    print(len(ds))
-    print()
+    def test_go(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = GODataset(root=tmp, name='test')
 
-    print('PDBBindRefined')
-    ds = PDBBindRefined(root=PATH+'/data/pdbbind', name='test')
-    print('test:', ds[0])
-    print(len(ds))
-    print()
+    def test_ec(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = ECDataset(root=tmp, name='test')
 
-    print('TMScoreBenchmark')
-    ds = TMScoreBenchmark(root=PATH+'/data/tmscore', name='test', use_precomputed=False)
-    print('test:', ds.tm_score['1adr_']['1aho_'])
-    print(len(ds))
-    print()
+    def test_pfam(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = PfamDataset(root=tmp, name='test')
+
+    def test_rcsb(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = RCSBDataset(root=tmp, name='test')
+
+if __name__ == '__main__':
+    unittest.main()
