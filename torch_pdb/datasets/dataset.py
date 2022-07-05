@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-import torch, os, gzip, inspect
-from torch_geometric.data import InMemoryDataset, Data, extract_tar, download_url
-from torch_geometric.utils import from_scipy_sparse_matrix
+import os, gzip, inspect
+
+import torch
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
-from torch_pdb.embeddings import one_hot
 from joblib import Parallel, delayed
+from torch_geometric.data import InMemoryDataset, Data, extract_tar, download_url
+from torch_geometric.utils import from_scipy_sparse_matrix
+
+from torch_pdb.utils import one_hot
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
