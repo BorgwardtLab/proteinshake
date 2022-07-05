@@ -6,7 +6,7 @@
 Welcome to torch-pdb!
 =====================================
 
-**torch-pdb** is a collection of **pytorch-geometric** datasets built from protein structure data banks.
+**torch-pdb** is a collection of **pytorch** datasets built from protein structure data banks.
 Each dataset can be imported directly into your pyg models for training and inspection.
 Depending on the dataset, specific annotations will be included in the `Data` objects such as small molecule binding pockets, and function annotations.
 
@@ -17,6 +17,12 @@ Depending on the dataset, specific annotations will be included in the `Data` ob
 * RCSB-PDB: useful for unsupervised training
 * AlphaFold: useful for unsupervised training
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Notes
+
+   notes/installation
 
 
 .. toctree::
