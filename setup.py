@@ -13,7 +13,8 @@ requirements = [
                 'wget',
                 'requests',
                 'joblib',
-                'rdkit'
+                'rdkit',
+                'tabulate'
                 ]
 
 setuptools.setup(
