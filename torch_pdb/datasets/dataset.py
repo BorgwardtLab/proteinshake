@@ -2,6 +2,7 @@
 import os, gzip, inspect
 
 import torch
+import pandas as pd
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 import numpy as np
@@ -80,6 +81,14 @@ class TorchPDBDataset(InMemoryDataset):
         ''' Dumps data to /raw and /raw/files/*.pdb.
         Implement me! '''
         raise NotImplementedError
+
+    def describe(self):
+        """ Produce dataset statistics.
+        """
+        data = {'name': type(self).__name__,
+                'num_proteins': len(self)
+               }
+        return data
 
     def add_protein_attributes(self, protein):
         ''' Implement me! '''

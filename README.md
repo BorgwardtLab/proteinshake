@@ -41,17 +41,6 @@ Data(edge_index=[2, 512], chain_id=[257], residue_idx=[257], residue=[257], resi
 This is a summary of available datasets.
 
 
-| Dataset | # of graphs | graph attributes | node attributes | dataset attributes |
-|---------|-------------|------------------|-----------------|-----------------|
-| `RCSB`         |  9117           |                  |                 |                 |
-| `PDBBindRefined`         |  5316           |     `is_site (binary)`             |                 |                 |
-| `PDBBindPPI`         |  5316           |     `is_site (binary)`             |                 |                 |
-| `TMScoreBenchmark`         |  200 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBGO`         |  7811 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBEC`         |  1864 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `RCSBPfam`         |  7173 |     `tm_score[i][j]` (`float`)             |                 |                 |
-| `AF`         |  ? |     `tm_score[i][j]` (`float`)             |                 |                 |
-
 ## Graph Building
 
 You can customize the way graphs are built grom protein 3D structures with the following arguments to the dataset constructors:
@@ -67,25 +56,3 @@ from pdb_pyg.datasets import PDBBindRefined
 
 dataset = PDBBindRefined(name='pdbbind', node_type='residue')
 ```
-
-## Building dataset backends
-
-If you want to compute some of the datasets we host (e.g. TM-score) follow these steps:
-
-** [TM score benchmark dataset](https://zhanggroup.org/TM-align/benchmark/)
-
-0. Install `TMalign` and add executable to `PATH` [download](https://zhanggroup.org/TM-align/)
-
-1. Download the list of structures
-
-```
-$ python scripts/get_tmlist.py
-```
-
-2. Fetch PDBs and Compute TM scores
-
-```
-$  python scripts/tmscore_precompute.py --custom-urls torch_pdb/pkg_data/tm_pdblist.txt --dest data/tm-bench
-```
-
-3. Move the `tm-bench` folder to your `data` directory so that the `download()` method is skipped when creating the dataset.
