@@ -53,6 +53,7 @@ class TorchPDBDataset(InMemoryDataset):
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
+            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
         }
         if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
