@@ -1,5 +1,5 @@
 import os, shutil, argparse
-from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
