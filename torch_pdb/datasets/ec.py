@@ -1,3 +1,5 @@
+import json
+
 from torch_pdb.datasets import RCSBDataset
 
 class ECDataset(RCSBDataset):
