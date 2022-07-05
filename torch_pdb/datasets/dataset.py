@@ -104,8 +104,6 @@ class TorchPDBDataset(InMemoryDataset):
         else:
             if os.path.exists(f'{self.root}/raw/done.txt'):
                 return
-            if self.n_jobs == 1:
-                print('Downloading an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
             os.makedirs(f'{self.root}/raw/files', exist_ok=True)
             self.download()
             self.download_complete()
