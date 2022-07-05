@@ -1,5 +1,5 @@
 import unittest, tempfile
-from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 class Dummy(unittest.TestCase):
 

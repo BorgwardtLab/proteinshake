@@ -1,33 +1,30 @@
 # -*- coding: utf-8 -*-
 import glob
-import torch
 import requests
 import os
 import itertools
 import re
 import subprocess
 from collections import defaultdict
-from joblib import Parallel, delayed
 
+import torch
+from joblib import Parallel, delayed
 from tqdm import tqdm
 from torch_geometric.data import extract_tar, download_url
 
 from torch_pdb.datasets import TorchPDBDataset
-
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
 TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
-
     Parameters
     ----------
     pdb1: str
         Path to PDB.
     arg2 : str
         Path to PDB.
-
     Returns
     -------
     float
@@ -48,7 +45,6 @@ def tmalign_wrapper(pdb1, pdb2):
 
 class TMScoreBenchmark(TorchPDBDataset):
     """"Dataset conatining TM scores between pairs of proteins.
-
     Parameters
     ----------
     root: str
@@ -88,7 +84,6 @@ class TMScoreBenchmark(TorchPDBDataset):
     def compute_distances(self, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
         Saves TMalign output to `self.raw_dir/tm-bench.pt`
-
         Returns
         -------
         dict

@@ -1,9 +1,10 @@
 import requests, glob, torch, json
 import pandas as pd
 from torch_geometric.data import download_url
-from torch_pdb import TorchPDBDataset
 from tqdm import tqdm
 from joblib import Parallel, delayed
+
+from torch_pdb.datasets import TorchPDBDataset
 
 class RCSBDataset(TorchPDBDataset):
 

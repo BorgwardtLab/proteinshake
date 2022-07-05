@@ -3,15 +3,17 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = ["torch",
-                'torch-geometric',
+requirements = [
+                'numpy',
+                'scipy',
                 'biopandas',
                 'seaborn',
                 'sklearn',
                 'tqdm',
                 'wget',
                 'requests',
-                'joblib'
+                'joblib',
+                'rdkit'
                 ]
 
 setuptools.setup(

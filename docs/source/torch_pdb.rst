@@ -1,39 +1,19 @@
-torch\_pdb.dataset
--------------------------
+torch\_pdb package
+==================
 
-.. automodule:: torch_pdb.dataset
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Subpackages
+-----------
 
-torch\_pdb.embeddings
-----------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: torch_pdb.embeddings
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   torch_pdb.datasets
+   torch_pdb.utils
 
-torch\_pdb.pdbbind\_refined
-----------------------------------
+Module contents
+---------------
 
-.. automodule:: torch_pdb.pdbbind_refined
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-torch\_pdb.rcsb
-----------------------
-
-.. automodule:: torch_pdb.rcsb
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-torch\_pdb.tmscore\_benchmark
-------------------------------------
-
-.. automodule:: torch_pdb.tmscore_benchmark
+.. automodule:: torch_pdb
    :members:
    :undoc-members:
    :show-inheritance:

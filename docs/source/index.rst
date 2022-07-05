@@ -18,12 +18,14 @@ Depending on the dataset, specific annotations will be included in the `Data` ob
 * AlphaFold: useful for unsupervised training
 
 
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :glob:
+   :maxdepth: 1
+   :caption: Package Reference
 
-   torch_pdb
-
+   modules/datasets
+   modules/utils
 
 
 Indices and tables
