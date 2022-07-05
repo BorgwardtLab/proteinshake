@@ -9,10 +9,12 @@ def get_interfaces(protein, ref_chain=None, cutoff=6):
     """Obtain interfacing residues within a single structure of polymers. Uses
     KDTree data structure for vector search. If structure not found in complex
     databse, it is automatically downloaded from RCSB.
+
     Parameters
     ----------
     protein: dict
         Parsed protein dictionary.
+
     Returns
     --------
         `list`: containing all Residue objects belonging to interface. As pairs
