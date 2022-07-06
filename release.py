@@ -1,5 +1,5 @@
 import os, shutil, argparse
-from torch_pdb import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
@@ -25,3 +25,16 @@ for Dataset in [RCSBDataset, ECDataset, PDBBindRefined, TMScoreBenchmark, GOData
 if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/tm-bench.pt'):
     print('Copying TM scores...')
     shutil.copyfile(f'{SCRATCH}/release/TMScoreBenchmark/raw/tm-bench.pt', f'{PATH}/release/tm-bench.pt')
+
+
+from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
+from torch_pdb.datasets import AlphaFoldDataset
+
+for organism in AF_DATASET_NAMES.keys():
+    print()
+    print('AlphaFoldDataset', organism)
+    ds = AlphaFoldDataset(root=f'{SCRATCH}/release/AlphaFoldDataset_{organism}', name=organism, use_precomputed=False, n_jobs=n_jobs)
+    del ds
+    if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/AlphaFoldDataset_{organism}.pt'):
+        print('Copying...')
+        shutil.copyfile(f'{SCRATCH}/release/AlphaFoldDataset_{organism}/AlphaFoldDataset.pt', f'{PATH}/release/AlphaFoldDataset_{organism}.pt')

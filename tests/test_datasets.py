@@ -1,5 +1,6 @@
 import unittest, tempfile
-from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
 
 class Dummy(unittest.TestCase):
 
@@ -26,6 +27,11 @@ class Dummy(unittest.TestCase):
     def test_rcsb(self):
         with tempfile.TemporaryDirectory() as tmp:
             ds = RCSBDataset(root=tmp, name='test')
+
+    def test_alphafold(self):
+        for organism in AF_DATASET_NAMES.keys():
+            with tempfile.TemporaryDirectory() as tmp:
+                ds = AlphaFoldDataset(root=tmp, name='test', organism=organism)
 
 if __name__ == '__main__':
     unittest.main()
