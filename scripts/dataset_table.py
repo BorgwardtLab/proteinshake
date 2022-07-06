@@ -6,8 +6,14 @@ import pandas as pd
 
 from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
-datasets = [GODataset,
-            ECDataset]
+
+datasets = [
+            RCSBDataset,
+            PfamDataset,
+            GODataset,
+            ECDataset,
+            PDBBindRefined,
+            TMScoreBenchmark]
 
 rows = []
 for dataset in datasets:
@@ -16,8 +22,8 @@ for dataset in datasets:
         rows.append(ds.describe())
 
 df = pd.DataFrame(rows)
-md = df.to_markdown()
-tx = df.to_latex()
+md = df.to_markdown(index=False)
+tx = df.to_latex(index=False)
 
 print(md)
 print()

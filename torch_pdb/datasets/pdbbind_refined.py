@@ -40,3 +40,8 @@ class PDBBindRefined(TorchPDBDataset):
         ).sum(dim=1).nonzero()] = 1.
         protein['binding_site'] = is_site
         return protein
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = "Small Mol. Binding Site (`binding_site`)"
+        desc['values'] = 2
+        desc['type'] = 'Binary'

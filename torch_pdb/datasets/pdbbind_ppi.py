@@ -35,7 +35,6 @@ class PDBBindPPI(TorchPDBDataset):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
         extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
         os.rename(f'{self.root}/raw/PP', f'{self.root}/raw/files')
-        self.download_complete()
 
     def add_protein_attributes(self, protein):
         protein['is_interface'] = get_interfaces(protein)

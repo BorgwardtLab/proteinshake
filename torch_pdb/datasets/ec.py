@@ -13,4 +13,11 @@ class ECDataset(RCSBDataset):
         protein['EC'] = annot['rcsb_polymer_entity']['rcsb_ec_lineage'][-1]['id']
         return protein
 
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = 'Enzyme Classification (`EC`)'
+        desc['values'] = len(set(self.data.EC))
+        desc['type'] = 'Categorical'
+        return desc
+
 

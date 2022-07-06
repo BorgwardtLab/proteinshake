@@ -16,5 +16,11 @@ class GODataset(RCSBDataset):
                 go_terms.extend([go['id'] for go in a['annotation_lineage']])
         protein['GO'] = go_terms
         return protein
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = "Gene Ontology (GO)"
+        print(self.data.GO)
+        desc['values'] = f"{len(set(s[0] for s in self.data.GO))} (root)"
+        desc['type'] = 'Categorical, Hierarchical'
 
 

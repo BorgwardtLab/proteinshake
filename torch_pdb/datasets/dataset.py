@@ -85,8 +85,10 @@ class TorchPDBDataset(InMemoryDataset):
     def describe(self):
         """ Produce dataset statistics.
         """
+        n_resi = len(self.data.residue_index) / len(self.data.ID)
         data = {'name': type(self).__name__,
-                'num_proteins': len(self)
+                'num_proteins': len(self),
+                'avg size (# residues)': n_resi
                }
         return data
 

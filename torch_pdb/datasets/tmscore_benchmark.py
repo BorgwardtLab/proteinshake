@@ -117,3 +117,9 @@ class TMScoreBenchmark(TorchPDBDataset):
 
         torch.save((dist, rmsd), f'{self.root}/tm-bench.pt')
         return dist, rmsd
+
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = 'TM Score'
+        desc['values'] = "[0-1]"
+        desc['type'] = "Real-valued, Pairwise"
