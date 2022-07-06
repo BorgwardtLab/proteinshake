@@ -5,10 +5,9 @@ from sklearn.neighbors import KDTree
 
 import numpy as np
 
-def get_interfaces(protein, ref_chain=None, cutoff=6):
+def get_interfaces(protein, cutoff=6):
     """Obtain interfacing residues within a single structure of polymers. Uses
-    KDTree data structure for vector search. If structure not found in complex
-    databse, it is automatically downloaded from RCSB.
+    KDTree data structure for vector search.
 
     Parameters
     ----------
@@ -17,9 +16,7 @@ def get_interfaces(protein, ref_chain=None, cutoff=6):
 
     Returns
     --------
-        `list`: containing all Residue objects belonging to interface. As pairs
-        of residues (res_1, res_2)
-        `Structure`: BioPython Structure object
+        `torch.tensor`: indicator tensor for each residue with 0 if not in interface and 1 else.
     """
 
     #3-D KD tree

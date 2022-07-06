@@ -11,7 +11,7 @@ from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
 
 class PDBBindRefined(TorchPDBDataset):
-    """"Dataset conatining proteins bound to small molecules. Residues
+    """Proteins bound to small molecules with binding site and affinity information. Residues
     in each protein are marked with a boolean `binding_site` to indicate
     residues defined to be inside the binding pocket.
 

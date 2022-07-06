@@ -7,6 +7,8 @@ from joblib import Parallel, delayed
 from torch_pdb.datasets import TorchPDBDataset
 
 class RCSBDataset(TorchPDBDataset):
+    """ Non-redundant structures taken from RCSB Protein Databank.
+    """
 
     def __init__(self, query=[], similarity_cutoff=70, **kwargs):
         self.similarity_cutoff = similarity_cutoff

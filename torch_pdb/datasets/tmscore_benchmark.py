@@ -44,7 +44,21 @@ def tmalign_wrapper(pdb1, pdb2):
 
 
 class TMScoreBenchmark(TorchPDBDataset):
-    """"Dataset conatining TM scores between pairs of proteins.
+    """Proteins with TM scores between all pairs.
+    This dataset contains 200 proteins from the TMalign benchmark dataset.
+    The dataset has a global attribute `tm_score` which is a dictionary
+    containing the TMscore between all pairs of proteins in the dataset.
+
+    .. code-block:: python
+
+        from torch_pdb.datasets import TMScoreBenchmark
+
+        dataset = TMScoreBenchmark()
+        protein_1, protein_2 = dataset[0].name, dataset[2].name
+
+        dataset[protein_1][protein_2]
+        >>> 0.32
+
     Parameters
     ----------
     root: str

@@ -9,9 +9,10 @@ from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils import get_interfaces
 
 class PDBBindPPI(TorchPDBDataset):
-    """"Dataset conatining proteins bound to small molecules. Residues
-    in each protein are marked with a boolean `binding_site` to indicate
-    residues defined to be inside the binding pocket.
+    """Protein-protein complexes with annotated interfaces. Residues
+    in each protein are marked with a boolean `is_interface` to indicate
+    residues defined to belong to the interface of two protein chains.
+    The default threshold for determining interface residues is 6 Angstroms.
 
     Parameters
     ----------
@@ -19,11 +20,15 @@ class PDBBindPPI(TorchPDBDataset):
         Root directory where the dataset should be saved.
     name: str
         The name of the dataset.
+    cutoff: float
+        Distance in angstroms within which a pair of residues is considered to
+        belong to the interface.
     """
 
 
-    def __init__(self, version='2020', **kwargs):
+    def __init__(self, cutoff=6, version='2020', **kwargs):
         self.version = version
+        self.cutoff = cutoff
         super().__init__(**kwargs)
 
     def get_raw_files(self):
@@ -37,7 +42,7 @@ class PDBBindPPI(TorchPDBDataset):
         os.rename(f'{self.root}/raw/PP', f'{self.root}/raw/files')
 
     def add_protein_attributes(self, protein):
-        protein['is_interface'] = get_interfaces(protein)
+        protein['is_interface'] = get_interfaces(protein, self.cutoff)
         return protein
 
     def describe(self):

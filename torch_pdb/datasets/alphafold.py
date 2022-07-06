@@ -30,6 +30,8 @@ AF_DATASET_NAMES = {
 }
 
 class AlphaFoldDataset(TorchPDBDataset):
+    """ 3D structures predicted from sequence by AlphaFold.
+    """
 
     def __init__(self, organism, **kwargs):
         if organism == 'all':
