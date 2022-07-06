@@ -54,6 +54,7 @@ class TorchPDBDataset(InMemoryDataset):
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
+            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
         }
         if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
@@ -115,8 +116,6 @@ class TorchPDBDataset(InMemoryDataset):
         else:
             if os.path.exists(f'{self.root}/raw/done.txt'):
                 return
-            if self.n_jobs == 1:
-                print('Downloading an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
             os.makedirs(f'{self.root}/raw/files', exist_ok=True)
             self.download()
             self.download_complete()
