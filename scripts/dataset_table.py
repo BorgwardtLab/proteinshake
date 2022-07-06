@@ -16,10 +16,11 @@ datasets = [
             TMScoreBenchmark]
 
 rows = []
-for dataset in datasets:
-    with tempfile.TemporaryDirectory() as tmp:
-        ds = dataset(root=tmp, name='test')
-        rows.append(ds.describe())
+for i, dataset in enumerate(datasets):
+    ds = dataset(root=f"data_{i}", name='test')
+    desc = ds.describe()
+    print(desc)
+    rows.append(desc)
 
 df = pd.DataFrame(rows)
 md = df.to_markdown(index=False)

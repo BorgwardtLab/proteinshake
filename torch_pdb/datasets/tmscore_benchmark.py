@@ -123,3 +123,4 @@ class TMScoreBenchmark(TorchPDBDataset):
         desc['property'] = 'TM Score'
         desc['values'] = "[0-1]"
         desc['type'] = "Real-valued, Pairwise"
+        return desc

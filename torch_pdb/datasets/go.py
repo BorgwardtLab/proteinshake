@@ -19,8 +19,7 @@ class GODataset(RCSBDataset):
     def describe(self):
         desc = super().describe()
         desc['property'] = "Gene Ontology (GO)"
-        print(self.data.GO)
         desc['values'] = f"{len(set(s[0] for s in self.data.GO))} (root)"
         desc['type'] = 'Categorical, Hierarchical'
-
+        return desc
 

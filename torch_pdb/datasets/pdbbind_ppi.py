@@ -39,3 +39,10 @@ class PDBBindPPI(TorchPDBDataset):
     def add_protein_attributes(self, protein):
         protein['is_interface'] = get_interfaces(protein)
         return protein
+
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = "Protein-protein interface (residue-level)"
+        desc['values'] = 2
+        desc['type'] = "Binary"
+        return desc

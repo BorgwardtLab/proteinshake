@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
-import glob, torch, os
+import glob
+import os
+
+import torch
+from rdkit import Chem
 from torch_geometric.data import extract_tar, download_url
+
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
 
 class PDBBindRefined(TorchPDBDataset):
     """"Dataset conatining proteins bound to small molecules. Residues
@@ -39,9 +45,34 @@ class PDBBindRefined(TorchPDBDataset):
             torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
         ).sum(dim=1).nonzero()] = 1.
         protein['binding_site'] = is_site
+
+        index_data = parse_pdbbind_PL_index(osp.join(self.raw_dir,
+                                                    "files",
+                                                    "index",
+                                                    f"INDEX_refined_set.{self.version}")
+                                            )
+        ligand = Chem.MolFromMolFile(osp.join(self.raw_dir,
+                                              'files',
+                                              protein['ID'],
+                                              f'{protein["ID"]}_ligand.sdf')
+                                     )
+        smiles = Chem.MolToSmiles(ligand)
+        is_site = torch.zeros((len(pocket),))
+        is_site[(
+            torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
+        ).sum(dim=1).nonzero()] = 1.
+        protein['binding_site'] = is_site
+        bind_data = index_data[protein['ID']]
+        protein['kd'] = bind_data['kd']['value']
+        protein['resolution'] = bind_data['resolution']
+        protein['year'] = bind_data['date']
+        protein['ligand_id'] = bind_data['ligand_id']
+        protein['ligand_smiles'] = smiles
+
         return protein
     def describe(self):
         desc = super().describe()
-        desc['property'] = "Small Mol. Binding Site (`binding_site`)"
+        desc['property'] = "Small Mol. Binding Site (residue-level)"
         desc['values'] = 2
         desc['type'] = 'Binary'
+        return desc
