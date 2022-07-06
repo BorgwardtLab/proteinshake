@@ -3,6 +3,7 @@ from .rcsb import RCSBDataset
 from .ec import ECDataset
 from .go import GODataset
 from .pdbbind_refined import PDBBindRefined
+from .pdbbind_ppi import PDBBindPPI
 from .pfam import PfamDataset
 from .tmscore_benchmark import TMScoreBenchmark
 
@@ -12,6 +13,7 @@ __all__ = [
     'ECDataset',
     'GODataset',
     'PDBBindRefined',
+    'PDBBindPPI',
     'PramDataset',
     'TMScoreBenchmark'
     ]
