@@ -7,6 +7,17 @@ This is a collection of torch-geometric datasets built from [PDB](https://www.rc
 After installing, datasets can be passed directly to torch loaders for model training.
 
 
+| name             |   num_proteins |   avg size (# residues) | property                                | values      | type                      |
+|:-----------------|---------------:|------------------------:|:----------------------------------------|:------------|:--------------------------|
+| RCSBDataset      |           9117 |                 421.945 | nan                                     | nan         | nan                       |
+| PfamDataset      |           7173 |                 455.147 | Protein Family (Pfam)                   | 2854 (root) | Categorical, Hierarchical |
+| GODataset        |           7811 |                 442.024 | Gene Ontology (GO)                      | 73 (root)   | Categorical, Hierarchical |
+| ECDataset        |           1864 |                 587.329 | Enzyme Classification (`EC`)            | 633         | Categorical               |
+| PDBBindRefined   |           5316 |                 428.289 | Small Mol. Binding Site (residue-level) | 2           | Binary                    |
+| TMScoreBenchmark |            200 |                 247.29  | TM Score                                | [0-1]       | Real-valued, Pairwise     |
+
+
+
 ## Installation
 
 
