@@ -5,12 +5,12 @@ from torch_geometric.utils import from_scipy_sparse_matrix
 from torch_geometric.data import Data
 from tqdm import tqdm
 
-from torch_pdb.utils.io import load_if_exists
+from torch_pdb.utils import checkpoint, one_hot
 
 
 class GraphDataset():
 
-    def __init__(self, root, proteins, node_embedding, eps=None, k=None, weighted_edges=False):
+    def __init__(self, root, proteins, node_embedding=one_hot, eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         self.construction = 'k' if not k is None else 'eps'
         self.root = root
@@ -18,7 +18,10 @@ class GraphDataset():
         self.eps = eps
         self.weighted_edges = weighted_edges
         self.node_embedding = node_embedding
-        self.name = f'k_{k}' if self.construction == 'k' else f'eps_{eps}'
+        self.name = f'emb_{node_embedding.__name__}'
+        self.name += '_k_{k}' if self.construction == 'k' else f'_eps_{eps}'
+        if self.weighted_edges:
+            self.name += 'weighted'
         self.info = proteins
         self.proteins = self.convert(proteins)
 
@@ -36,18 +39,18 @@ class GraphDataset():
         edges = from_scipy_sparse_matrix(graph[1])
         return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info)
 
-    @load_if_exists('{root}/processed/{name}.graph')
+    @checkpoint('{root}/processed/graph/{name}.pkl')
     def convert(self, proteins):
         return [self.protein2graph(p) for p in tqdm(proteins, desc='Converting proteins to graphs')]
 
-    @load_if_exists('{root}/processed/{name}.pyg')
+    @checkpoint('{root}/processed/graph/pyg__{name}.pkl')
     def pyg(self):
         return [self.graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
 
-    @load_if_exists('{root}/processed/{name}.dgl')
+    @checkpoint('{root}/processed/graph/dgl__{name}.pkl')
     def dgl(self):
         raise NotImplementedError
 
-    @load_if_exists('{root}/processed/{name}.nx')
+    @checkpoint('{root}/processed/graph/nx__{name}.pkl')
     def nx(self):
         raise NotImplementedError

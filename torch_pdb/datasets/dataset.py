@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 from torch_geometric.data import extract_tar, download_url
 from torch_geometric.utils import from_scipy_sparse_matrix
 
-from torch_pdb.frameworks import GraphDataset, PointDataset, VoxelDataset
+from torch_pdb.representations import GraphDataset, PointDataset, VoxelDataset
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 

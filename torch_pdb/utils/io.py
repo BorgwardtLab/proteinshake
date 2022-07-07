@@ -2,7 +2,7 @@ import os
 import torch
 
 # decorator to return saved file if it exists
-def load_if_exists(path):
+def checkpoint(path):
     def decorator(function):
         def wrapper(self, *args, **kwargs):
             if os.path.exists(path.format(**self.__dict__)):
