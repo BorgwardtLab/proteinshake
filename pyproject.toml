@@ -1,0 +1,14 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "torch_pdb"
+authors = [{name = "Tim Kucera, Carlos Oliver, Leslie O'Bray, Dexiong Chen, Karsten Borgwardt", email = "tim.kucera@bsse.ethz.ch"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+
+[project.urls]
+Home = "https://torch-pdb.readthedocs.io/en/latest/index.html"
