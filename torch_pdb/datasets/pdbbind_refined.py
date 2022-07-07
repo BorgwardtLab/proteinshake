@@ -3,12 +3,11 @@ import glob
 import os
 import os.path as osp
 
-import torch
 from rdkit import Chem
-from torch_geometric.data import extract_tar, download_url
 
 from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
+from torch_pdb.utils import extract_tar, download_url
 
 class PDBBindRefined(TorchPDBDataset):
     """Proteins bound to small molecules with binding site and affinity information. Residues

@@ -3,11 +3,10 @@ import re
 import tarfile
 import glob
 
-import torch
-from torch_geometric.data import download_url
 from tqdm import tqdm
 
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils import download_url, extract_tar, load, save
 
 AF_DATASET_NAMES = {
     'arabidopsis_thaliana': 'UP000006548_3702_ARATH',
@@ -61,8 +60,8 @@ class AlphaFoldDataset(TorchPDBDataset):
             os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.pt', f'{self.root}/{self.__class__.__name__}.pt')
         elif type(self.organism) == list:
             _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in torch.load(f'{self.root}/{self.__class__.__name__}_{organism}.pt')]
-            torch.save(proteins, f'{self.root}/{self.__class__.__name__}.pt')
+            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.pt')]
+            save(proteins, f'{self.root}/{self.__class__.__name__}.h5')
             _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.pt') for organism in self.organism]
 
 
@@ -70,8 +69,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         def _download(organism):
             os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
             download_url(self.base_url+AF_DATASET_NAMES[organism]+'_v2.tar', f'{self.root}/raw/{organism}')
-            with tarfile.open(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v2.tar', 'r') as tar:
-                tar.extractall(path=f'{self.root}/raw/{organism}')
+            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v2.tar', f'{self.root}/raw/{organism}')
         if type(self.organism) == str:
             _download(self.organism)
         elif type(self.organism) == list:

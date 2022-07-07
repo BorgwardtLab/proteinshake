@@ -1,10 +1,10 @@
 import requests, glob, torch, json
 import pandas as pd
-from torch_geometric.data import download_url
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils import download_url
 
 class RCSBDataset(TorchPDBDataset):
     """ Non-redundant structures taken from RCSB Protein Databank.

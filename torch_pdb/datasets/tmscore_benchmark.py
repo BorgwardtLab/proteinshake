@@ -7,12 +7,12 @@ import re
 import subprocess
 from collections import defaultdict
 
-import torch
 from joblib import Parallel, delayed
 from tqdm import tqdm
-from torch_geometric.data import extract_tar, download_url
 
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils import extract_tar, download_url
+
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
 TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
@@ -82,7 +82,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download_precomputed(self):
         super().download_precomputed()
         if self.use_precomputed:
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tm-bench.pt', f'{self.root}')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tmalign.h5', f'{self.root}')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -105,8 +105,8 @@ class TMScoreBenchmark(TorchPDBDataset):
         dict
             RMSD between all pairs of proteins as a dictionary.
         """
-        if os.path.exists(f'{self.root}/tm-bench.pt'):
-            return torch.load(f'{self.root}/tm-bench.pt')
+        if os.path.exists(f'{self.root}/tmalign.h5'):
+            return load(f'{self.root}/tmalign.h5')
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
@@ -129,7 +129,7 @@ class TMScoreBenchmark(TorchPDBDataset):
         dist = dict(dist)
         rmsd = dict(rmsd)
 
-        torch.save((dist, rmsd), f'{self.root}/tm-bench.pt')
+        save((dist, rmsd), f'{self.root}/tmalign.h5')
         return dist, rmsd
 
     def describe(self):

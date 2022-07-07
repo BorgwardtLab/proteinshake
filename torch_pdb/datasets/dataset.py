@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 import os, gzip, inspect
 
-import torch
 import pandas as pd
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from joblib import Parallel, delayed
-from torch_geometric.data import extract_tar, download_url
-from torch_geometric.utils import from_scipy_sparse_matrix
+from torch_geometric.utils import from_scipy_sparse_matrix, download_url, save, load
 
 from torch_pdb.representations import GraphDataset, PointDataset, VoxelDataset
 
@@ -33,7 +31,7 @@ class TorchPDBDataset():
         self.release = release
         self.check_arguments_same_as_hosted()
         self._download()
-        self.proteins = torch.load(f'{self.root}/{self.__class__.__name__}.pt')
+        self.proteins = load(f'{self.root}/{self.__class__.__name__}.h5')
 
     def check_arguments_same_as_hosted(self):
         signature = inspect.signature(self.__init__)
@@ -108,7 +106,7 @@ class TorchPDBDataset():
         #proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
         proteins = [p for p in proteins if p is not None]
-        torch.save(proteins, f'{self.root}/{self.__class__.__name__}.pt')
+        save(proteins, f'{self.root}/{self.__class__.__name__}.h5')
 
     def parse_pdb(self, path):
         df = self.pdb2df(path)
