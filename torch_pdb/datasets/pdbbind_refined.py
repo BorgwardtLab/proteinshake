@@ -29,7 +29,7 @@ class PDBBindRefined(TorchPDBDataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')
+        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.download_limit()]
 
     def get_id_from_filename(self, filename):
         return filename[:4]
@@ -43,7 +43,7 @@ class PDBBindRefined(TorchPDBDataset):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["ID"]}/{protein["ID"]}_pocket.pdb')
         is_site = np.zeros((len(pocket),))
         is_site[(
-            np.array(pocket['residue_number'].tolist()).expand_dims(1) == protein['residue_index']
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
         ).sum(axis=1).nonzero()] = 1.
         protein['binding_site'] = is_site
 
@@ -60,7 +60,7 @@ class PDBBindRefined(TorchPDBDataset):
         smiles = Chem.MolToSmiles(ligand)
         is_site = np.zeros((len(pocket),))
         is_site[(
-            np.array(pocket['residue_number'].tolist()).expand_dims(1) == protein['residue_index']
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
         ).sum(axis=1).nonzero()] = 1.
         protein['binding_site'] = is_site.tolist()
         bind_data = index_data[protein['ID']]

@@ -23,7 +23,7 @@ class RCSBDataset(TorchPDBDataset):
 
     def download(self):
         if self.n_jobs == 1:
-            print('Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
+            print('Warning: Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         total = None
         i = 0
         batch_size = 5000

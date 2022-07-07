@@ -29,7 +29,8 @@ class PDBBindPPI(TorchPDBDataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
+        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.download_limit()]
+        
     def get_id_from_filename(self, filename):
         return filename[:4]
 

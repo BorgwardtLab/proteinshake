@@ -37,7 +37,7 @@ def load(path):
             obj = pickle.load(handle)
     return obj
 
-def download_url(url, out_path, log=True, chunk_size=10*1024):
+def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     file_name = os.path.basename(url)
     if os.path.isdir(out_path):
         out_path += '/'+file_name
@@ -51,9 +51,11 @@ def download_url(url, out_path, log=True, chunk_size=10*1024):
             size = file.write(data)
             if log:
                 bar.update(size)
+    if log:
+        bar.close()
 
 def extract_tar(tar_path, out_path, extract_members=False):
-    if replace:
+    if extract_members:
         with tarfile.open(tar_path,'r') as file:
             for member in object.getmembers():
                 file.extract(member, out_path)

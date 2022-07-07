@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import extract_tar, download_url
+from torch_pdb.utils import extract_tar, download_url, save, load
 
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools

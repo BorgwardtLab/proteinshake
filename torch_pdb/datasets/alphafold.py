@@ -44,7 +44,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')
+        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]
 
     def get_id_from_filename(self, filename):
         return re.search('(?<=AF-)(.*)(?=-F1-model)', filename).group()
