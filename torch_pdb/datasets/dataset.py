@@ -1,3 +1,6 @@
+"""
+Base dataset class for 3D structures.
+"""
 # -*- coding: utf-8 -*-
 import os, gzip, inspect
 
