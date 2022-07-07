@@ -82,7 +82,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download_precomputed(self):
         super().download_precomputed()
         if self.use_precomputed:
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tmalign.h5', f'{self.root}')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tmalign.json.gz', f'{self.root}')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -98,7 +98,7 @@ class TMScoreBenchmark(TorchPDBDataset):
 
     def compute_distances(self, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
-        Saves TMalign output to `self.raw_dir/tm-bench.pt`
+        Saves TMalign output to `self.raw_dir/tmalign.json.gz`
         Returns
         -------
         dict
@@ -106,8 +106,8 @@ class TMScoreBenchmark(TorchPDBDataset):
         dict
             RMSD between all pairs of proteins as a dictionary.
         """
-        if os.path.exists(f'{self.root}/tmalign.h5'):
-            return load(f'{self.root}/tmalign.h5')
+        if os.path.exists(f'{self.root}/tmalign.json.gz'):
+            return load(f'{self.root}/tmalign.json.gz')
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
@@ -130,7 +130,7 @@ class TMScoreBenchmark(TorchPDBDataset):
         dist = dict(dist)
         rmsd = dict(rmsd)
 
-        save((dist, rmsd), f'{self.root}/tmalign.h5')
+        save((dist, rmsd), f'{self.root}/tmalign.json.gz')
         return dist, rmsd
 
     def describe(self):

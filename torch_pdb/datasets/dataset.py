@@ -31,7 +31,7 @@ class TorchPDBDataset():
         self.release = release
         self.check_arguments_same_as_hosted()
         self._download()
-        self.proteins = load(f'{self.root}/{self.__class__.__name__}.h5')
+        self.proteins = load(f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def download_limit(self): # used only in testing
         return None
@@ -101,14 +101,14 @@ class TorchPDBDataset():
             self.parse()
 
     def download_precomputed(self):
-        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.pt'):
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.pt', f'{self.root}')
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.json.gz', f'{self.root}')
 
     def parse(self):
         #proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
         proteins = [p for p in proteins if p is not None]
-        save(proteins, f'{self.root}/{self.__class__.__name__}.h5')
+        save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def parse_pdb(self, path):
         df = self.pdb2df(path)

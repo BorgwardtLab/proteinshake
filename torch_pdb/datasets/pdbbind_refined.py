@@ -47,12 +47,14 @@ class PDBBindRefined(TorchPDBDataset):
         ).sum(axis=1).nonzero()] = 1.
         protein['binding_site'] = is_site
 
-        index_data = parse_pdbbind_PL_index(osp.join(self.raw_dir,
+        index_data = parse_pdbbind_PL_index(osp.join(self.root,
+                                                    "raw",
                                                     "files",
                                                     "index",
                                                     f"INDEX_refined_set.{self.version}")
                                             )
-        ligand = Chem.MolFromMolFile(osp.join(self.raw_dir,
+        ligand = Chem.MolFromMolFile(osp.join(self.root,
+                                              'raw',
                                               'files',
                                               protein['ID'],
                                               f'{protein["ID"]}_ligand.sdf')

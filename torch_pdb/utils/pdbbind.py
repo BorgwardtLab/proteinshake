@@ -16,7 +16,6 @@ def affinity_parse(s):
         (e.g. `=`, `>`) applied to the value, `unit` is `uM, nM, pM` and
         `measure` is the type experimental measurement (e.g. `Kd, Ki, IC50`)
     """
-    print(s)
     operator = "".join(re.findall(r"[=|<|>|~]", s))
     measures = ['Kd', 'Ki', 'IC50']
     for m in measures:
@@ -64,4 +63,3 @@ def parse_pdbbind_PL_index(index_path):
                            }
 
     return data
-

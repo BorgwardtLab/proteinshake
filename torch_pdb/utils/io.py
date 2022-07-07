@@ -2,7 +2,8 @@ import os
 import tarfile
 import torch
 import pickle
-import h5py
+import json
+import gzip
 import requests
 from tqdm import tqdm
 
@@ -21,17 +22,23 @@ def checkpoint(path):
     return decorator
 
 def save(obj, path):
-    if path.endswith('.h5'):
-        with h5py.File(path, 'w') as file:
-            file.create_dataset('data', data=obj)
+    if path.endswith('.json.gz'):
+        with gzip.open(path, 'w') as file:
+            file.write(json.dumps(obj).encode('utf-8'))
+    elif path.endswith('.json'):
+        with open(path,'w') as file:
+            json.dump(obj, file)
     else:
         with open(path, 'wb') as file:
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load(path):
-    if path.endswith('.h5'):
-        with h5py.File(path, 'r') as file:
-            obj = file['data']
+    if path.endswith('.json.gz'):
+        with gzip.open(path, 'r') as file:
+            obj = json.loads(file.read().decode('utf-8'))
+    elif path.endswith('.json'):
+        with open(path,'r') as file:
+            obj = json.load(file)
     else:
         with open(path, 'rb') as handle:
             obj = pickle.load(handle)

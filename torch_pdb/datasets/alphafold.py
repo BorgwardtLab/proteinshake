@@ -51,18 +51,18 @@ class AlphaFoldDataset(TorchPDBDataset):
 
     def download_precomputed(self):
         # overload this to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.pt'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
             return
         def _download(organism):
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.pt', f'{self.root}')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
         if type(self.organism) == str:
             _download(self.organism)
-            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.pt', f'{self.root}/{self.__class__.__name__}.pt')
+            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.json.gz', f'{self.root}/{self.__class__.__name__}.json.gz')
         elif type(self.organism) == list:
             _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.pt')]
-            save(proteins, f'{self.root}/{self.__class__.__name__}.h5')
-            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.pt') for organism in self.organism]
+            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')]
+            save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
+            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz') for organism in self.organism]
 
 
     def download(self):
