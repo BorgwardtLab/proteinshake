@@ -4,6 +4,7 @@ import os
 import os.path as osp
 
 from rdkit import Chem
+import numpy as np
 
 from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
@@ -40,10 +41,10 @@ class PDBBindRefined(TorchPDBDataset):
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["ID"]}/{protein["ID"]}_pocket.pdb')
-        is_site = torch.zeros((len(pocket),))
+        is_site = np.zeros((len(pocket),))
         is_site[(
-            torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
-        ).sum(dim=1).nonzero()] = 1.
+            np.array(pocket['residue_number'].tolist()).expand_dims(1) == protein['residue_index']
+        ).sum(axis=1).nonzero()] = 1.
         protein['binding_site'] = is_site
 
         index_data = parse_pdbbind_PL_index(osp.join(self.raw_dir,
@@ -57,11 +58,11 @@ class PDBBindRefined(TorchPDBDataset):
                                               f'{protein["ID"]}_ligand.sdf')
                                      )
         smiles = Chem.MolToSmiles(ligand)
-        is_site = torch.zeros((len(pocket),))
+        is_site = np.zeros((len(pocket),))
         is_site[(
-            torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
-        ).sum(dim=1).nonzero()] = 1.
-        protein['binding_site'] = is_site
+            np.array(pocket['residue_number'].tolist()).expand_dims(1) == protein['residue_index']
+        ).sum(axis=1).nonzero()] = 1.
+        protein['binding_site'] = is_site.tolist()
         bind_data = index_data[protein['ID']]
         protein['kd'] = bind_data['kd']['value']
         protein['resolution'] = bind_data['resolution']

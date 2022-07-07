@@ -117,13 +117,9 @@ class TorchPDBDataset():
         protein = {
             'ID': self.get_id_from_filename(os.path.basename(path)),
             'sequence': ''.join(df['residue_name']),
-            'residue_index': torch.tensor(df['residue_number'].tolist()).int(),
+            'residue_index': df['residue_number'].tolist(),
             'chain_id': df['chain_id'].tolist(),
-            'coords': torch.stack([
-                torch.tensor(df['x_coord'].to_list()),
-                torch.tensor(df['y_coord'].to_list()),
-                torch.tensor(df['z_coord'].to_list())
-            ], dim=1).long(),
+            'coords': df[['x_coord','y_coord','z_coord']].values.tolist(),
         }
         protein = self.add_protein_attributes(protein)
         return protein
