@@ -69,8 +69,8 @@ class RCSBDataset(TorchPDBDataset):
             if total is None:
                 total = r['group_by_count']
             i += batch_size
-            print(f'\rQuerying {min(i,total)} of {total}', end='')
-        print()
+
+        ids = ids[:self.download_limit()] # for testing
 
         failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]

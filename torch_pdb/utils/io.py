@@ -37,16 +37,17 @@ def load(path):
             obj = pickle.load(handle)
     return obj
 
-def download_url(url, out_path, log=True):
+def download_url(url, out_path, log=True, chunk_size=10*1024):
     file_name = os.path.basename(url)
     if os.path.isdir(out_path):
         out_path += '/'+file_name
     r = requests.get(url, stream=True)
     total = int(r.headers.get('content-length', 0))
     if log:
-        bar = tqdm(desc=f'Downloading {file_name}', total=total, unit='iB', unit_scale=True, unit_divisor=1024)
+        print(f'Downloading {file_name}:')
+        bar = tqdm(total=total, unit='iB', unit_scale=True, unit_divisor=chunk_size)
     with open(out_path, 'wb') as file:
-        for data in r.iter_content(chunk_size=1024):
+        for data in r.iter_content(chunk_size=chunk_size):
             size = file.write(data)
             if log:
                 bar.update(size)

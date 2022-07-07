@@ -7,8 +7,8 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from joblib import Parallel, delayed
-from torch_geometric.utils import from_scipy_sparse_matrix, download_url, save, load
 
+from torch_pdb.utils import download_url, save, load
 from torch_pdb.representations import GraphDataset, PointDataset, VoxelDataset
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -32,6 +32,9 @@ class TorchPDBDataset():
         self.check_arguments_same_as_hosted()
         self._download()
         self.proteins = load(f'{self.root}/{self.__class__.__name__}.h5')
+
+    def download_limit(self): # used only in testing
+        return None
 
     def check_arguments_same_as_hosted(self):
         signature = inspect.signature(self.__init__)
@@ -83,7 +86,6 @@ class TorchPDBDataset():
         return protein
 
     def download_complete(self):
-        print('Download complete.')
         with open(f'{self.root}/raw/done.txt','w') as file:
             file.write('done.')
 

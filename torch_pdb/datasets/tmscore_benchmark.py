@@ -87,6 +87,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
         pdblist = []
+        lines = lines[:self.download_limit()] # for testing
         print('Downloading TMScore Benchmark PDBs...')
         for l in lines:
             m = re.search(".pdb", l)
