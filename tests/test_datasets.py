@@ -1,5 +1,5 @@
 import unittest, tempfile
-from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from torch_pdb.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
 from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDatasets(unittest.TestCase):
@@ -7,6 +7,10 @@ class TestDatasets(unittest.TestCase):
     def test_pdbbind(self):
         with tempfile.TemporaryDirectory() as tmp:
             ds = PDBBindRefined(root=tmp)
+
+    def test_pdbbind_ppi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = PDBBindPPI(root=tmp)
 
     def test_tm(self):
         with tempfile.TemporaryDirectory() as tmp:

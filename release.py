@@ -1,5 +1,5 @@
 import os, shutil, argparse
-from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
@@ -12,7 +12,7 @@ SCRATCH = args.scratch if args.scratch != '' else args.path
 n_jobs = args.njobs
 
 os.makedirs(f'{PATH}/release', exist_ok=True)
-for Dataset in [RCSBDataset, ECDataset, PDBBindRefined, TMScoreBenchmark, GODataset, PfamDataset]:
+for Dataset in [RCSBDataset, ECDataset, PDBBindRefined, PDBBindPPI,  TMScoreBenchmark, GODataset, PfamDataset]:
     name = Dataset.__name__
     print()
     print(name)

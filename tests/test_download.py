@@ -1,6 +1,6 @@
 import unittest, tempfile
 from unittest import mock
-from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from torch_pdb.datasets import PDBBindRefined, PDBBindPPI,  TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
 from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDownload(unittest.TestCase):
@@ -9,6 +9,11 @@ class TestDownload(unittest.TestCase):
     def test_pdbbind(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = PDBBindRefined(root=tmp, use_precomputed=False)
+
+    @mock.patch('torch_pdb.datasets.TorchPDBDataset.download_limit', return_value=5)
+    def test_pdbbind_ppi(self, mock):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = PDBBindPPI(root=tmp, use_precomputed=False)
 
     @mock.patch('torch_pdb.datasets.TorchPDBDataset.download_limit', return_value=5)
     def test_tm(self, mock):
