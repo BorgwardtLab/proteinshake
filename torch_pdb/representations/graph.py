@@ -9,15 +9,15 @@ from torch_pdb.utils import checkpoint, one_hot
 
 class GraphDataset():
 
-    def __init__(self, root, proteins, node_embedding=one_hot, eps=None, k=None, weighted_edges=False):
+    def __init__(self, root, proteins, embedding=one_hot, eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         self.construction = 'knn' if not k is None else 'eps'
         self.root = root
         self.k = k
         self.eps = eps
         self.weighted_edges = weighted_edges
-        self.node_embedding = node_embedding
-        self.name = f'emb_{node_embedding.__name__}'
+        self.embedding = embedding
+        self.name = f'emb_{embedding.__name__}'
         self.name += '_k_{k}' if self.construction == 'knn' else f'_eps_{eps}'
         if self.weighted_edges:
             self.name += 'weighted'
@@ -25,7 +25,7 @@ class GraphDataset():
         self.proteins = self.convert(proteins)
 
     def protein2graph(self, protein):
-        nodes = self.node_embedding(protein['sequence'])
+        nodes = self.embedding(protein['sequence'])
         if self.construction == 'eps':
             mode = 'distance' if self.weighted_edges else 'connectivity'
             adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)

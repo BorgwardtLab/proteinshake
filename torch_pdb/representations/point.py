@@ -1,23 +1,47 @@
+import os
 from tqdm import tqdm
+from torch_pdb.utils import checkpoint, one_hot
 
 class PointDataset():
 
-    def __init__(self, root, proteins, embedding):
+    def __init__(self, root, proteins, embedding=one_hot):
         self.root = root
-        self.name = f'embedding_{embedding.__name__}'
+        self.embedding = embedding
+        self.name = f'emb_{embedding.__name__}'
         self.proteins = self.convert(proteins)
 
     def protein2point(self, protein):
-        pass
+        protein['x'] = self.embedding(protein['sequence'])
+        return protein
 
-    def point2torch(self, graph, info={}):
-        pass
-
+    @checkpoint('{root}/processed/point/{name}.pkl')
     def convert(self, proteins):
         return [self.protein2point(p) for p in tqdm(proteins, desc='Converting proteins to point clouds')]
 
     def torch(self):
-        raise NotImplementedError
+        import torch
+        from torch.utils.data import Dataset as TorchDataset
+        class Dataset(TorchDataset):
+            def __init__(self, path, proteins):
+                if os.path.exists(path):
+                    self.proteins = torch.load(path)
+                else:
+                    self.proteins = []
+                    for p in proteins:
+                        for key, value in p.items():
+                            try:
+                                p[key] = torch.tensor(value)
+                            except:
+                                pass
+                        self.proteins.append(p)
+                    torch.save(self.proteins, path)
+            def __len__(self):
+                return len(self.proteins)
+            def __getitem__(self, i):
+                return self.proteins[i]
+        ds = Dataset(f'{self.root}/processed/point/{self.name}.torch.pkl', self.proteins)
+        return ds
 
+    @checkpoint('{root}/processed/point/{name}.tf.pkl')
     def tf(self):
         raise NotImplementedError
