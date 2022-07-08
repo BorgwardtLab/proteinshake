@@ -15,7 +15,7 @@ from torch_pdb.utils import extract_tar, download_url, save, load
 
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
-TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../TMalign'
+TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../../TMalign'
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
@@ -86,15 +86,17 @@ class TMScoreBenchmark(TorchPDBDataset):
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
-        pdblist = []
-        lines = lines[:self.download_limit()] # for testing
+        links = []
         print('Downloading TMScore Benchmark PDBs...')
         for l in lines:
             m = re.search(".pdb", l)
             if m:
                 start, end = m.span()
                 pdbid = l[start-5:end]
-                download_url(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}", f'{self.root}/raw/files', log=False)
+                links.append(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}")
+        links = links[:self.download_limit()] # for testing
+        for link in tqdm(links):
+            download_url(link, f'{self.root}/raw/files', log=False)
 
     def compute_distances(self, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.

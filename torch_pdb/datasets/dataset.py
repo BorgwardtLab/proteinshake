@@ -21,7 +21,7 @@ class TorchPDBDataset():
             check_sequence      = False,
             n_jobs              = 1,
             use_precomputed     = True,
-            release             = 'JUL2022'
+            release             = '07JUL2022'
             ):
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
@@ -101,6 +101,7 @@ class TorchPDBDataset():
             self.parse()
 
     def download_precomputed(self):
+        os.makedirs(f'{self.root}', exist_ok=True)
         if not os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
             download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.json.gz', f'{self.root}')
 
@@ -121,7 +122,10 @@ class TorchPDBDataset():
             'chain_id': df['chain_id'].tolist(),
             'coords': df[['x_coord','y_coord','z_coord']].values.tolist(),
         }
-        protein = self.add_protein_attributes(protein)
+        try:
+            protein = self.add_protein_attributes(protein)
+        except:
+            return None
         return protein
 
     def pdb2df(self, path):

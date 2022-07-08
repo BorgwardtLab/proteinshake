@@ -49,6 +49,7 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     if os.path.isdir(out_path):
         out_path += '/'+file_name
     r = requests.get(url, stream=True)
+    r.raise_for_status()
     total = int(r.headers.get('content-length', 0))
     if log:
         print(f'Downloading {file_name}:')
