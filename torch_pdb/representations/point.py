@@ -42,6 +42,10 @@ class PointDataset():
         ds = Dataset(f'{self.root}/processed/point/{self.name}.torch.pkl', self.proteins)
         return ds
 
-    @checkpoint('{root}/processed/point/{name}.tf.pkl')
     def tf(self):
-        raise NotImplementedError
+        import tensorflow as tf
+        def generator():
+            for p in self.proteins:
+                yield p['coords']
+        ds = tf.data.Dataset.from_generator(generator, tf.float32, output_shapes=[None,3])
+        return ds
