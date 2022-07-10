@@ -1,25 +1,10 @@
 import os
 import tarfile
-import torch
 import pickle
 import json
 import gzip
 import requests
 from tqdm import tqdm
-
-# decorator to return saved file if it exists
-def checkpoint(path):
-    def decorator(function):
-        def wrapper(self, *args, **kwargs):
-            if os.path.exists(path.format(**self.__dict__)):
-                return torch.load(path.format(**self.__dict__))
-            else:
-                os.makedirs(os.path.dirname(path.format(**self.__dict__)), exist_ok=True)
-                result = function(self, *args, **kwargs)
-                torch.save(result, path.format(**self.__dict__))
-                return result
-        return wrapper
-    return decorator
 
 def save(obj, path):
     if path.endswith('.json.gz'):
@@ -70,3 +55,17 @@ def extract_tar(tar_path, out_path, extract_members=False):
     else:
         with tarfile.open(tar_path) as file:
             file.extractall(out_path)
+
+# decorator to return saved file if it exists
+def checkpoint(path):
+    def decorator(function):
+        def wrapper(self, *args, **kwargs):
+            if os.path.exists(path.format(**self.__dict__)):
+                return load(path.format(**self.__dict__))
+            else:
+                os.makedirs(os.path.dirname(path.format(**self.__dict__)), exist_ok=True)
+                result = function(self, *args, **kwargs)
+                save(result, path.format(**self.__dict__))
+                return result
+        return wrapper
+    return decorator

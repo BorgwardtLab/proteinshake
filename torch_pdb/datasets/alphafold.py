@@ -47,7 +47,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]
 
     def get_id_from_filename(self, filename):
-        return re.search('(?<=AF-)(.*)(?=-F1-model)', filename).group()
+        return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
 
     def download_precomputed(self):
         # overload this to compile multiple organisms into one
