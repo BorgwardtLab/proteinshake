@@ -4,11 +4,14 @@ import os
 import os.path as osp
 
 from rdkit import Chem
+from rdkit import RDLogger
 import numpy as np
 
 from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
 from torch_pdb.utils import extract_tar, download_url
+
+RDLogger.DisableLog('rdApp.*') # disable warnings
 
 class PDBBindRefined(TorchPDBDataset):
     """Proteins bound to small molecules with binding site and affinity information. Residues
@@ -59,7 +62,10 @@ class PDBBindRefined(TorchPDBDataset):
                                               protein['ID'],
                                               f'{protein["ID"]}_ligand.sdf')
                                      )
-        smiles = Chem.MolToSmiles(ligand)
+        try:
+            smiles = Chem.MolToSmiles(ligand)
+        except:
+            return None
         is_site = np.zeros((len(pocket),))
         is_site[(
             np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
@@ -72,7 +78,7 @@ class PDBBindRefined(TorchPDBDataset):
         protein['ligand_id'] = bind_data['ligand_id']
         protein['ligand_smiles'] = smiles
         return protein
-        
+
     def describe(self):
         desc = super().describe()
         desc['property'] = "Small Mol. Binding Site (residue-level)"
