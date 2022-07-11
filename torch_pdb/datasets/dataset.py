@@ -119,9 +119,10 @@ class TorchPDBDataset():
             'ID': self.get_id_from_filename(os.path.basename(path)),
             'sequence': ''.join(df['residue_name']),
             'residue_index': df['residue_number'].tolist(),
-            'chain_id': df['chain_id'].tolist(),
             'coords': df[['x_coord','y_coord','z_coord']].values.tolist(),
         }
+        if not self.only_single_chain: # only include chains if multi-chain protein
+            protein['chain_id'] = df['chain_id'].tolist()
         try:
             protein = self.add_protein_attributes(protein)
         except:

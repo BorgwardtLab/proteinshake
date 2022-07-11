@@ -41,7 +41,7 @@ class AlphaFoldDataset(TorchPDBDataset):
             elif type(organism) == list:
                 self.organism = [o.lower().replace(' ','_') for o in organism]
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
-        super().__init__(**kwargs)
+        super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]

@@ -13,7 +13,7 @@ class RCSBDataset(TorchPDBDataset):
     def __init__(self, query=[], similarity_cutoff=70, **kwargs):
         self.similarity_cutoff = similarity_cutoff
         self.query = query
-        super().__init__(**kwargs)
+        super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*.pdb.gz')
