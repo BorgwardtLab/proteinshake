@@ -15,6 +15,7 @@ class PfamDataset(RCSBDataset):
             if a['type'] == 'Pfam':
                 pfams.append(a['name'])
         protein['Pfam'] = pfams
+        return protein
 
     def describe(self):
         desc = super().describe()

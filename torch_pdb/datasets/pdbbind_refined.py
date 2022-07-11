@@ -71,8 +71,8 @@ class PDBBindRefined(TorchPDBDataset):
         protein['year'] = bind_data['date']
         protein['ligand_id'] = bind_data['ligand_id']
         protein['ligand_smiles'] = smiles
-
         return protein
+        
     def describe(self):
         desc = super().describe()
         desc['property'] = "Small Mol. Binding Site (residue-level)"

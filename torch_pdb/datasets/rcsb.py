@@ -37,12 +37,12 @@ class RCSBDataset(TorchPDBDataset):
                         {
                             "type": "terminal",
                             "service": "text",
-                            "parameters": {"operator": "exact_match", "value": "Protein", "attribute": "entity_poly.rcsb_entity_polymer_type"}
+                            "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
                         },
                         {
                             "type": "terminal",
                             "service": "text",
-                            "parameters": {"attribute": "rcsb_entry_info.entity_count", "operator": "equals", "value": 1}
+                            "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
                         },
                         *[
                             {
@@ -64,12 +64,16 @@ class RCSBDataset(TorchPDBDataset):
                 "return_type": "polymer_entity"
             }
             r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
-            r = json.loads(r.text)
-            ids.extend([x['identifier'].split('_')[0] for x in r['result_set']])
+            try:
+                response_dict = json.loads(r.text)
+                ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
+            except:
+                print('An error occured when querying RCSB.')
+                print(r.text)
+                exit()
             if total is None:
-                total = r['group_by_count']
+                total = response_dict['group_by_count']
             i += batch_size
-
         ids = ids[:self.download_limit()] # for testing
 
         failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))

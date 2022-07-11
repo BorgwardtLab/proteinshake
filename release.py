@@ -12,11 +12,12 @@ SCRATCH = args.scratch if args.scratch != '' else args.path
 n_jobs = args.njobs
 
 os.makedirs(f'{PATH}/release', exist_ok=True)
-for Dataset in [RCSBDataset, ECDataset, PDBBindRefined,  TMScoreBenchmark, GODataset, PfamDataset]:
+for Dataset in [RCSBDataset, ECDataset, GODataset, PfamDataset, PDBBindRefined, PDBBindPPI, TMScoreBenchmark]:
     name = Dataset.__name__
     print()
     print(name)
     ds = Dataset(root=f'{SCRATCH}/release/{name}', use_precomputed=False, n_jobs=n_jobs)
+    print('Length:', len(ds.proteins))
     del ds
     if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/{name}.json.gz'):
         print('Copying...')
@@ -34,6 +35,7 @@ for organism in AF_DATASET_NAMES.keys():
     print()
     print('AlphaFoldDataset', organism)
     ds = AlphaFoldDataset(root=f'{SCRATCH}/release/AlphaFoldDataset_{organism}', organism=organism, use_precomputed=False, n_jobs=n_jobs)
+    print('Length:', len(ds.proteins))
     del ds
     if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/AlphaFoldDataset_{organism}.json.gz'):
         print('Copying...')

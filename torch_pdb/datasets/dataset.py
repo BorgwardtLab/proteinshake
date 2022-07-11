@@ -110,7 +110,9 @@ class TorchPDBDataset():
             return
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         #proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
+        before = len(proteins)
         proteins = [p for p in proteins if p is not None]
+        print(f'Filtered {before-len(proteins)} proteins.')
         save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def parse_pdb(self, path):
@@ -125,10 +127,7 @@ class TorchPDBDataset():
         }
         if not self.only_single_chain: # only include chains if multi-chain protein
             protein['chain_id'] = df['chain_id'].tolist()
-        try:
-            protein = self.add_protein_attributes(protein)
-        except:
-            return None
+        protein = self.add_protein_attributes(protein)
         return protein
 
     def pdb2df(self, path):
