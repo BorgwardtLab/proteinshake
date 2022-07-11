@@ -43,7 +43,7 @@ def get_interfaces(protein, cutoff=6):
 
     resi_interface = []
     for r in protein['residue_index']:
-        resi_interface.append(r.item() in interface)
+        resi_interface.append(r in interface)
     return resi_interface
 
 if __name__ == "__main__":
