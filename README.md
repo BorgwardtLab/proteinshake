@@ -1,5 +1,9 @@
+[pypi-img]: https://img.shields.io/pypi/v/torch-pdb
+
 ![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/torch-pdb/badge/?version=latest)](https://torch-pdb.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version][pypi-img]][pypi-url]
+
 
 # `torch-pdb`: torch-geometric datasets built from the PDB
 
