@@ -10,6 +10,8 @@
 
 # `torch-pdb`: torch-geometric datasets built from the PDB
 
+![](images/torch-pdb.png)
+
 This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/).
 After installing, datasets can be passed directly to torch loaders for model training.
 
