@@ -1,4 +1,4 @@
-import requests, glob, torch, json
+import requests, glob, json
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
