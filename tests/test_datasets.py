@@ -33,9 +33,9 @@ class TestDatasets(unittest.TestCase):
             ds = RCSBDataset(root=tmp)
 
     def test_alphafold(self):
-        for organism in AF_DATASET_NAMES.keys():
-            with tempfile.TemporaryDirectory() as tmp:
-                ds = AlphaFoldDataset(root=tmp, organism=organism)
+        organism = 'methanocaldococcus jannaschii'
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = AlphaFoldDataset(root=tmp, organism=organism)
 
 if __name__ == '__main__':
     unittest.main()
