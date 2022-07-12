@@ -24,7 +24,7 @@ class TorchPDBDataset():
             check_sequence      = False,
             n_jobs              = 1,
             use_precomputed     = True,
-            release             = '07JUL2022'
+            release             = '12JUL2022'
             ):
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed

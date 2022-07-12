@@ -1,6 +1,13 @@
 debug.py
 setup.sh
 
+TMalign
+data/
+release/
+venv/
+test.py
+.nfs*
+
 __pycache__/
 .ropeproject/
 .pytest_cache/
