@@ -3,8 +3,18 @@ import json
 from torch_pdb.datasets import RCSBDataset
 
 class ECDataset(RCSBDataset):
+    """ Proteins from RCSB for which Enzyme Classification is known.
+    Each item in this dataset has the attribute `EC` which is a string
+    identifier.
+    """
 
     def __init__(self, query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs):
+        """
+
+        Args:
+            query: REST-API query.
+
+        """
         super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
@@ -12,5 +22,12 @@ class ECDataset(RCSBDataset):
             annot = json.load(file)
         protein['EC'] = annot['rcsb_polymer_entity']['rcsb_ec_lineage'][-1]['id']
         return protein
+
+    def describe(self):
+        desc = super().describe()
+        desc['property'] = 'Enzyme Classification (`EC`)'
+        desc['values'] = len(set(self.data.EC))
+        desc['type'] = 'Categorical'
+        return desc
 
 

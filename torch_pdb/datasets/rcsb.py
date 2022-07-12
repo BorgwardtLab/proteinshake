@@ -7,6 +7,8 @@ from joblib import Parallel, delayed
 from torch_pdb.datasets import TorchPDBDataset
 
 class RCSBDataset(TorchPDBDataset):
+    """ Non-redundant structures taken from RCSB Protein Databank.
+    """
 
     def __init__(self, query=[], similarity_cutoff=70, **kwargs):
         self.similarity_cutoff = similarity_cutoff
@@ -20,6 +22,8 @@ class RCSBDataset(TorchPDBDataset):
         return filename[:4]
 
     def download(self):
+        if self.n_jobs == 1:
+            print('Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         total = None
         i = 0
         batch_size = 5000

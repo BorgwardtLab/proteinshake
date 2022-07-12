@@ -5,3 +5,4 @@ git+https://github.com/pyg-team/pyg_sphinx_theme.git
 torch-geometric==2.0.4
 biopandas==0.4.1
 pandas==1.4.3
+rdkit-pypi==2022.3.3

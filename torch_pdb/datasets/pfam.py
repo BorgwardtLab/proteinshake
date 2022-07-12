@@ -15,3 +15,11 @@ class PfamDataset(RCSBDataset):
             if a['type'] == 'Pfam':
                 pfams.append(a['name'])
         protein['Pfam'] = pfams
+
+    def describe(self):
+        desc = super().describe()
+        print(self.data)
+        desc['property'] = "Protein Family (Pfam)"
+        desc['values'] = f"{len(set(s[0] for s in self.data.Pfam))} (root)"
+        desc['type'] = 'Categorical, Hierarchical'
+        return desc

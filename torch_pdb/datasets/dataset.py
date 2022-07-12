@@ -1,3 +1,6 @@
+"""
+Base dataset class for 3D structures.
+"""
 # -*- coding: utf-8 -*-
 import os, gzip, inspect
 
@@ -16,6 +19,7 @@ from torch_pdb.utils import one_hot
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
 class TorchPDBDataset(InMemoryDataset):
+    """ Base dataset class for holding 3D structures and encoding as graphs."""
     def __init__(self,
             root                = 'data',
             name                = 'proteins',
@@ -54,6 +58,7 @@ class TorchPDBDataset(InMemoryDataset):
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
+            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
         }
         if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
@@ -85,8 +90,10 @@ class TorchPDBDataset(InMemoryDataset):
     def describe(self):
         """ Produce dataset statistics.
         """
+        n_resi = len(self.data.residue_index) / len(self.data.ID)
         data = {'name': type(self).__name__,
-                'num_proteins': len(self)
+                'num_proteins': len(self),
+                'avg size (# residues)': n_resi
                }
         return data
 
@@ -113,8 +120,6 @@ class TorchPDBDataset(InMemoryDataset):
         else:
             if os.path.exists(f'{self.root}/raw/done.txt'):
                 return
-            if self.n_jobs == 1:
-                print('Downloading an entire dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
             os.makedirs(f'{self.root}/raw/files', exist_ok=True)
             self.download()
             self.download_complete()

@@ -1,36 +1,41 @@
-import setuptools
+from setuptools import find_packages, setup
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+__version__ = '0.0.3'
+URL = 'https://torch-pdb.readthedocs.io/en/latest/index.html'
 
-requirements = [
-                'numpy',
-                'scipy',
-                'biopandas',
-                'seaborn',
-                'sklearn',
-                'tqdm',
-                'wget',
-                'requests',
-                'joblib',
-                'rdkit',
-                'tabulate'
-                ]
+install_requires = [
+                    'numpy',
+                    'scipy',
+                    'biopandas',
+                    'seaborn',
+                    'scikit-learn',
+                    'tqdm',
+                    'wget',
+                    'requests',
+                    'joblib',
+                    'rdkit',
+                    'tabulate'
+                    ]
+test_requires = [
+    'pytest',
+]
 
-setuptools.setup(
-    name="torch-pdb",
-    version="0.0.1",
-    author="Carlos Oliver, Dexiong Chen, Leslie O'Bray, Tim Kucera,",
-    author_email="carlos.oliver@bsse.ethz.ch",
-    description="Dead simple datasets for loading PDBs into torch-geometric.",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(),
-    package_data={'pdb_pyg.pkg_data': ['*.json', '*.txt']},
-    install_requires=requirements,
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ]
+setup(
+    name='torch_pdb',
+    version=__version__,
+    description='PyTorch datasets built from 3D protein structures.',
+    author = "Tim Kucera, Carlos Oliver, Leslie O'Bray, Dexiong Chen, Karsten Borgwardt",
+    author_email = "tim.kucera@bsse.ethz.ch",
+    url=URL,
+    keywords = ['bioinformatics',
+                'deep-learning',
+                'pytorch',
+                'torch-geometric',
+                'computational-biology',
+                'macromolecular-structure'],
+    python_requires='>=3.7',
+    install_requires=install_requires,
+    packages=find_packages(),
+    include_package_data=True,
 )
+

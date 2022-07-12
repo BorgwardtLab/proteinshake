@@ -6,23 +6,24 @@ import pandas as pd
 
 from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
-datasets = [GODataset,
-            ECDataset,
-            TMScoreBenchmark,
-            PfamDataset,
+datasets = [
             RCSBDataset,
-            PDBBindRefined]
+            PfamDataset,
+            GODataset,
+            ECDataset,
+            PDBBindRefined,
+            TMScoreBenchmark]
 
 rows = []
-for dataset in datasets:
-    print(dataset)
-    with tempfile.TemporaryDirectory() as tmp:
-        ds = dataset(root=tmp, name='test')
-        rows.append(ds.describe())
+for i, dataset in enumerate(datasets):
+    ds = dataset(root=f"data_{i}", name='test')
+    desc = ds.describe()
+    print(desc)
+    rows.append(desc)
 
 df = pd.DataFrame(rows)
-md = df.to_markdown()
-tx = df.to_latex()
+md = df.to_markdown(index=False)
+tx = df.to_latex(index=False)
 
 print(md)
 print()
