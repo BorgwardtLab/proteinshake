@@ -5,6 +5,7 @@
 ![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/torch-pdb/badge/?version=latest)](https://torch-pdb.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version][pypi-img]][pypi-url]
+![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.torch-pdb&left_color=green&right_color=red)
 
 
 # `torch-pdb`: torch-geometric datasets built from the PDB
