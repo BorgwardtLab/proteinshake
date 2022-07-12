@@ -47,9 +47,10 @@ def get_interfaces(protein, cutoff=6):
     return resi_interface
 
 if __name__ == "__main__":
+    import os
     df = PandasPdb().fetch_pdb('1pd7').df['ATOM']
     protein = {
-        'ID': self.get_id_from_filename(os.path.basename(path)),
+        'ID': get_id_from_filename(os.path.basename(path)),
         'sequence': ''.join(df['residue_name']),
         'residue_index': df['residue_number'].tolist(),
         'chain_id': df['chain_id'].tolist(),
