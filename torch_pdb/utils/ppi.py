@@ -1,5 +1,4 @@
 import pandas as pd
-import torch
 from biopandas.pdb import PandasPdb
 from sklearn.neighbors import KDTree
 
@@ -16,7 +15,7 @@ def get_interfaces(protein, cutoff=6):
 
     Returns
     --------
-        `torch.tensor`: indicator tensor for each residue with 0 if not in interface and 1 else.
+        `list`: indicator list for each residue with 0 if not in interface and 1 else.
     """
 
     #3-D KD tree
@@ -44,16 +43,17 @@ def get_interfaces(protein, cutoff=6):
 
     resi_interface = []
     for r in protein['residue_index']:
-        resi_interface.append(r.item() in interface)
-    return torch.tensor(resi_interface)
+        resi_interface.append(r in interface)
+    return resi_interface
 
 if __name__ == "__main__":
     df = PandasPdb().fetch_pdb('1pd7').df['ATOM']
     protein = {
+        'ID': self.get_id_from_filename(os.path.basename(path)),
         'sequence': ''.join(df['residue_name']),
-        'residue_index': torch.tensor(df['residue_number'].tolist()).int(),
+        'residue_index': df['residue_number'].tolist(),
         'chain_id': df['chain_id'].tolist(),
-        'coords': torch.tensor(df.apply(lambda row: (row['x_coord'], row['y_coord'], row['z_coord']), axis=1).to_list()).long(),
+        'coords': df[['x_coord','y_coord','z_coord']].values.tolist(),
     }
     interface = get_interfaces(protein)
     print(interface)

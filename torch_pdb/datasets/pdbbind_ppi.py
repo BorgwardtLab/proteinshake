@@ -2,11 +2,8 @@
 import os
 import glob
 
-import torch
-from torch_geometric.data import extract_tar, download_url
-
 from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import get_interfaces
+from torch_pdb.utils import get_interfaces, extract_tar, download_url
 
 class PDBBindPPI(TorchPDBDataset):
     """Protein-protein complexes with annotated interfaces. Residues
@@ -32,7 +29,8 @@ class PDBBindPPI(TorchPDBDataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
+        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.download_limit()]
+
     def get_id_from_filename(self, filename):
         return filename[:4]
 

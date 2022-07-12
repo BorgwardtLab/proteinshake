@@ -3,11 +3,10 @@ import re
 import tarfile
 import glob
 
-import torch
-from torch_geometric.data import download_url
 from tqdm import tqdm
 
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils import download_url, extract_tar, load, save
 
 AF_DATASET_NAMES = {
     'arabidopsis_thaliana': 'UP000006548_3702_ARATH',
@@ -42,36 +41,35 @@ class AlphaFoldDataset(TorchPDBDataset):
             elif type(organism) == list:
                 self.organism = [o.lower().replace(' ','_') for o in organism]
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
-        super().__init__(**kwargs)
+        super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')
+        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]
 
     def get_id_from_filename(self, filename):
-        return re.search('(?<=AF-)(.*)(?=-F1-model)', filename).group()
+        return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
 
     def download_precomputed(self):
         # overload this to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.pt'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
             return
         def _download(organism):
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.pt', f'{self.root}')
+            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
         if type(self.organism) == str:
             _download(self.organism)
-            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.pt', f'{self.root}/{self.__class__.__name__}.pt')
+            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.json.gz', f'{self.root}/{self.__class__.__name__}.json.gz')
         elif type(self.organism) == list:
             _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in torch.load(f'{self.root}/{self.__class__.__name__}_{organism}.pt')]
-            torch.save(proteins, f'{self.root}/{self.__class__.__name__}.pt')
-            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.pt') for organism in self.organism]
+            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')]
+            save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
+            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz') for organism in self.organism]
 
 
     def download(self):
         def _download(organism):
             os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
             download_url(self.base_url+AF_DATASET_NAMES[organism]+'_v2.tar', f'{self.root}/raw/{organism}')
-            with tarfile.open(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v2.tar', 'r') as tar:
-                tar.extractall(path=f'{self.root}/raw/{organism}')
+            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v2.tar', f'{self.root}/raw/{organism}')
         if type(self.organism) == str:
             _download(self.organism)
         elif type(self.organism) == list:

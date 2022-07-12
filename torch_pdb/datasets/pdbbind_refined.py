@@ -3,12 +3,15 @@ import glob
 import os
 import os.path as osp
 
-import torch
 from rdkit import Chem
-from torch_geometric.data import extract_tar, download_url
+from rdkit import RDLogger
+import numpy as np
 
 from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
+from torch_pdb.utils import extract_tar, download_url
+
+RDLogger.DisableLog('rdApp.*') # disable warnings
 
 class PDBBindRefined(TorchPDBDataset):
     """Proteins bound to small molecules with binding site and affinity information. Residues
@@ -29,7 +32,7 @@ class PDBBindRefined(TorchPDBDataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')
+        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.download_limit()]
 
     def get_id_from_filename(self, filename):
         return filename[:4]
@@ -41,36 +44,41 @@ class PDBBindRefined(TorchPDBDataset):
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["ID"]}/{protein["ID"]}_pocket.pdb')
-        is_site = torch.zeros((len(pocket),))
+        is_site = np.zeros((len(pocket),))
         is_site[(
-            torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
-        ).sum(dim=1).nonzero()] = 1.
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
+        ).sum(axis=1).nonzero()] = 1.
         protein['binding_site'] = is_site
 
-        index_data = parse_pdbbind_PL_index(osp.join(self.raw_dir,
+        index_data = parse_pdbbind_PL_index(osp.join(self.root,
+                                                    "raw",
                                                     "files",
                                                     "index",
                                                     f"INDEX_refined_set.{self.version}")
                                             )
-        ligand = Chem.MolFromMolFile(osp.join(self.raw_dir,
+        ligand = Chem.MolFromMolFile(osp.join(self.root,
+                                              'raw',
                                               'files',
                                               protein['ID'],
                                               f'{protein["ID"]}_ligand.sdf')
                                      )
-        smiles = Chem.MolToSmiles(ligand)
-        is_site = torch.zeros((len(pocket),))
+        try:
+            smiles = Chem.MolToSmiles(ligand)
+        except:
+            return None
+        is_site = np.zeros((len(pocket),))
         is_site[(
-            torch.tensor(pocket['residue_number'].tolist()).unsqueeze(1) == protein['residue_index']
-        ).sum(dim=1).nonzero()] = 1.
-        protein['binding_site'] = is_site
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
+        ).sum(axis=1).nonzero()] = 1.
+        protein['binding_site'] = is_site.tolist()
         bind_data = index_data[protein['ID']]
         protein['kd'] = bind_data['kd']['value']
         protein['resolution'] = bind_data['resolution']
         protein['year'] = bind_data['date']
         protein['ligand_id'] = bind_data['ligand_id']
         protein['ligand_smiles'] = smiles
-
         return protein
+
     def describe(self):
         desc = super().describe()
         desc['property'] = "Small Mol. Binding Site (residue-level)"

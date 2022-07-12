@@ -1,10 +1,10 @@
 import requests, glob, torch, json
 import pandas as pd
-from torch_geometric.data import download_url
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from torch_pdb.datasets import TorchPDBDataset
+from torch_pdb.utils import download_url
 
 class RCSBDataset(TorchPDBDataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
@@ -13,7 +13,7 @@ class RCSBDataset(TorchPDBDataset):
     def __init__(self, query=[], similarity_cutoff=70, **kwargs):
         self.similarity_cutoff = similarity_cutoff
         self.query = query
-        super().__init__(**kwargs)
+        super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*.pdb.gz')
@@ -23,7 +23,7 @@ class RCSBDataset(TorchPDBDataset):
 
     def download(self):
         if self.n_jobs == 1:
-            print('Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
+            print('Warning: Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         total = None
         i = 0
         batch_size = 5000
@@ -37,12 +37,12 @@ class RCSBDataset(TorchPDBDataset):
                         {
                             "type": "terminal",
                             "service": "text",
-                            "parameters": {"operator": "exact_match", "value": "Protein", "attribute": "entity_poly.rcsb_entity_polymer_type"}
+                            "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
                         },
                         {
                             "type": "terminal",
                             "service": "text",
-                            "parameters": {"attribute": "rcsb_entry_info.entity_count", "operator": "equals", "value": 1}
+                            "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
                         },
                         *[
                             {
@@ -64,13 +64,17 @@ class RCSBDataset(TorchPDBDataset):
                 "return_type": "polymer_entity"
             }
             r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
-            r = json.loads(r.text)
-            ids.extend([x['identifier'].split('_')[0] for x in r['result_set']])
+            try:
+                response_dict = json.loads(r.text)
+                ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
+            except:
+                print('An error occured when querying RCSB.')
+                print(r.text)
+                exit()
             if total is None:
-                total = r['group_by_count']
+                total = response_dict['group_by_count']
             i += batch_size
-            print(f'\rQuerying {min(i,total)} of {total}', end='')
-        print()
+        ids = ids[:self.download_limit()] # for testing
 
         failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]

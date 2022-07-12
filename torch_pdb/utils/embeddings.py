@@ -1,4 +1,4 @@
-import torch
+import numpy as np
 
 alphabet = 'ARNDCEQGHILKMFPSTWYV'
 
@@ -11,7 +11,7 @@ def one_hot(sequence):
     Returns:
     """
 
-    return torch.stack([torch.eye(len(alphabet))[alphabet.index(aa)] for aa in sequence])
+    return np.stack([np.eye(len(alphabet))[alphabet.index(aa)] for aa in sequence])
 
 # AA Index
 # ...
