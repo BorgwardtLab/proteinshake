@@ -1,5 +1,4 @@
 import os
-import torch
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
@@ -39,6 +38,7 @@ class GraphDataset():
 
     @checkpoint('{root}/processed/graph/{name}.pyg.pkl')
     def pyg(self):
+        import torch
         from torch_geometric.utils import from_scipy_sparse_matrix
         from torch_geometric.data import Data
         def graph2pyg(graph, info={}):
