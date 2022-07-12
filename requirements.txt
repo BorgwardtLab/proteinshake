@@ -4,3 +4,4 @@ rdkit-pypi==2022.3.3
 tqdm==4.64.0
 scikit-learn==1.1.1
 joblib==1.1.0
+requests==2.27.1
