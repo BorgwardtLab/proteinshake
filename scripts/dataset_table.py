@@ -7,10 +7,15 @@ import pandas as pd
 from torch_pdb.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 
 datasets = [GODataset,
-            ECDataset]
+            ECDataset,
+            TMScoreBenchmark,
+            PfamDataset,
+            RCSBDataset,
+            PDBBindRefined]
 
 rows = []
 for dataset in datasets:
+    print(dataset)
     with tempfile.TemporaryDirectory() as tmp:
         ds = dataset(root=tmp, name='test')
         rows.append(ds.describe())
