@@ -1,7 +1,5 @@
 import re
 
-import torch
-
 def affinity_parse(s):
     """ Parse the affinity string. e.g. `Kd=30uM`.
     Parameters
