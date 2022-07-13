@@ -3,7 +3,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
-from torch_pdb.utils import checkpoint, one_hot
+from torch_pdb.utils import checkpoint, one_hot, compose_embeddings
 
 
 class GraphDataset():
@@ -33,8 +33,13 @@ class GraphDataset():
         self.k = k
         self.eps = eps
         self.weighted_edges = weighted_edges
-        self.embedding = embedding
-        self.name = f'emb_{embedding.__name__}'
+        if type(embedding) == list:
+            self.embedding = compose_embeddings(embedding)
+            emb_names = '_'.join([e.__name__ for e in embedding])
+            self.name = f'emb_{emb_names}'
+        else:
+            self.embedding = embedding
+            self.name = f'emb_{embedding.__name__}'
         self.name += '_k_{k}' if self.construction == 'knn' else f'_eps_{eps}'
         if self.weighted_edges:
             self.name += 'weighted'
