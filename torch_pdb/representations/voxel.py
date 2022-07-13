@@ -1,6 +1,16 @@
 from tqdm import tqdm
 
 class VoxelDataset():
+    """ Voxel representation of a protein structure dataset.
+
+    Voxelizes the protein dataset.
+
+    Parameters
+    ----------
+    embedding: Union[function, list]
+        A function or list of functions for embedding the protein sequence to node attributes.
+
+    """
 
     def __init__(self, root, proteins):
         self.root = root

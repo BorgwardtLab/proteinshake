@@ -3,6 +3,16 @@ from tqdm import tqdm
 from torch_pdb.utils import checkpoint, one_hot
 
 class PointDataset():
+    """ Point cloud representation of a protein structure dataset.
+
+    Converts a protein object to a point cloud.
+
+    Parameters
+    ----------
+    embedding: Union[function, list]
+        A function or list of functions for embedding the protein sequence to node attributes.
+
+    """
 
     def __init__(self, root, proteins, embedding=one_hot):
         self.root = root
