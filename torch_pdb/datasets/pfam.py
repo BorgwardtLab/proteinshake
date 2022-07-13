@@ -22,8 +22,7 @@ class PfamDataset(RCSBDataset):
 
     def describe(self):
         desc = super().describe()
-        print(self.data)
         desc['property'] = "Protein Family (Pfam)"
-        desc['values'] = f"{len(set(s[0] for s in self.data.Pfam))} (root)"
+        desc['values'] = f"{len(set((p['Pfam'][0] for p in self.proteins)))} (root)"
         desc['type'] = 'Categorical, Hierarchical'
         return desc
