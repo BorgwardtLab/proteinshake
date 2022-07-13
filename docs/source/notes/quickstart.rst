@@ -3,7 +3,7 @@ Quickstart
 
 To get started, follow the `installation instructions <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_.
 
-Loading a dataset is one in one line:
+Loading a dataset is a one-liner. Here we download the set of experimentally-validated structures that have a known Gene-Ontology classification:
 
 .. code-block:: python
 
