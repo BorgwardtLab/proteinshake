@@ -29,5 +29,3 @@ class ECDataset(RCSBDataset):
         desc['values'] = len(set((p['EC'] for p in self.proteins)))
         desc['type'] = 'Categorical'
         return desc
-
-

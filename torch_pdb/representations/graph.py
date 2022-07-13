@@ -7,6 +7,24 @@ from torch_pdb.utils import checkpoint, one_hot
 
 
 class GraphDataset():
+    """ Graph representation of a protein structure dataset.
+
+    Converts a protein object to a graph by using a k-nearest-neighbor or epsilon-neighborhood approach. Define either `k` or `eps` to determine which one is used.
+
+    Also embeds the protein sequence to attributes of the graph nodes using a supplied embedding function. See `utils.embeddings` for examples. If a list of functions is passed to `embedding`, the resulting features will be concatenated.
+
+    Parameters
+    ----------
+    embedding: Union[function, list]
+        A function or list of functions for embedding the protein sequence to node attributes.
+    eps: float
+        The epsilon radius to be used in graph construction (in Angstrom).
+    k: int
+        The number of neighbors to be used in the k-NN graph.
+    weighted_edges: bool, default False
+        If `True`, edges are attributed with their euclidean distance. If `False`, edges are unweighted.
+
+    """
 
     def __init__(self, root, proteins, embedding=one_hot, eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
@@ -25,11 +43,11 @@ class GraphDataset():
 
     def protein2graph(self, protein):
         nodes = self.embedding(protein['sequence'])
+        mode = 'distance' if self.weighted_edges else 'connectivity'
         if self.construction == 'eps':
-            mode = 'distance' if self.weighted_edges else 'connectivity'
             adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)
         elif self.construction == 'knn':
-            adj = kneighbors_graph(protein['coords'], n_neighbors=self.k)
+            adj = kneighbors_graph(protein['coords'], n_neighbors=self.k, mode=mode)
         return (nodes, adj)
 
     @checkpoint('{root}/processed/graph/{name}.pkl')

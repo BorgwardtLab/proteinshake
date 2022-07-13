@@ -8,6 +8,19 @@ from torch_pdb.utils import download_url
 
 class RCSBDataset(TorchPDBDataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
+
+    This class also serves as a base class for all RCSB derived datasets. It can be subclassed by defining a default `query` argument. The query is a list of triplets `(attribute, operator, value)` according to https://search.rcsb.org/#attribute-queries and https://data.rcsb.org/data-attributes.html, which is passed to the REST API call to RCSB. See e.g. the GODataset subclass for an example. To find the right attributes, the queries can be constructed by doing an advanced search at RCSB (https://www.rcsb.org/search/advanced) and exporting to JSON. Also compare the API call in the `download` method.
+
+    It uses RCSB's integrated sequence similarity filtering to remove redundant proteins.
+
+    Also, only single chain proteins are used. Change the REST payload in `download` to override this behaviour.
+
+    Parameters
+    ----------
+    query: list
+        A list of triplets `(attribute, operator, value)` to be added to the REST API call to RCSB.
+    similarity_cutoff: {100,95,90,70,50,30}
+        The sequence similarity threshold to remove redundant protein structures.
     """
 
     def __init__(self, query=[], similarity_cutoff=70, **kwargs):

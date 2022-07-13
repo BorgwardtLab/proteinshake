@@ -1,3 +1,7 @@
+"""
+Helper functions for all input/output related things.
+"""
+
 import os
 import tarfile
 import pickle
@@ -7,6 +11,15 @@ import requests
 from tqdm import tqdm
 
 def save(obj, path):
+    """ Saves an object to either pickle, json, or json.gz (determined by the extension in the file name).
+
+    Parameters
+    ----------
+    obj:
+        The object to be saved.
+    path:
+        The path to save the object.
+    """
     if path.endswith('.json.gz'):
         with gzip.open(path, 'w') as file:
             file.write(json.dumps(obj).encode('utf-8'))
@@ -18,6 +31,18 @@ def save(obj, path):
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load(path):
+    """ Loads a pickle, json or json.gz file.
+
+    Parameters
+    ----------
+    path:
+        The path to be loaded.
+
+    Returns
+    -------
+    object
+        The loaded object.
+    """
     if path.endswith('.json.gz'):
         with gzip.open(path, 'r') as file:
             obj = json.loads(file.read().decode('utf-8'))
@@ -30,6 +55,20 @@ def load(path):
     return obj
 
 def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
+    """ Downloads a file from an url. If `out_path` is a directory, the file will be saved under the url basename.
+
+    Parameters
+    ----------
+    url: str
+        The url to be downloaded.
+    out_path: str
+        Path to save the downloaded file.
+    log: bool, default True
+        Whether to show a progress bar.
+    chunk_size: int, default 10485760
+        The chunk size of the download.
+
+    """
     file_name = os.path.basename(url)
     if os.path.isdir(out_path):
         out_path += '/'+file_name
@@ -48,6 +87,17 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
         bar.close()
 
 def extract_tar(tar_path, out_path, extract_members=False):
+    """ Extracts a tar file.
+
+    Parameters
+    ----------
+    tar_path:
+        The path to the tar file.
+    out_path:
+        The directory to extract to.
+    extract_members: bool, default False
+        If `True`, the tar file member will be directly extracted to `out_path`, instead of creating a subdirectory.
+    """
     if extract_members:
         with tarfile.open(tar_path,'r') as file:
             for member in object.getmembers():
@@ -56,8 +106,20 @@ def extract_tar(tar_path, out_path, extract_members=False):
         with tarfile.open(tar_path) as file:
             file.extractall(out_path)
 
-# decorator to return saved file if it exists
 def checkpoint(path):
+    """ A decorator to checkpoint the result of a class method. It will check if the file specified by `path` exists, in which case the file is loaded and returned instead of running the decorated method. Otherwise the method is run and the result saved at the specified path.
+
+    The path looks similar to a format string. The decorator will look in the attributes of the Owner of the decorated method to replace values in the format string. Example:
+
+    .. code-block:: python
+
+        @checkpoint('{root}/raw/{name}.pkl')
+        def some_class_method(self):
+            return {'hello': 'world'}
+
+    This will replace `{root}` and `{name}` with `self.root` and `self.name` arguments of the class.
+
+    """
     def decorator(function):
         def wrapper(self, *args, **kwargs):
             if os.path.exists(path.format(**self.__dict__)):

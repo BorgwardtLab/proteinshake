@@ -3,6 +3,9 @@ import json
 from torch_pdb.datasets import RCSBDataset
 
 class PfamDataset(RCSBDataset):
+    """ Proteins from RCSB for which the protein family (Pfam) term is known.
+    Each protein in the dataset has a `Pfam` attribute which stores the list of protein families.
+    """
 
     def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
         super().__init__(query=query, **kwargs)

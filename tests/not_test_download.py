@@ -1,3 +1,7 @@
+'''
+Tests all downloads with 'use_precomputed=False'. The number of downloaded files and the number of parsed files is patched to a small number where possible. However, most datasets require downloading one large file, which takes time. Hence removed from GitHub testing CI (by not naming it according to pytest convention).
+'''
+
 import unittest, tempfile
 from unittest import mock
 from torch_pdb.datasets import PDBBindRefined, PDBBindPPI,  TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
