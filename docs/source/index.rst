@@ -18,7 +18,7 @@ We currently collect structures from the following databases:
 
 Drawing from these sources we provide many large ML-ready `datasets <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_ organized by annotation property or structure determination method.
 
-Once a dataset is loaded, we provide several options for `representing <https://torch-pdb.readthedocs.io/en/latest/modules/representations.html>`_the raw atomic coordinates into graphs, point clouds, and voxels (surfaces coming soon).
+Once a dataset is loaded, we provide several options for `representing <https://torch-pdb.readthedocs.io/en/latest/modules/representations.html>`_ the raw atomic coordinates into graphs, point clouds, and voxels (surfaces coming soon).
 
 Go to `quickstart <https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html>`_ guide to get started.
 
