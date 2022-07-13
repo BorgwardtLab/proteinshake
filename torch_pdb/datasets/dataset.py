@@ -38,7 +38,7 @@ class TorchPDBDataset():
     def __init__(self,
             root                = 'data',
             use_precomputed     = True,
-            release             = '12JUL2022'
+            release             = '12JUL2022',
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
