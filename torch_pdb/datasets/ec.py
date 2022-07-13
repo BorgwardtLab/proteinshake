@@ -26,7 +26,7 @@ class ECDataset(RCSBDataset):
     def describe(self):
         desc = super().describe()
         desc['property'] = 'Enzyme Classification (`EC`)'
-        desc['values'] = len(set(self.data.EC))
+        desc['values'] = len(set((p['EC'] for p in self.proteins)))
         desc['type'] = 'Categorical'
         return desc
 
