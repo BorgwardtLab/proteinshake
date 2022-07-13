@@ -29,5 +29,3 @@ class ECDataset(RCSBDataset):
         desc['values'] = len(set(self.data.EC))
         desc['type'] = 'Categorical'
         return desc
-
-

@@ -8,6 +8,7 @@ from tqdm import tqdm
 from torch_pdb.datasets import TorchPDBDataset
 from torch_pdb.utils import download_url, extract_tar, load, save
 
+# A map of organism names to their download file names. See https://alphafold.ebi.ac.uk/download
 AF_DATASET_NAMES = {
     'arabidopsis_thaliana': 'UP000006548_3702_ARATH',
     'caenorhabditis_elegans': 'UP000001940_6239_CAEEL',
@@ -30,6 +31,14 @@ AF_DATASET_NAMES = {
 
 class AlphaFoldDataset(TorchPDBDataset):
     """ 3D structures predicted from sequence by AlphaFold.
+
+    Requires the `organism` name to be specified. Can be a single organism, or a list of organism names, in which case the data will be concatenated. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
+    Pass the full latin organism name separated by a space. `organism` can also be 'all', in which case the data of all organisms will be concatenated, or 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
+
+    Parameters
+    ----------
+    organism: Union[str, list]
+        The organism name or a list of names or 'all' or 'swissprot'.
     """
 
     def __init__(self, organism, **kwargs):
@@ -50,7 +59,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
 
     def download_precomputed(self):
-        # overload this to compile multiple organisms into one
+        # overloads the parent method to compile multiple organisms into one
         if os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
             return
         def _download(organism):
