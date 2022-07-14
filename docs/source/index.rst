@@ -6,50 +6,31 @@
 Welcome to torch-pdb!
 =====================================
 
-**torch-pdb** is a collection of **pytorch** datasets built from protein structure data banks.
-Each dataset can be imported directly into your pyg models for training and inspection.
-Depending on the dataset, specific annotations will be included in the `Data` objects such as small molecule binding pockets, and function annotations.
+With **torch-pdb** you can quickly load datasets of 3D biomolecular structures into your favorite framework and structure representation. 
 
-We currently draw from the following protein structure respositories:
+We currently collect structures from the following databases:
 
-* `RCSB <https://www.rcsb.org/>`_: central repository for 3D structures (contains Gene Ontology, Enzyme Classification, Protein Family annotations, etc.). 
+* `RCSB <https://www.rcsb.org/>`_: central repository for all solved 3D structures (contains Gene Ontology, Enzyme Classification, Protein Family annotations, etc.). 
 * `TMAlign <https://zhanggroup.org/TM-align/>`_: curated benchmark dataset for protein-protein simlarity computations. 
+* `PDBBind <http://www.pdbbind.org.cn/index.php/>`_: curated dataset of biomolecular complexes (protein-protein, protein-small molecule, etc.) including experimental affinity information. 
 * `AlphaFold <https://www.deepmind.com/open-source/alphafold-protein-structure-database>`_: database of predicted protein 3D structures. 
 
-Drawing from these sources we provide the following datasets. Each dataset is defined by a set of proteins for which some property is known (e.g. Gene Ontology annotation):
 
-+--------+-------+-----------+--------------------+-----+------------+
-| Name   | N     | Mean Size | Property           | Val | Type       |
-|        | umber | (#        |                    | ues |            |
-|        | of    | residues) |                    |     |            |
-|        | struc |           |                    |     |            |
-|        | tures |           |                    |     |            |
-+========+=======+===========+====================+=====+============+
-| RCSBD  | 9117  | 421.945   | -                  | -   | -          |
-| ataset |       |           |                    |     |            |
-+--------+-------+-----------+--------------------+-----+------------+
-| PfamD  | 7173  | 455.147   | Protein Family     | 2   | Ca         |
-| ataset |       |           | (Pfam)             | 854 | tegorical, |
-|        |       |           |                    | (ro | Hi         |
-|        |       |           |                    | ot) | erarchical |
-+--------+-------+-----------+--------------------+-----+------------+
-| GOD    | 7811  | 442.024   | Gene Ontology (GO) | 73  | Ca         |
-| ataset |       |           |                    | (ro | tegorical, |
-|        |       |           |                    | ot) | Hi         |
-|        |       |           |                    |     | erarchical |
-+--------+-------+-----------+--------------------+-----+------------+
-| ECD    | 1864  | 587.329   | Enzyme             | 633 | C          |
-| ataset |       |           | Classification     |     | ategorical |
-|        |       |           | (``EC``)           |     |            |
-+--------+-------+-----------+--------------------+-----+------------+
-| PD     | 5316  | 428.289   | Small Mol. Binding | 2   | Binary     |
-| BBindR |       |           | Site               |     |            |
-| efined |       |           | (residue-level)    |     |            |
-+--------+-------+-----------+--------------------+-----+------------+
-| TMSc   | 200   | 247.29    | TM Score           | [0  | Re         |
-| oreBen |       |           |                    | -1] | al-valued, |
-| chmark |       |           |                    |     | Pairwise   |
-+--------+-------+-----------+--------------------+-----+------------+
+Drawing from these sources we provide many large ML-ready `datasets <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_ organized by annotation property or structure determination method.
+
+Once a dataset is loaded, we provide several options for `representing <https://torch-pdb.readthedocs.io/en/latest/modules/representations.html>`_ the raw atomic coordinates into graphs, point clouds, and voxels (surfaces coming soon).
+
+Go to `quickstart <https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html>`_ guide to get started.
+
+Source code is hosted on `GitHub <https://github.com/BorgwardtLab/torch-pdb>`_.
+
+We welcome contributions and bug reports through issues and pull requests.
+
+Who is torch-pdb for?
+---------------------
+
+``torch-pdb`` is intended for computational biologists and machine learning resarchers who need quick access to ML-ready curated datasets. To our knowledge, this is the largest repository of stready to use datasets with rich property annotations. Going beyond experimental structures, this is also making AlphaFold predicted structures for SwissProt and over a dozen organism proteomes. 
+
 
 .. toctree::
    :glob:
@@ -57,6 +38,9 @@ Drawing from these sources we provide the following datasets. Each dataset is de
    :caption: Notes
 
    notes/installation
+   notes/quickstart
+   notes/datastats
+   notes/contributing
 
 
 .. toctree::
@@ -65,6 +49,7 @@ Drawing from these sources we provide the following datasets. Each dataset is de
    :caption: Package Reference
 
    modules/datasets
+   modules/representations
    modules/utils
 
 

@@ -9,12 +9,12 @@
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.torch-pdb)
 
 
-# `torch-pdb`: torch-geometric datasets built from the PDB
-
 ![](images/torch-pdb.png)
 
-This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/).
-After installing, datasets can be passed directly to torch loaders for model training.
+# `torch-pdb`: the largest repository of ML-ready protein 3D structure datasets
+
+This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
+After installing, datasets can be passed directly to ML loaders for model training.
 
 
 | name                                           |   num_proteins |   avg size (# residues) | property                                | values      | type                      |
@@ -62,34 +62,7 @@ $ cd torch-pdb
 $ pip install .
 ```
 
-## Quickstart
+### Usage
 
+See the [quickstart](https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html) guide on our [documentation](https://torch-pdb.readthedocs.io/en/latest/index.html) site to get started.
 
-```python
->>> from pdb_pyg.datasets import PDBBindRefined
-
->>> dataset = PDBBindRefined(name='pdbbind')
->>> d[0]
-Data(edge_index=[2, 512], chain_id=[257], residue_idx=[257], residue=[257], residue_name=[257], residue_number=[257], residue_position=[257], coord=[257, 3], aa_idx=[257, 553], bond_type=[512], num_nodes=257, datapath='/tmp/var/test/raw/6ugp/6ugp_protein.pdb', name='6ugp')
-```
-
-## Datasets
-
-This is a summary of available datasets.
-
-
-## Graph Building
-
-You can customize the way graphs are built grom protein 3D structures with the following arguments to the dataset constructors:
-
-
-*  `node_type (str)`: Currently only `residue` is supported.
-*  `neighbor_type (str)`: We support `knn` and `radius`
-*  `knn (int)`: Number of nearest neighbor residues to connect with an edge.
-
-
-```python
-from pdb_pyg.datasets import PDBBindRefined
-
-dataset = PDBBindRefined(name='pdbbind', node_type='residue')
-```
