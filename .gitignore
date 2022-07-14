@@ -5,6 +5,7 @@ TMalign
 data/
 release/
 venv/
+docsvenv/
 test.py
 .nfs*
 

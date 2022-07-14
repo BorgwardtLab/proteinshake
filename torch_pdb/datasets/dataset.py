@@ -18,7 +18,7 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 
 class TorchPDBDataset():
-    """ Base dataset class. Holds the logic for downloading and parsing .pdb files.
+    """ Base dataset class. Holds the logic for downloading and parsing PDB files.
 
     Parameters
     ----------
@@ -55,11 +55,11 @@ class TorchPDBDataset():
         self.proteins = load(f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def download_limit(self):
-        """ Used only in testing, where this method is mock.patched to a small number.
+        """ Used only in testing, where this method is mock.patched to a small number. Default None.
 
         Returns
         -------
-        None
+        int
             The limit to be applied to the number of downloaded/parsed files.
         """
         return None

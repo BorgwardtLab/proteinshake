@@ -1,6 +1,6 @@
 import os
 from tqdm import tqdm
-from torch_pdb.utils import checkpoint, one_hot
+from torch_pdb.utils import checkpoint, one_hot, compose_embeddings
 
 class PointDataset():
     """ Point cloud representation of a protein structure dataset.
@@ -16,8 +16,13 @@ class PointDataset():
 
     def __init__(self, root, proteins, embedding=one_hot):
         self.root = root
-        self.embedding = embedding
-        self.name = f'emb_{embedding.__name__}'
+        if type(embedding) == list:
+            self.embedding = compose_embeddings(embedding)
+            emb_names = '_'.join([e.__name__ for e in embedding])
+            self.name = f'emb_{emb_names}'
+        else:
+            self.embedding = embedding
+            self.name = f'emb_{embedding.__name__}'
         self.proteins = self.convert(proteins)
 
     def protein2point(self, protein):
