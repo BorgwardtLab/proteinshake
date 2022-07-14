@@ -3,23 +3,36 @@ Quickstart
 
 To get started, follow the `installation instructions <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_.
 
-Loading a dataset is a one-liner. Here we download the set of experimentally-validated structures that have a known Gene-Ontology classification:
+Loading a dataset is a one-liner, consisting of three parts:
+1. Choosing a dataset (e.g. AlphaFold or RCSB)
+2. Converting proteins to a representation (graphs, point clouds, or voxels)
+3. Loading them to your favorite framework (pyg, torch, dgl, tf, nx, np)
 
 .. code-block:: python
 
   from torch_pdb.datasets import GODataset
-  proteins = GODataset(root="/tmp/var")
+  proteins = GODataset(root="./data").to_graph(k=5).pyg()
 
-This will fetch the protein coordinates and annotations.
+The above line takes a dataset with proteins annotated with Gene Ontology terms and transforms them to graphs with 5 neighbors. They are then loaded into a pytorch geometric dataset.
 
-To use this dataset in a PyTorch model, we need to choose a way of encoding the raw coordinates into a data structure.
-
-Here, we choose a residue graph, see `this page <https://torch-pdb.readthedocs.io/en/latest/modules/representations.html>`_ for a complete list of available data representations.
+Some other examples:
 
 .. code-block:: python
 
-   from torch_pdb.representations import GraphDataset
+  # a graph dataset with epsilon-neighborhood graphs with radius 8 Angstrom, in DGL
+  proteins = GODataset(root="./data").to_graph(eps=8).dgl()
 
-   graph_data = GraphDataset(root='/tmp/var', proteins=proteins.proteins)
+  # a point cloud dataset, in tensorflow
+  proteins = GODataset(root="./data").to_point().tf()
 
+  # a voxel dataset with a voxel size of 10 Angstrom, in torch
+  proteins = GODataset(root="./data").to_voxel(size=10).torch()
 
+You can arbitrarily combine datasets, representations and frameworks.
+
+The resulting dataset you can use like any other dataset of your framework. In the case of pytorch-geometric for example:
+
+.. code-block:: python
+
+  from torch_geometric.loader import DataLoader
+  loader = DataLoader(proteins, batch_size=32)
