@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from joblib import Parallel, delayed
 
-from torch_pdb.utils import download_url, save, load
+from torch_pdb.utils import download_url, save, load, unzip_file
 from torch_pdb.representations import GraphDataset, PointDataset, VoxelDataset
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -52,7 +52,7 @@ class TorchPDBDataset():
         self.check_arguments_same_as_hosted()
         self._download()
         self.parse()
-        self.proteins = load(f'{self.root}/{self.__class__.__name__}.json.gz')
+        self.proteins = load(f'{self.root}/{self.__class__.__name__}.json')
 
     def download_limit(self):
         """ Used only in testing, where this method is mock.patched to a small number. Default None.
@@ -148,6 +148,7 @@ class TorchPDBDataset():
     def _download(self):
         """ Helper function to prepare the download. Switches between precomputed and raw download. Creates necessary subdirectories.
         """
+        os.makedirs(f'{self.root}', exist_ok=True)
         if self.use_precomputed:
             self.download_precomputed()
         else:
@@ -161,20 +162,22 @@ class TorchPDBDataset():
         """ Downloads the precomputed dataset from torch-pdb.
         """
         os.makedirs(f'{self.root}', exist_ok=True)
-        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
             download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.json.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
         """
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
             return
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
         #proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
         print(f'Filtered {before-len(proteins)} proteins.')
-        save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
+        save(proteins, f'{self.root}/{self.__class__.__name__}.json')
 
     def parse_pdb(self, path):
         """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Should return `None` if the protein was found to be invalid.

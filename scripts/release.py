@@ -16,6 +16,7 @@ How to add a new dataset to the release pipeline:
 
 import os, shutil, argparse
 from torch_pdb.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from torch_pdb.utils import zip_file
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
@@ -40,6 +41,8 @@ for Dataset in [RCSBDataset, ECDataset, GODataset, PfamDataset, PDBBindRefined, 
     # create dataset
     ds = Dataset(root=f'{SCRATCH}/release/{name}', use_precomputed=False, n_jobs=n_jobs)
     print('Length:', len(ds.proteins))
+    print('Compressing...')
+    zip_file(f'{SCRATCH}/release/{name}/{name}.json')
     # delete to free memory
     del ds
     # copy from scratch to target
@@ -65,6 +68,8 @@ for organism in AF_DATASET_NAMES.keys():
     print('AlphaFoldDataset', organism)
     ds = AlphaFoldDataset(root=f'{SCRATCH}/release/AlphaFoldDataset_{organism}', organism=organism, use_precomputed=False, n_jobs=n_jobs)
     print('Length:', len(ds.proteins))
+    print('Compressing...')
+    zip_file(f'{SCRATCH}/release/AlphaFoldDataset_{organism}/AlphaFoldDataset.json')
     del ds
     if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/AlphaFoldDataset_{organism}.json.gz'):
         print('Copying...')
