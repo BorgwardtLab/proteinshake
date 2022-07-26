@@ -52,7 +52,11 @@ class GraphDataset():
         if self.construction == 'eps':
             adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)
         elif self.construction == 'knn':
-            adj = kneighbors_graph(protein['coords'], n_neighbors=self.k, mode=mode)
+            # reduce k if protein is smaller than self.k
+            n_neighbors = min(len(protein['residue_index']), self.k)
+            adj = kneighbors_graph(protein['coords'],
+                                   n_neighbors=n_neighbors,
+                                   mode=mode)
         return (nodes, adj)
 
     @checkpoint('{root}/processed/graph/{name}.pkl')

@@ -34,6 +34,8 @@ class TorchPDBDataset():
         If `True`, will discard proteins whose primary sequence is not identical with the sequence of amino acids in the structure. This can happen if the structure is not complete (e.g. for parts that could not be crystallized).
     n_jobs: int, default 1
         The number of jobs for downloading and parsing files. It is recommended to increase the number of jobs with `use_precomputed=False`.
+    min_size: int, default 10
+        Proteins smaller than min_size residues will be skipped.
     """
     def __init__(self,
             root                = 'data',
@@ -42,10 +44,12 @@ class TorchPDBDataset():
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
+            min_size            = 10
             ):
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
         self.root = root
+        self.min_size= min_size
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
@@ -252,6 +256,9 @@ class TorchPDBDataset():
         bool
             Whether or not the DataFrame is valid.
         """
+        print("Validating...")
+        if len(df['residue_index']) < self.min_size:
+            return False
         # check if single chain protein
         if self.only_single_chain and len(df['chain_id'].unique()) > 1:
             return False
