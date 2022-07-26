@@ -256,7 +256,6 @@ class TorchPDBDataset():
         bool
             Whether or not the DataFrame is valid.
         """
-        print("Validating...")
         if len(df['residue_index']) < self.min_size:
             return False
         # check if single chain protein
