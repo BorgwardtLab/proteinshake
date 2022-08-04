@@ -1,14 +1,14 @@
-torch_pdb.utils
+proteinshake.utils
 ========================
 
-.. currentmodule:: torch_pdb.utils
+.. currentmodule:: proteinshake.utils
 
 .. autosummary::
     :nosignatures:
-    {% for cls in torch_pdb.utils.classes %}
+    {% for cls in proteinshake.utils.classes %}
       {{ cls }}
     {% endfor %}
 
-.. automodule:: torch_pdb.utils
+.. automodule:: proteinshake.utils
     :members:
     :exclude-members: download, process, processed_file_names, raw_file_names, num_classes, get, get_raw_files, get_id_from_filename

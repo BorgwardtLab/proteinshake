@@ -3,8 +3,8 @@ import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
-from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import download_url
+from proteinshake.datasets import TorchPDBDataset
+from proteinshake.utils import download_url
 
 class RCSBDataset(TorchPDBDataset):
     """ Non-redundant structures taken from RCSB Protein Databank.

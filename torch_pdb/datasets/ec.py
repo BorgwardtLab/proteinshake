@@ -1,6 +1,6 @@
 import json
 
-from torch_pdb.datasets import RCSBDataset
+from proteinshake.datasets import RCSBDataset
 
 class ECDataset(RCSBDataset):
     """ Proteins from RCSB for which Enzyme Classification is known.

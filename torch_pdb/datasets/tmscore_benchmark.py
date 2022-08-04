@@ -10,8 +10,8 @@ from collections import defaultdict
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import extract_tar, download_url, save, load, unzip_file
+from proteinshake.datasets import TorchPDBDataset
+from proteinshake.utils import extract_tar, download_url, save, load, unzip_file
 
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
@@ -51,7 +51,7 @@ class TMScoreBenchmark(TorchPDBDataset):
 
     .. code-block:: python
 
-        from torch_pdb.datasets import TMScoreBenchmark
+        from proteinshake.datasets import TMScoreBenchmark
 
         dataset = TMScoreBenchmark()
         protein_1, protein_2 = dataset[0].name, dataset[2].name

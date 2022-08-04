@@ -7,9 +7,9 @@ from rdkit import Chem
 from rdkit import RDLogger
 import numpy as np
 
-from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils.pdbbind import parse_pdbbind_PL_index
-from torch_pdb.utils import extract_tar, download_url
+from proteinshake.datasets import TorchPDBDataset
+from proteinshake.utils.pdbbind import parse_pdbbind_PL_index
+from proteinshake.utils import extract_tar, download_url
 
 RDLogger.DisableLog('rdApp.*') # disable warnings
 

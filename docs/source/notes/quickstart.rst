@@ -10,7 +10,7 @@ Loading a dataset is a one-liner, consisting of three parts:
 
 .. code-block:: python
 
-  from torch_pdb.datasets import GODataset
+  from proteinshake.datasets import GODataset
   proteins = GODataset(root="./data").to_graph(k=5).pyg()
 
 The above line takes a dataset with proteins annotated with Gene Ontology terms and transforms them to graphs with 5 neighbors. They are then loaded into a pytorch geometric dataset.

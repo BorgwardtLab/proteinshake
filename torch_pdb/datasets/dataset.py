@@ -11,8 +11,8 @@ import numpy as np
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from joblib import Parallel, delayed
 
-from torch_pdb.utils import download_url, save, load, unzip_file
-from torch_pdb.representations import GraphDataset, PointDataset, VoxelDataset
+from proteinshake.utils import download_url, save, load, unzip_file
+from proteinshake.representations import GraphDataset, PointDataset, VoxelDataset
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 

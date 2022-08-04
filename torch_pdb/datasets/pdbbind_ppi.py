@@ -2,8 +2,8 @@
 import os
 import glob
 
-from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import get_interfaces, extract_tar, download_url
+from proteinshake.datasets import TorchPDBDataset
+from proteinshake.utils import get_interfaces, extract_tar, download_url
 
 class PDBBindPPI(TorchPDBDataset):
     """Protein-protein complexes with annotated interfaces. Residues

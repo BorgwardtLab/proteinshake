@@ -1,6 +1,6 @@
 import json
 
-from torch_pdb.datasets import RCSBDataset
+from proteinshake.datasets import RCSBDataset
 
 class PfamDataset(RCSBDataset):
     """ Proteins from RCSB for which the protein family (Pfam) term is known.

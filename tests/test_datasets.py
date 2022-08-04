@@ -3,8 +3,8 @@ Tests downloading the precomputed datasets and loading the data.
 '''
 
 import unittest, tempfile
-from torch_pdb.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
-from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
+from proteinshake.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDatasets(unittest.TestCase):
 

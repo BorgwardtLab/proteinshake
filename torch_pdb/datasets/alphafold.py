@@ -5,8 +5,8 @@ import glob
 
 from tqdm import tqdm
 
-from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import download_url, extract_tar, load, save, unzip_file
+from proteinshake.datasets import TorchPDBDataset
+from proteinshake.utils import download_url, extract_tar, load, save, unzip_file
 
 # A map of organism names to their download file names. See https://alphafold.ebi.ac.uk/download
 AF_DATASET_NAMES = {

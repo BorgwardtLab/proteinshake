@@ -7,7 +7,7 @@ Submodules
 torch\_pdb.datasets.dataset module
 ----------------------------------
 
-.. automodule:: torch_pdb.datasets.dataset
+.. automodule:: proteinshake.datasets.dataset
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ torch\_pdb.datasets.dataset module
 torch\_pdb.datasets.ec module
 -----------------------------
 
-.. automodule:: torch_pdb.datasets.ec
+.. automodule:: proteinshake.datasets.ec
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ torch\_pdb.datasets.ec module
 torch\_pdb.datasets.go module
 -----------------------------
 
-.. automodule:: torch_pdb.datasets.go
+.. automodule:: proteinshake.datasets.go
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ torch\_pdb.datasets.go module
 torch\_pdb.datasets.pdbbind\_refined module
 -------------------------------------------
 
-.. automodule:: torch_pdb.datasets.pdbbind_refined
+.. automodule:: proteinshake.datasets.pdbbind_refined
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ torch\_pdb.datasets.pdbbind\_refined module
 torch\_pdb.datasets.pfam module
 -------------------------------
 
-.. automodule:: torch_pdb.datasets.pfam
+.. automodule:: proteinshake.datasets.pfam
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ torch\_pdb.datasets.pfam module
 torch\_pdb.datasets.rcsb module
 -------------------------------
 
-.. automodule:: torch_pdb.datasets.rcsb
+.. automodule:: proteinshake.datasets.rcsb
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ torch\_pdb.datasets.rcsb module
 Module contents
 ---------------
 
-.. automodule:: torch_pdb.datasets
+.. automodule:: proteinshake.datasets
    :members:
    :undoc-members:
    :show-inheritance:

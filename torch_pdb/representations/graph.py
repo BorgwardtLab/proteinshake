@@ -3,7 +3,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
-from torch_pdb.utils import checkpoint, one_hot, compose_embeddings
+from proteinshake.utils import checkpoint, one_hot, compose_embeddings
 
 
 class GraphDataset():

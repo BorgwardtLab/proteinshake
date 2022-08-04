@@ -1,6 +1,6 @@
 import os
 from tqdm import tqdm
-from torch_pdb.utils import checkpoint, one_hot, compose_embeddings
+from proteinshake.utils import checkpoint, one_hot, compose_embeddings
 
 class PointDataset():
     """ Point cloud representation of a protein structure dataset.

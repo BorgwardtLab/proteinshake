@@ -7,13 +7,13 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   torch_pdb.datasets
-   torch_pdb.utils
+   proteinshake.datasets
+   proteinshake.utils
 
 Module contents
 ---------------
 
-.. automodule:: torch_pdb
+.. automodule:: proteinshake
    :members:
    :undoc-members:
    :show-inheritance:

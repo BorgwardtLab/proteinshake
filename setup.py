@@ -21,7 +21,7 @@ test_requires = [
 ]
 
 setup(
-    name='torch_pdb',
+    name='proteinshake',
     version=__version__,
     description='PyTorch datasets built from 3D protein structures.',
     author = "Tim Kucera, Carlos Oliver, Leslie O'Bray, Dexiong Chen, Karsten Borgwardt",

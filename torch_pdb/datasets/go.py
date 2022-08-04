@@ -1,6 +1,6 @@
 import json
 
-from torch_pdb.datasets import RCSBDataset
+from proteinshake.datasets import RCSBDataset
 
 class GODataset(RCSBDataset):
     """ Proteins from RCSB for which the Gene Ontology (GO) term is known.
