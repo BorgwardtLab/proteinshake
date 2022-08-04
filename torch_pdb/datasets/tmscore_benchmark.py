@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import extract_tar, download_url, save, load
+from torch_pdb.utils import extract_tar, download_url, save, load, unzip_file
 
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
@@ -83,6 +83,8 @@ class TMScoreBenchmark(TorchPDBDataset):
         super().download_precomputed()
         if self.use_precomputed:
             download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tmalign.json.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/tmalign.json.gz')
 
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
@@ -108,8 +110,8 @@ class TMScoreBenchmark(TorchPDBDataset):
         dict
             RMSD between all pairs of proteins as a dictionary.
         """
-        if os.path.exists(f'{self.root}/tmalign.json.gz'):
-            return load(f'{self.root}/tmalign.json.gz')
+        if os.path.exists(f'{self.root}/tmalign.json'):
+            return load(f'{self.root}/tmalign.json')
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 

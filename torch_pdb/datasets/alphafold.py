@@ -6,7 +6,7 @@ import glob
 from tqdm import tqdm
 
 from torch_pdb.datasets import TorchPDBDataset
-from torch_pdb.utils import download_url, extract_tar, load, save
+from torch_pdb.utils import download_url, extract_tar, load, save, unzip_file
 
 # A map of organism names to their download file names. See https://alphafold.ebi.ac.uk/download
 AF_DATASET_NAMES = {
@@ -60,18 +60,20 @@ class AlphaFoldDataset(TorchPDBDataset):
 
     def download_precomputed(self):
         # overloads the parent method to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
             return
         def _download(organism):
             download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')
         if type(self.organism) == str:
             _download(self.organism)
-            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.json.gz', f'{self.root}/{self.__class__.__name__}.json.gz')
+            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.json', f'{self.root}/{self.__class__.__name__}.json')
         elif type(self.organism) == list:
             _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')]
-            save(proteins, f'{self.root}/{self.__class__.__name__}.json.gz')
-            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz') for organism in self.organism]
+            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.json')]
+            save(proteins, f'{self.root}/{self.__class__.__name__}.json')
+            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.json') for organism in self.organism]
 
 
     def download(self):

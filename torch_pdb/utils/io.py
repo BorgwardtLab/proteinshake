@@ -7,6 +7,7 @@ import tarfile
 import pickle
 import json
 import gzip
+import shutil
 import requests
 from tqdm import tqdm
 
@@ -54,6 +55,35 @@ def load(path):
             obj = pickle.load(handle)
     return obj
 
+def zip_file(path):
+    """ Zips a file.
+
+    Parameters
+    ----------
+    path:
+        The path to the file.
+
+    """
+    with open(path, 'rb') as f_in:
+        with gzip.open(path+'.gz', 'wb') as f_out:
+            f_out.writelines(f_in)
+
+def unzip_file(path):
+    """ Unzips a .gz file.
+
+    Parameters
+    ----------
+    path:
+        The path to the .gz file.
+
+    """
+    assert path.endswith('.gz')
+    with gzip.open(path, 'rb') as f_in:
+        with open(path[:-3], 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+
+
 def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     """ Downloads a file from an url. If `out_path` is a directory, the file will be saved under the url basename.
 
@@ -70,7 +100,7 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
 
     """
     file_name = os.path.basename(url)
-    if os.path.isdir(out_path):
+    if os.path.isdir(out_path) or out_path.endswith('/'):
         out_path += '/'+file_name
     r = requests.get(url, stream=True)
     r.raise_for_status()
