@@ -1,10 +1,10 @@
 [pypi-url]: https://pypi.org/project/proteinshake
 
-![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/torch-pdb/badge/?version=latest)](https://torch-pdb.readthedocs.io/en/latest/?badge=latest)
+![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/proteinshake/badge/?version=latest)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version][pypi-img]][pypi-url]
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/torch-pdb/main/LICENSE)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.torch-pdb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
 # `proteinshake`: the largest repository of ML-ready protein 3D structure datasets
 
@@ -59,11 +59,11 @@ $ pip install .
 
 ### Usage
 
-See the [quickstart](https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html) guide on our [documentation](https://torch-pdb.readthedocs.io/en/latest/index.html) site to get started.
+See the [quickstart](https://proteinshake.readthedocs.io/en/latest/notes/quickstart.html) guide on our [documentation](https://proteinshake.readthedocs.io/en/latest/index.html) site to get started.
 
 ### Licenses
 
-We make our code available under the [MIT License](https://github.com/BorgwardtLab/torch-pdb/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+We make our code available under the [MIT License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 
 We obtained and modified data from the following sources:
 
