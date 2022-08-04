@@ -1,5 +1,3 @@
-[pypi-img]: https://img.shields.io/pypi/v/torch-pdb
-
 [pypi-url]: https://pypi.org/project/torch-pdb
 
 ![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
@@ -8,10 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/torch-pdb/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.torch-pdb)
 
-
-![](images/torch-pdb.png)
-
-# `torch-pdb`: the largest repository of ML-ready protein 3D structure datasets
+# `proteinshake`: the largest repository of ML-ready protein 3D structure datasets
 
 This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
 After installing, datasets can be passed directly to ML loaders for model training.
@@ -48,7 +43,7 @@ After installing, datasets can be passed directly to ML loaders for model traini
 
 
 ```
-$ pip install torch-pdb
+$ pip install proteinshake
 ```
 
 Note: ensure that you are using the correct versions of `torch-[scatter,sparse]` according to your hardware and cuda version. See [this](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html#installation-via-pip-wheels) page for more info.
@@ -57,8 +52,8 @@ Note: ensure that you are using the correct versions of `torch-[scatter,sparse]`
 ### From source
 
 ```
-$ git clone https://github.com/BorgwardtLab/torch-pdb
-$ cd torch-pdb
+$ git clone https://github.com/BorgwardtLab/proteinshake
+$ cd proteinshake
 $ pip install .
 ```
 
