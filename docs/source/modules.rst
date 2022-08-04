@@ -1,7 +1,7 @@
-torch_pdb
+proteinshake
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   torch_pdb
+   proteinshake

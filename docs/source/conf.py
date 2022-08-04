@@ -1,6 +1,6 @@
 import datetime
 
-import torch_pdb
+import proteinshake
 
 author = "Kucera, Oliver, O'Bray, Chen"
 project = 'torch-pdb'
@@ -35,7 +35,7 @@ intersphinx_mapping = {
 
 def setup(app):
     def rst_jinja_render(app, _, source):
-        rst_context = {'torch_pdb': torch_pdb}
+        rst_context = {'proteinshake': proteinshake}
         source[0] = app.builder.templates.render_string(source[0], rst_context)
 
     app.connect('source-read', rst_jinja_render)

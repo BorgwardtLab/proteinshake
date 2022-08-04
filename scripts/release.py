@@ -5,7 +5,7 @@ How to generate a new release:
 1. run release.py
 2. make a new release on GitHub, attach the .json.gz file of each dataset
 3. tag it after date of download, like '12JUL2022'
-4. change the default argument 'release' in torch_pdb.datasets.dataset.TorchPDBDataset to the new release tag
+4. change the default argument 'release' in proteinshake.datasets.dataset.TorchPDBDataset to the new release tag
 
 How to add a new dataset to the release pipeline:
 1. import the dataset class
@@ -15,8 +15,8 @@ How to add a new dataset to the release pipeline:
 '''
 
 import os, shutil, argparse
-from torch_pdb.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
-from torch_pdb.utils import zip_file
+from proteinshake.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
+from proteinshake.utils import zip_file
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
@@ -59,8 +59,8 @@ if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/tmalign.json.gz'):
 ###################
 # AlphaFold Datasets
 ###################
-from torch_pdb.datasets.alphafold import AF_DATASET_NAMES
-from torch_pdb.datasets import AlphaFoldDataset
+from proteinshake.datasets.alphafold import AF_DATASET_NAMES
+from proteinshake.datasets import AlphaFoldDataset
 
 # create one dataset for each organism
 for organism in AF_DATASET_NAMES.keys():

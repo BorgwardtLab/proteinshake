@@ -7,7 +7,7 @@ Submodules
 torch\_pdb.utils.embeddings module
 ----------------------------------
 
-.. automodule:: torch_pdb.utils.embeddings
+.. automodule:: proteinshake.utils.embeddings
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ torch\_pdb.utils.embeddings module
 torch\_pdb.utils.pdbbind module
 -------------------------------
 
-.. automodule:: torch_pdb.utils.pdbbind
+.. automodule:: proteinshake.utils.pdbbind
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ torch\_pdb.utils.pdbbind module
 torch\_pdb.utils.ppi module
 ---------------------------
 
-.. automodule:: torch_pdb.utils.ppi
+.. automodule:: proteinshake.utils.ppi
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ torch\_pdb.utils.ppi module
 Module contents
 ---------------
 
-.. automodule:: torch_pdb.utils
+.. automodule:: proteinshake.utils
    :members:
    :undoc-members:
    :show-inheritance:
