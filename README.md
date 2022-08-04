@@ -1,4 +1,4 @@
-[pypi-url]: https://pypi.org/project/torch-pdb
+[pypi-url]: https://pypi.org/project/proteinshake
 
 ![test workflow](https://github.com/BorgwardtLab/torch-pdb/actions/workflows/build.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/torch-pdb/badge/?version=latest)](https://torch-pdb.readthedocs.io/en/latest/?badge=latest)

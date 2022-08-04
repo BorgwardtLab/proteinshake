@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-__version__ = '0.1.0'
+__version__ = '0.0.1'
 URL = 'https://torch-pdb.readthedocs.io/en/latest/index.html'
 
 install_requires = [
