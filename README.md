@@ -2,7 +2,7 @@
 
 ![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/proteinshake/badge/?version=latest)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version][pypi-img]][pypi-url]
+![PyPI](https://img.shields.io/pypi/v/proteinshake)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
