@@ -3,7 +3,7 @@ import datetime
 import proteinshake
 
 author = "Kucera, Oliver, O'Bray, Chen"
-project = 'torch-pdb'
+project = 'proteinshake'
 version = "0.0.1"
 copyright = f'{datetime.datetime.now().year}, {author}'
 

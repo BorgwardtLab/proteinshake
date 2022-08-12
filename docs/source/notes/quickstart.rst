@@ -30,9 +30,9 @@ Some other examples:
 
 You can arbitrarily combine datasets, representations and frameworks.
 
-The resulting dataset you can use like any other dataset of your framework. In the case of pytorch-geometric for example:
+The resulting dataset you can use like any other dataset of your framework. In the case of proteinshake for example:
 
 .. code-block:: python
 
-  from torch_geometric.loader import DataLoader
+  from proteinshake.loader import DataLoader
   loader = DataLoader(proteins, batch_size=32)
