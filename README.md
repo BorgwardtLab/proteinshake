@@ -57,9 +57,6 @@ After installing, datasets can be passed directly to ML loaders for model traini
 $ pip install proteinshake
 ```
 
-Note: ensure that you are using the correct versions of `torch-[scatter,sparse]` according to your hardware and cuda version. See [this](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html#installation-via-pip-wheels) page for more info.
-
-
 ### From source
 
 ```
