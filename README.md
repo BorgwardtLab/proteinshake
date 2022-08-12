@@ -1,5 +1,11 @@
-[pypi-url]: https://pypi.org/project/proteinshake
 
+<p align="center">
+<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/images/proteinshake_banner.png" width="70%">
+</p>
+
+# The largest repository of ML-ready protein 3D structure datasets
+
+[pypi-url]: https://pypi.org/project/proteinshake
 ![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/proteinshake/badge/?version=latest)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/proteinshake)](https://pypi.org/project/proteinshake/)
@@ -7,11 +13,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
-<p align="center">
-<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/images/proteinshake_banner.png" width="70%">
-</p>
-
-# `proteinshake`: the largest repository of ML-ready protein 3D structure datasets
 
 This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
 After installing, datasets can be passed directly to ML loaders for model training.
