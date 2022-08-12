@@ -1,5 +1,5 @@
 proteinshake
-=========
+=============
 
 .. toctree::
    :maxdepth: 4

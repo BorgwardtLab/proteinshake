@@ -1,11 +1,11 @@
 Installation
-============
+=============
 
-``torch-pdb`` can be installed directly through PyPi.
+``proteinshake`` can be installed directly through PyPi.
 
 .. code-block:: bash
 
-  $ pip install torch-pdb
+  $ pip install proteinshake 
 
 .. note::
-   Installation depends on pre-exising installation of `pytorch` and `torch-geometric`. 
+   We do not include frameworks in the automatically installed dependencies beyond pytorch.

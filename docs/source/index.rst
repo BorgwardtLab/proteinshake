@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to torch-pdb!
+Welcome to proteinshake!
 =====================================
 
-With **torch-pdb** you can quickly load datasets of 3D biomolecular structures into your favorite framework and structure representation. 
+With **proteinshake** you can quickly load datasets of 3D biomolecular structures into your favorite framework and structure representation. 
 
 We currently collect structures from the following databases:
 
@@ -26,10 +26,10 @@ Source code is hosted on `GitHub <https://github.com/BorgwardtLab/torch-pdb>`_.
 
 We welcome contributions and bug reports through issues and pull requests.
 
-Who is torch-pdb for?
----------------------
+Who is proteinshake for?
+-------------------------
 
-``torch-pdb`` is intended for computational biologists and machine learning resarchers who need quick access to ML-ready curated datasets. To our knowledge, this is the largest repository of stready to use datasets with rich property annotations. Going beyond experimental structures, this is also making AlphaFold predicted structures for SwissProt and over a dozen organism proteomes. 
+``proteinshake`` is intended for computational biologists and machine learning resarchers who need quick access to ML-ready curated datasets. To our knowledge, this is the largest repository of stready to use datasets with rich property annotations. Going beyond experimental structures, this is also making AlphaFold predicted structures for SwissProt and over a dozen organism proteomes. 
 
 
 .. toctree::
