@@ -68,11 +68,11 @@ $ cd proteinshake
 $ pip install .
 ```
 
-### Usage
+## Usage
 
 See the [quickstart](https://proteinshake.readthedocs.io/en/latest/notes/quickstart.html) guide on our [documentation](https://proteinshake.readthedocs.io/en/latest/index.html) site to get started.
 
-### Licenses
+## Legal Note
 
 <!---
 We make our code available under the [MIT License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
