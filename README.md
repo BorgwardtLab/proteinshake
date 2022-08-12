@@ -7,6 +7,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
+![](/images/proteinshake_banner.png)
+
 # `proteinshake`: the largest repository of ML-ready protein 3D structure datasets
 
 This is a collection of torch-geometric datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
