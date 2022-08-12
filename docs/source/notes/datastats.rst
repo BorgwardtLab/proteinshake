@@ -1,5 +1,5 @@
 Dataset Statistics
-============
+==================
 
 .. list-table::
    :header-rows: 1

@@ -23,7 +23,7 @@ test_requires = [
 setup(
     name='proteinshake',
     version=__version__,
-    description='PyTorch datasets built from 3D protein structures.',
+    description='Deep learning ready datasets of 3D protein structures.',
     author = "Tim Kucera, Carlos Oliver, Leslie O'Bray, Dexiong Chen, Karsten Borgwardt",
     author_email = "tim.kucera@bsse.ethz.ch",
     url=URL,

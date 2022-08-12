@@ -3,7 +3,7 @@ import datetime
 import proteinshake
 
 author = "Kucera, Oliver, O'Bray, Chen"
-project = 'torch-pdb'
+project = 'proteinshake'
 version = "0.0.1"
 copyright = f'{datetime.datetime.now().year}, {author}'
 
@@ -17,9 +17,9 @@ extensions = [
 ]
 
 html_theme = 'pyg_sphinx_theme'
-html_logo = ('https://raw.githubusercontent.com/cgoliver/torch-pdb_sphinx_theme/'
+html_logo = ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
              'master/pyg_sphinx_theme/static/img/torch-pdb.png')
-html_favicon= ('https://raw.githubusercontent.com/cgoliver/torch-pdb_sphinx_theme/'
+html_favicon= ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
              'master/pyg_sphinx_theme/static/img/favicon.png')
 
 add_module_names = False
