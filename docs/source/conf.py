@@ -16,6 +16,8 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
+# logos
+
 html_theme = 'pyg_sphinx_theme'
 html_logo = ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
              'master/pyg_sphinx_theme/static/img/torch-pdb.png')
