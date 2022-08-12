@@ -68,7 +68,9 @@ See the [quickstart](https://proteinshake.readthedocs.io/en/latest/notes/quickst
 
 ### Licenses
 
+<!---
 We make our code available under the [MIT License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+-->
 
 We obtained and modified data from the following sources:
 
