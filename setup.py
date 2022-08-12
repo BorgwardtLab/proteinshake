@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
-__version__ = '0.0.1'
-URL = 'https://torch-pdb.readthedocs.io/en/latest/index.html'
+__version__ = '0.0.2'
+URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
 
 install_requires = [
                     'numpy',
