@@ -63,16 +63,29 @@ class GraphDataset():
     def convert(self, proteins):
         return [self.protein2graph(p) for p in tqdm(proteins, desc='Converting proteins to graphs')]
 
-    @checkpoint('{root}/processed/graph/{name}.pyg.pkl')
-    def pyg(self):
+    def pyg(self, transform=None, pre_transform=None, pre_filter=None):
         import torch
         from torch_geometric.utils import from_scipy_sparse_matrix
-        from torch_geometric.data import Data
+        from torch_geometric.data import Data, InMemoryDataset
+
         def graph2pyg(graph, info={}):
             nodes = torch.Tensor(graph[0]).float()
             edges = from_scipy_sparse_matrix(graph[1])
             return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info)
-        return [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
+        data_list = [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
+
+        class Dataset(InMemoryDataset):
+            def __init__(self, root, data_list, transform=transform, pre_transform=pre_transform, pre_filter=pre_filter):
+                super().__init__(root, transform, pre_transform, pre_filter)
+                if not os.path.exists(root):
+                    if self.pre_filter is not None:
+                        data_list = [data for data in data_list if self.pre_filter(data)]
+                    if self.pre_transform is not None:
+                        data_list = [self.pre_transform(data) for data in data_list]
+                    data, slices = self.collate(data_list)
+                    torch.save((data, slices), root)
+                self.data, self.slices = torch.load(root)
+        return Dataset(f'{self.root}/processed/graph/{self.name}.pyg', data_list)
 
     def dgl(self):
         from dgl.data import DGLDataset
