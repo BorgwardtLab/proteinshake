@@ -53,7 +53,7 @@ class GraphDataset():
             adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)
         elif self.construction == 'knn':
             # reduce k if protein is smaller than self.k
-            n_neighbors = min(len(protein['residue_index']), self.k)
+            n_neighbors = min(len(protein['coords']) - 1, self.k)
             adj = kneighbors_graph(protein['coords'],
                                    n_neighbors=n_neighbors,
                                    mode=mode)
