@@ -68,10 +68,21 @@ class GraphDataset():
         from torch_geometric.utils import from_scipy_sparse_matrix
         from torch_geometric.data import Data, InMemoryDataset
 
+        def info2pyg(info):
+            """ Try to convert info dictionary to tensor."""
+            new_info = {}
+            for k,v in info.items():
+                try:
+                    new_info[k] = torch.Tensor(v)
+                except TypeError:
+                    new_info[k] = v
+                    pass
+            return new_info
+
         def graph2pyg(graph, info={}):
             nodes = torch.Tensor(graph[0]).float()
             edges = from_scipy_sparse_matrix(graph[1])
-            return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info)
+            return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info2pyg(info))
         data_list = [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
 
         class Dataset(InMemoryDataset):
