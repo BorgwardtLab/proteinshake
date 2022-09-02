@@ -3,7 +3,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
-from proteinshake.utils import checkpoint, compose_embeddings
+from proteinshake.utils import checkpoint, compose_embeddings, residue_one_hot
 
 
 class GraphDataset():
@@ -26,7 +26,7 @@ class GraphDataset():
 
     """
 
-    def __init__(self, root, proteins, embedding=None, eps=None, k=None, weighted_edges=False):
+    def __init__(self, root, proteins, embedding=residue_one_hot, eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         self.construction = 'knn' if not k is None else 'eps'
         self.root = root
@@ -47,10 +47,7 @@ class GraphDataset():
         self.proteins = self.convert(proteins)
 
     def protein2graph(self, protein):
-        if not self.embedding is None:
-            nodes = self.embedding(protein['sequence'])
-        else:
-            nodes = np.arange(len(protein['sequence']))
+        nodes = self.embedding(protein['sequence'])
         mode = 'distance' if self.weighted_edges else 'connectivity'
         if self.construction == 'eps':
             adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)
