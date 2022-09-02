@@ -8,7 +8,12 @@ import numpy as np
 
 alphabet = 'ARNDCEQGHILKMFPSTWYV'
 
-def one_hot(sequence):
+def residue_numeric(sequence):
+    """ Compute the index of the residue
+    """
+    return np.stack([alphabet.index(aa) for aa in sequence])
+
+def residue_one_hot(sequence):
     """ Compute the one-hot encoding of a protein sequence.
 
     Parameters
