@@ -1,6 +1,6 @@
 import os
 from tqdm import tqdm
-from proteinshake.utils import checkpoint, one_hot, compose_embeddings
+from proteinshake.utils import checkpoint, residue_one_hot, compose_embeddings
 
 class PointDataset():
     """ Point cloud representation of a protein structure dataset.
@@ -14,7 +14,7 @@ class PointDataset():
 
     """
 
-    def __init__(self, root, proteins, embedding=one_hot):
+    def __init__(self, root, proteins, embedding=residue_one_hot):
         self.root = root
         if type(embedding) == list:
             self.embedding = compose_embeddings(embedding)
