@@ -65,8 +65,9 @@ class GraphDataset():
 
     def pyg(self, transform=None, pre_transform=None, pre_filter=None):
         import torch
+        from torch_geometric.data import Data
         from torch_geometric.utils import from_scipy_sparse_matrix
-        from torch_geometric.data import Data, InMemoryDataset
+        from .pyg_data import Dataset
 
         def info2pyg(info):
             """ Try to convert info dictionary to tensor."""
@@ -84,19 +85,14 @@ class GraphDataset():
             edges = from_scipy_sparse_matrix(graph[1])
             return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info2pyg(info))
         data_list = [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
+        return Dataset(f'{self.root}/processed/graph/{self.name}.pyg',
+                       data_list,
+                       transform=transform,
+                       pre_transform=pre_transform,
+                       pre_filter=pre_filter)
 
-        class Dataset(InMemoryDataset):
-            def __init__(self, root, data_list, transform=transform, pre_transform=pre_transform, pre_filter=pre_filter):
-                super().__init__(root, transform, pre_transform, pre_filter)
-                if not os.path.exists(root):
-                    if self.pre_filter is not None:
-                        data_list = [data for data in data_list if self.pre_filter(data)]
-                    if self.pre_transform is not None:
-                        data_list = [self.pre_transform(data) for data in data_list]
-                    data, slices = self.collate(data_list)
-                    torch.save((data, slices), root)
-                self.data, self.slices = torch.load(root)
-        return Dataset(f'{self.root}/processed/graph/{self.name}.pyg', data_list)
+    def dgl(self):
+        raise NotImplementedError
 
     def dgl(self):
         from dgl.data import DGLDataset
@@ -120,22 +116,23 @@ class GraphDataset():
                     self.proteins = [graph2dgl(p, info=info) for p,info in zip(proteins,info)]
                     save_graphs(path, self.proteins)
             def __getitem__(self, i):
-                return self.proteins[i]
+                    return self.proteins[i]
             def __len__(self):
-                return len(self.proteins)
+                    return len(self.proteins)
         ds = Dataset(f'{self.root}/processed/graph/{self.name}.dgl.pkl',  self.proteins, self.info)
         return ds
 
-    @checkpoint('{root}/processed/graph/{name}.nx.pkl')
-    def nx(self):
-        import networkx as nx
-        def graph2nx(graph, info={}):
-            g = nx.from_scipy_sparse_matrix(graph[1])
-            g.add_nodes_from(graph[0])
-            for key,value in info.items():
-                if type(value) == list and len(value) == len(info['sequence']):
-                    nx.set_node_attributes(g, value, key)
-                else:
-                    g.graph[key] = value
-            return g
-        return [graph2nx(p, info=info) for p,info in zip(self.proteins,self.info)]
+        @checkpoint('{root}/processed/graph/{name}.nx.pkl')
+        def nx(self):
+            import networkx as nx
+            def graph2nx(graph, info={}):
+                g = nx.from_scipy_sparse_matrix(graph[1])
+                g.add_nodes_from(graph[0])
+                for key,value in info.items():
+                    if type(value) == list and len(value) == len(info['sequence']):
+                        nx.set_node_attributes(g, value, key)
+                    else:
+                        g.graph[key] = value
+                return g
+            return [graph2nx(p, info=info) for p,info in zip(self.proteins,self.info)]
+
