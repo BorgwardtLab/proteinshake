@@ -7,7 +7,6 @@ install_requires = [
                     'numpy',
                     'scipy',
                     'biopandas',
-                    'seaborn',
                     'scikit-learn',
                     'tqdm',
                     'wget',
