@@ -21,7 +21,10 @@ class Dataset(InMemoryDataset):
         data = Data()
         for key in self.data.keys:
             item, slices = self.data[key], self.slices[key]
-            s = list(repeat(slice(None), item.dim()))
-            s[data.__cat_dim__(key, item)] = slice(slices[idx], slices[idx + 1])
-            data[key] = item[s].clone()
+            if isinstance(item, torch.Tensor):
+                s = list(repeat(slice(None), item.dim()))
+                s[data.__cat_dim__(key, item)] = slice(slices[idx], slices[idx + 1])
+                data[key] = item[s].clone()
+            else:
+                data[key] = [item[s] for s in range(slices[idx], slices[idx + 1])]
         return data
