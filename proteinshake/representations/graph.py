@@ -81,7 +81,7 @@ class GraphDataset():
             return new_info
 
         def graph2pyg(graph, info={}):
-            nodes = torch.Tensor(graph[0]).float()
+            nodes = torch.from_numpy(graph[0])
             edges = from_scipy_sparse_matrix(graph[1])
             return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info2pyg(info))
         data_list = [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]

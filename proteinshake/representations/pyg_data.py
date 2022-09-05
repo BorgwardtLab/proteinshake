@@ -1,4 +1,6 @@
 import os
+from itertools import repeat
+
 import torch
 from torch_geometric.utils import from_scipy_sparse_matrix
 from torch_geometric.data import Data, InMemoryDataset
@@ -14,3 +16,15 @@ class Dataset(InMemoryDataset):
             data, slices = self.collate(data_list)
             torch.save((data, slices), root)
         self.data, self.slices = torch.load(root)
+
+    def get(self, idx):
+        data = Data()
+        for key in self.data.keys:
+            item, slices = self.data[key], self.slices[key]
+            if isinstance(item, torch.Tensor):
+                s = list(repeat(slice(None), item.dim()))
+                s[data.__cat_dim__(key, item)] = slice(slices[idx], slices[idx + 1])
+                data[key] = item[s].clone()
+            else:
+                data[key] = [item[s] for s in range(slices[idx], slices[idx + 1])]
+        return data

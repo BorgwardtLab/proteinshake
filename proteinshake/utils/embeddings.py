@@ -11,7 +11,7 @@ alphabet = 'ARNDCEQGHILKMFPSTWYV'
 def residue_numeric(sequence):
     """ Compute the index of the residue
     """
-    return np.stack([alphabet.index(aa) for aa in sequence])
+    return np.stack([alphabet.index(aa) for aa in sequence]).astype(np.int64)
 
 def residue_one_hot(sequence):
     """ Compute the one-hot encoding of a protein sequence.
