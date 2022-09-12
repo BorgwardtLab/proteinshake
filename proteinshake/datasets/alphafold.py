@@ -79,8 +79,8 @@ class AlphaFoldDataset(TorchPDBDataset):
     def download(self):
         def _download(organism):
             os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
-            download_url(self.base_url+AF_DATASET_NAMES[organism]+'_v2.tar', f'{self.root}/raw/{organism}')
-            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v2.tar', f'{self.root}/raw/{organism}')
+            download_url(self.base_url+AF_DATASET_NAMES[organism]+'_v3.tar', f'{self.root}/raw/{organism}')
+            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v3.tar', f'{self.root}/raw/{organism}')
         if type(self.organism) == str:
             _download(self.organism)
         elif type(self.organism) == list:
