@@ -10,6 +10,32 @@ import gzip
 import shutil
 import requests
 from tqdm import tqdm
+from joblib import Parallel
+
+class ProgressParallel(Parallel):
+    """ Extends joblib's Parallel with a progress bar.
+
+    Parameters
+    ----------
+    total:
+        The total number of jobs.
+    desc:
+        A description to display.
+    """
+    def __init__(self, total=None, desc=None, *args, **kwargs):
+        self._total = total
+        self._desc = desc
+        super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        with tqdm(total=self._total, desc=self._desc) as self._pbar:
+            return Parallel.__call__(self, *args, **kwargs)
+
+    def print_progress(self):
+        if self._total is None:
+            self._pbar.total = self.n_dispatched_tasks
+        self._pbar.n = self.n_completed_tasks
+        self._pbar.refresh()
 
 def save(obj, path):
     """ Saves an object to either pickle, json, or json.gz (determined by the extension in the file name).
