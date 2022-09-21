@@ -305,7 +305,7 @@ class TorchPDBDataset():
 
 
     def parse_pdb(self, path):
-        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Should return `None` if the protein was found to be invalid.
+        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
 
         Parameters
         ----------
@@ -320,8 +320,21 @@ class TorchPDBDataset():
         df = self.pdb2df(path)
         if not self.validate(df):
             return None
+        protein = {
+            'ID': self.get_id_from_filename(os.path.basename(path)),
+            'sequence': ''.join(df['residue_name']),
+            'atom_number': df['residue_number'].tolist(),
+            'atom_type': df['residue_type'].tolist(),
+            'residue_number': df['residue_number'].tolist(),
+            'residue_type': df['residue_type'].tolist(),
+            'x': df['x'].tolist(),
+            'y': df['y'].tolist(),
+            'z': df['z'].tolist(),
+        }
+        if not self.only_single_chain: # only include chains if multi-chain protein
+            protein['chain_id'] = df['chain_id'].tolist()
         # separate into atom, residue and protein dataframe
-        atom_df = df[['atom_type','atom_number','residue_number','x','y','z']].reset_index(drop=True)
+        '''atom_df = df[['atom_type','atom_number','residue_number','x','y','z']].reset_index(drop=True)
         residue_df = df[df['atom_type'] == 'CA'][['residue_type','residue_number','x','y','z','chain_id']].reset_index(drop=True)
         if self.only_single_chain: # only include chains if multi-chain protein
             residue_df.drop('chain_id', axis=1, inplace=True)
@@ -329,10 +342,10 @@ class TorchPDBDataset():
             'protein_id': [self.get_id_from_filename(os.path.basename(path))],
             'sequence': [''.join(residue_df['residue_type'].tolist())],
             'length': [len(residue_df)],
-        })
+        })'''
         # add attributes
-        protein = self.add_protein_attributes(atom_df, residue_df, protein_df)
-        return atom_df, residue_df, protein_df
+        protein = self.add_protein_attributes(protein)
+        return protein
 
     def pdb2df(self, path):
         """ Parses a single PDB file to a DataFrame (with biopandas). Also deals with multiple structure models in a PDB (e.g. from NMR) by only selecting the first model.
