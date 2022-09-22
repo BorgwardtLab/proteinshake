@@ -44,7 +44,8 @@ class Dataset():
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
-            minimum_length      = 10
+            minimum_length      = 10,
+            exclude_ids         = []
             ):
         self.repository_url = 'https://github.com/BorgwardtLab/torch-pdb/releases/download'
         self.n_jobs = n_jobs
@@ -54,6 +55,7 @@ class Dataset():
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
+        self.exclude_ids = exclude_ids
         self.check_arguments_same_as_hosted()
         self.start_download()
         self.parse()
@@ -216,13 +218,16 @@ class Dataset():
         dict
             A protein object.
         """
+        id = self.get_id_from_filename(os.path.basename(path))
+        if id in self.exclude_ids:
+            return None
         atom_df = self.pdb2df(path)
         residue_df = atom_df[atom_df['atom_type'] == 'CA']
         if not self.validate(atom_df):
             return None
         protein = {
             'protein': {
-                'ID': self.get_id_from_filename(os.path.basename(path)),
+                'ID': id,
                 'sequence': ''.join(residue_df['residue_type']),
             },
             'residue': {
