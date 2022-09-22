@@ -250,6 +250,10 @@ class Dataset():
         if not self.only_single_chain: # only include chains if multi-chain protein
             protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
             protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
+        # add pLDDT from AlphaFold
+        if self.__class__.__name__ == 'AlphaFoldDataset':
+            protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
+            protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
         # add attributes
         protein = self.add_protein_attributes(protein)
         return protein
@@ -294,7 +298,7 @@ class Dataset():
             'y_coord': 'y',
             'z_coord': 'z',
         })
-        return df[['atom_type','residue_type','x','y','z','chain_id','atom_number','residue_number']]
+        return df
 
     def validate(self, df):
         """ Performs several sanity checks for validity of the protein DataFrame.
