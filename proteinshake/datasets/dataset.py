@@ -193,7 +193,7 @@ class Dataset():
         self.download_complete()
 
     def download_precomputed(self, resolution='residue'):
-        """ Downloads the precomputed dataset from the proteinshake repository.
+        """ Downloads the precomputed dataset from the ProteinShake repository.
         """
         if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
             download_url(f'{self.repository_url}/{self.release}/{self.__class__.__name__}.{resolution}.avro', f'{self.root}')
