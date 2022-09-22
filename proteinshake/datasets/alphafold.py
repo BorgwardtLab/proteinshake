@@ -5,7 +5,7 @@ import glob
 
 from tqdm import tqdm
 
-from proteinshake.datasets import TorchPDBDataset
+from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url, extract_tar, load, save, unzip_file
 
 # A map of organism names to their download file names. See https://alphafold.ebi.ac.uk/download
@@ -29,7 +29,7 @@ AF_DATASET_NAMES = {
     'swissprot': 'swissprot_pdb',
 }
 
-class AlphaFoldDataset(TorchPDBDataset):
+class AlphaFoldDataset(Dataset):
     """ 3D structures predicted from sequence by AlphaFold.
 
     Requires the `organism` name to be specified. Can be a single organism, or a list of organism names, in which case the data will be concatenated. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
@@ -64,7 +64,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
             return
         def _download(organism):
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
+            download_url(f'{self.repository_url}/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
             print('Unzipping...')
             unzip_file(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')
         if type(self.organism) == str:

@@ -2,7 +2,7 @@ import json
 
 from proteinshake.datasets import RCSBDataset
 
-class ECDataset(RCSBDataset):
+class EnzymeCommissionDataset(RCSBDataset):
     """ Proteins from RCSB for which Enzyme Classification is known.
     Each item in this dataset has the attribute `EC` which is a string
     identifier.

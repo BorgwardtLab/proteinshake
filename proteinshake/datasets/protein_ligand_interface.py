@@ -7,13 +7,13 @@ from rdkit import Chem
 from rdkit import RDLogger
 import numpy as np
 
-from proteinshake.datasets import TorchPDBDataset
+from proteinshake.datasets import Dataset
 from proteinshake.utils.pdbbind import parse_pdbbind_PL_index
 from proteinshake.utils import extract_tar, download_url
 
 RDLogger.DisableLog('rdApp.*') # disable warnings
 
-class PDBBindRefined(TorchPDBDataset):
+class ProteinLigandInterfaceDataset(Dataset):
     """Proteins bound to small molecules with binding site and affinity information. Residues
     in each protein are marked with a boolean `binding_site` to indicate
     residues defined to be inside the binding pocket.

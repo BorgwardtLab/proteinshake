@@ -2,10 +2,10 @@
 import os
 import glob
 
-from proteinshake.datasets import TorchPDBDataset
+from proteinshake.datasets import Dataset
 from proteinshake.utils import get_interfaces, extract_tar, download_url
 
-class PDBBindPPI(TorchPDBDataset):
+class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes with annotated interfaces. Residues
     in each protein are marked with a boolean `is_interface` to indicate
     residues defined to belong to the interface of two protein chains.

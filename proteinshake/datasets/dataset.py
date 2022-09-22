@@ -17,7 +17,7 @@ from proteinshake.utils import download_url, save, load, unzip_file, ProgressPar
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
 
-class TorchPDBDataset():
+class Dataset():
     """ Base dataset class. Holds the logic for downloading and parsing PDB files.
 
     Parameters
@@ -25,7 +25,7 @@ class TorchPDBDataset():
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
     use_precomputed: bool, default True
-        If `True`, will download the processed dataset from torch-pdb (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
+        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
     release: str, default '12JUL2022'
         The GitHub tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. Latest (default) is recommended.
     only_single_chain: bool, default False
@@ -87,7 +87,7 @@ class TorchPDBDataset():
             if v.default is not inspect.Parameter.empty
             and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
         }
-        if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
+        if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
             super_args = {
                 k: v.default
@@ -143,7 +143,7 @@ class TorchPDBDataset():
         Parameters
         ----------
         protein: dict
-            A protein object with `ID`, `sequence`, `coords` and other features. See `TorchPDBDataset.parse_pdb()` for details.
+            A protein object with `ID`, `sequence`, `coords` and other features. See `Dataset.parse_pdb()` for details.
 
         Returns
         -------

@@ -10,7 +10,7 @@ from collections import defaultdict
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-from proteinshake.datasets import TorchPDBDataset
+from proteinshake.datasets import Dataset
 from proteinshake.utils import extract_tar, download_url, save, load, unzip_file
 
 # short-term absolute path hack for TMalign
@@ -43,7 +43,7 @@ def tmalign_wrapper(pdb1, pdb2):
     return float(TM1), float(TM2), float(RMSD)
 
 
-class TMScoreBenchmark(TorchPDBDataset):
+class TMAlignDataset(Dataset):
     """Proteins with TM scores between all pairs.
     This dataset contains 200 proteins from the TMalign benchmark dataset.
     The dataset has a global attribute `tm_score` which is a dictionary
@@ -82,7 +82,7 @@ class TMScoreBenchmark(TorchPDBDataset):
     def download_precomputed(self):
         super().download_precomputed()
         if self.use_precomputed:
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/tmalign.json.gz', f'{self.root}')
+            download_url(f'{self.repository_url}/{self.release}/tmalign.json.gz', f'{self.root}')
             print('Unzipping...')
             unzip_file(f'{self.root}/tmalign.json.gz')
 

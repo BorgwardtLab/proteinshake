@@ -2,7 +2,7 @@ import json
 
 from proteinshake.datasets import RCSBDataset
 
-class GODataset(RCSBDataset):
+class GeneOntologyDataset(RCSBDataset):
     """ Proteins from RCSB for which the Gene Ontology (GO) term is known.
     Each protein in the dataset has a `GO` attribute which stores the path
     from the root to the leaves along the GO hierarchy.

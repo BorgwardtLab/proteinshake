@@ -1,22 +1,22 @@
-from .dataset import TorchPDBDataset
+from .dataset import Dataset
 from .rcsb import RCSBDataset
-from .ec import ECDataset
-from .go import GODataset
-from .pdbbind_refined import PDBBindRefined
-from .pdbbind_ppi import PDBBindPPI
+from .enzyme_commission import EnzymeCommissionDataset
+from .gene_ontology import GeneOntologyDataset
+from .protein_protein_interface import ProteinLigandInterfaceDataset
+from .protein_ligand_interface import ProteinProteinInterfaceDataset
 from .pfam import PfamDataset
-from .tmscore_benchmark import TMScoreBenchmark
+from .tm_align import TMAlignDataset
 from .alphafold import AlphaFoldDataset
 
 __all__ = [
-    'TorchPDBDataset',
+    'Dataset',
     'RCSBDataset',
-    'ECDataset',
-    'GODataset',
-    'PDBBindRefined',
-    'PDBBindPPI',
-    'PramDataset',
-    'TMScoreBenchmark',
+    'EnzymeCommissionDataset',
+    'GeneOntologyDataset',
+    'ProteinProteinInterfaceDataset',
+    'ProteinLigandInterfaceDataset',
+    'PfamDataset',
+    'TMAlignDataset',
     'AlphaFoldDataset'
     ]
 

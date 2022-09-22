@@ -5,7 +5,7 @@ How to generate a new release:
 1. run release.py
 2. make a new release on GitHub, attach the .json.gz file of each dataset
 3. tag it after date of download, like '12JUL2022'
-4. change the default argument 'release' in proteinshake.datasets.dataset.TorchPDBDataset to the new release tag
+4. change the default argument 'release' in proteinshake.datasets.dataset.Dataset to the new release tag
 
 How to add a new dataset to the release pipeline:
 1. import the dataset class
