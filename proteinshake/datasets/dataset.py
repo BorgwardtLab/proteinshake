@@ -16,6 +16,10 @@ from proteinshake.utils import download_url, save, load, unzip_file, ProgressPar
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
+# maps the date-format release to Zenodo identifier
+RELEASES = {
+    '22SEP2022': '1107273'
+}
 
 class Dataset():
     """ Base dataset class. Holds the logic for downloading and parsing PDB files.
@@ -40,14 +44,14 @@ class Dataset():
     def __init__(self,
             root                = 'data',
             use_precomputed     = True,
-            release             = '12JUL2022',
+            release             = '22SEP2022',
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
             minimum_length      = 10,
             exclude_ids         = []
             ):
-        self.repository_url = 'https://github.com/BorgwardtLab/torch-pdb/releases/download'
+        self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
         self.root = root
@@ -56,9 +60,12 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
-        self.check_arguments_same_as_hosted()
-        self.start_download()
-        self.parse()
+        os.makedirs(f'{self.root}', exist_ok=True)
+        if not use_precomputed:
+            self.start_download()
+            self.parse()
+        else:
+            self.check_arguments_same_as_hosted()
 
     def proteins(self, resolution='residue'):
         with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
@@ -173,7 +180,6 @@ class Dataset():
     def download_precomputed(self, resolution='residue'):
         """ Downloads the precomputed dataset from the proteinshake repository.
         """
-        os.makedirs(f'{self.root}', exist_ok=True)
         if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
             download_url(f'{self.repository_url}/{self.release}/{self.__class__.__name__}.{resolution}.avro', f'{self.root}')
             print('Unzipping...')
@@ -353,6 +359,7 @@ class Dataset():
             The dataset in graph representation.
         """
         from proteinshake.representations import GraphDataset
+        self.download_precomputed(resolution=resolution)
         return GraphDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
     def to_point(self, resolution='residue', *args, **kwargs):
@@ -364,6 +371,7 @@ class Dataset():
             The dataset in point cloud representation.
         """
         from proteinshake.representations import PointDataset
+        self.download_precomputed(resolution=resolution)
         return PointDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
     def to_voxel(self, resolution='residue', *args, **kwargs):
@@ -375,4 +383,5 @@ class Dataset():
             The dataset in voxel representation.
         """
         from proteinshake.representations import VoxelDataset
+        self.download_precomputed(resolution=resolution)
         return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)

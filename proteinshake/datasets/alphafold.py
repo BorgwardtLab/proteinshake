@@ -61,20 +61,20 @@ class AlphaFoldDataset(Dataset):
 
     def download_precomputed(self, resolution='residue'):
         # overloads the parent method to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
             return
         def _download(organism):
-            download_url(f'{self.repository_url}/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')
+            download_url(f'{self.repository_url}/{self.__class__.__name__}_{organism}.{resolution}.avro.gz', f'{self.root}')
             print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}_{organism}.json.gz')
+            unzip_file(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro.gz')
         if type(self.organism) == str:
             _download(self.organism)
-            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.json', f'{self.root}/{self.__class__.__name__}.json')
+            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.{resolution}.avro', f'{self.root}/{self.__class__.__name__}.{resolution}.avro')
         elif type(self.organism) == list:
             _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.json')]
-            save(proteins, f'{self.root}/{self.__class__.__name__}.json')
-            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.json') for organism in self.organism]
+            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro')]
+            save(proteins, f'{self.root}/{self.__class__.__name__}.{resolution}.avro')
+            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro') for organism in self.organism]
 
 
     def download(self):
