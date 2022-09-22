@@ -58,9 +58,9 @@ class AlphaFoldDataset(TorchPDBDataset):
     def get_id_from_filename(self, filename):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
 
-    def download_precomputed(self):
+    def download_precomputed(self, resolution='residue'):
         # overloads the parent method to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
             return
         def _download(organism):
             download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}_{organism}.json.gz', f'{self.root}')

@@ -16,7 +16,8 @@ __all__ = ['residue_one_hot',
            'extract_tar',
            'zip_file',
            'unzip_file',
-           'ProgressParallel'
+           'ProgressParallel',
+           'write_avro'
            ]
 
 classes = __all__

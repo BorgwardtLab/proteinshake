@@ -11,6 +11,7 @@ import shutil
 import requests
 from tqdm import tqdm
 from joblib import Parallel
+from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
 
 class ProgressParallel(Parallel):
     """ Extends joblib's Parallel with a progress bar.
@@ -36,6 +37,35 @@ class ProgressParallel(Parallel):
             self._pbar.total = self.n_dispatched_tasks
         self._pbar.n = self.n_completed_tasks
         self._pbar.refresh()
+
+def fx2str(obj):
+    if obj is None:
+        return 'None'
+    return re.sub('(<.*?)\\s.*(>)', r'\1\2', obj.__repr__())
+
+def avro_schema_from_protein(protein):
+    typedict = {'int':'int', 'float':'float', 'str':'string'}
+    def field_spec(k,v):
+        if type(v) == dict:
+            return {'name':k, 'type':{'name':k, 'type':'record', 'fields': [field_spec(_k,_v) for _k,_v in v.items()]}}
+        elif type(v) == list:
+            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__]}}
+        elif type(v).__name__ in typedict:
+            return {'name':k, 'type': typedict[type(v).__name__]}
+        else:
+            raise f'All fields in a protein object need to be either int, float or string, not {type(v).__name__}'
+    schema = {
+        'name': 'Protein',
+        'namespace': 'Dataset',
+        'type': 'record',
+        'fields': [field_spec(k,v) for k,v in protein.items()],
+    }
+    return parse_avro_schema(schema)
+
+def write_avro(proteins, path):
+    schema = avro_schema_from_protein(proteins[0])
+    with open(path, 'wb') as file:
+        avro_writer(file, schema, proteins, metadata={'number_of_proteins':str(len(proteins))})
 
 def save(obj, path):
     """ Saves an object to either pickle, json, or json.gz (determined by the extension in the file name).
@@ -107,6 +137,7 @@ def unzip_file(path):
     with gzip.open(path, 'rb') as f_in:
         with open(path[:-3], 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+    os.remove(path)
 
 
 
@@ -156,11 +187,11 @@ def extract_tar(tar_path, out_path, extract_members=False):
     """
     if extract_members:
         with tarfile.open(tar_path,'r') as file:
-            for member in object.getmembers():
+            for member in tqdm(file.getmembers(), desc='Extracting', total=len(file.getmembers())):
                 file.extract(member, out_path)
     else:
         with tarfile.open(tar_path) as file:
-            file.extractall(out_path)
+            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(file.getmembers())))
 
 def checkpoint(path):
     """ A decorator to checkpoint the result of a class method. It will check if the file specified by `path` exists, in which case the file is loaded and returned instead of running the decorated method. Otherwise the method is run and the result saved at the specified path.

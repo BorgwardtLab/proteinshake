@@ -15,12 +15,17 @@ How to add a new dataset to the release pipeline:
 '''
 
 import os, shutil, argparse
+from datetime import datetime
 from proteinshake.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset
 from proteinshake.utils import zip_file
 
+RELEASE = datetime.now().strftime('%d%b%Y').upper()
+assert not os.path.exists(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}'))
+os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload'), exist_ok=True)
+
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
-parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars('$SCRATCH'))
+parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}'))
 parser.add_argument('--njobs', type=int, help='Number of jobs.', default=20)
 args = parser.parse_args()
 
@@ -28,7 +33,7 @@ PATH = args.path
 SCRATCH = args.scratch if args.scratch != '' else args.path
 n_jobs = args.njobs
 
-
+'''
 ###################
 # PDB Datasets
 ###################
@@ -54,7 +59,7 @@ for Dataset in [RCSBDataset, ECDataset, GODataset, PfamDataset, PDBBindRefined, 
 if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/tmalign.json.gz'):
     print('Copying TM scores...')
     shutil.copyfile(f'{SCRATCH}/release/TMScoreBenchmark/tmalign.json.gz', f'{PATH}/release/tmalign.json.gz')
-
+'''
 
 ###################
 # AlphaFold Datasets
@@ -66,11 +71,14 @@ from proteinshake.datasets import AlphaFoldDataset
 for organism in AF_DATASET_NAMES.keys():
     print()
     print('AlphaFoldDataset', organism)
-    ds = AlphaFoldDataset(root=f'{SCRATCH}/release/AlphaFoldDataset_{organism}', organism=organism, use_precomputed=False, n_jobs=n_jobs)
-    print('Length:', len(ds.proteins))
+    ds = AlphaFoldDataset(root=f'{SCRATCH}/AlphaFoldDataset_{organism}', organism=organism, use_precomputed=False, n_jobs=n_jobs)
     print('Compressing...')
-    zip_file(f'{SCRATCH}/release/AlphaFoldDataset_{organism}/AlphaFoldDataset.json')
+    zip_file(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.residue.avro')
+    zip_file(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.atom.avro')
     del ds
-    if SCRATCH != PATH and not os.path.exists(f'{PATH}/release/AlphaFoldDataset_{organism}.json.gz'):
-        print('Copying...')
-        shutil.copyfile(f'{SCRATCH}/release/AlphaFoldDataset_{organism}/AlphaFoldDataset.json.gz', f'{PATH}/release/AlphaFoldDataset_{organism}.json.gz')
+    print('Copying...')
+    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.residue.avro.gz', f'{SCRATCH}/upload/AlphaFoldDataset_{organism}.residue.avro.gz')
+    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.atom.avro.gz', f'{SCRATCH}/upload/AlphaFoldDataset_{organism}.atom.avro.gz')
+    #if SCRATCH != PATH and not os.path.exists(f'{PATH}/AlphaFoldDataset_{organism}.json.gz'):
+    #    print('Copying...')
+    #    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.json.gz', f'{PATH}/AlphaFoldDataset_{organism}.json.gz')

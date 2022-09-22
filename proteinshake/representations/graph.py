@@ -3,7 +3,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
-from proteinshake.utils import checkpoint, compose_embeddings, residue_numeric
+from proteinshake.utils import tokenize
 
 
 class GraphDataset():
@@ -26,90 +26,33 @@ class GraphDataset():
 
     """
 
-    def __init__(self, root, proteins, embedding=residue_numeric, eps=None, k=None, weighted_edges=False):
+    def __init__(self, dataset, resolution='residue', eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         self.construction = 'knn' if not k is None else 'eps'
-        self.root = root
-        self.k = k
-        self.eps = eps
+        self.resolution = resolution
         self.weighted_edges = weighted_edges
-        if type(embedding) == list:
-            self.embedding = compose_embeddings(embedding)
-            emb_names = '_'.join([e.__name__ for e in embedding])
-            self.name = f'emb_{emb_names}'
-        else:
-            self.embedding = embedding
-            self.name = f'emb_{embedding.__name__}'
-        self.name += '_k_{k}' if self.construction == 'knn' else f'_eps_{eps}'
+        self.eps = eps
+        self.k = k
+        self.name = f'resolution_{resolution}_'
+        self.name += f'knn_{k}' if self.construction == 'knn' else f'eps_{eps}'
         if self.weighted_edges:
-            self.name += 'weighted'
-        self.info = proteins
-        self.proteins = self.convert(proteins)
+            self.name += '_weighted'
+        self.dataset = dataset
+        os.makedirs(f'{dataset.root}/processed/graph', exist_ok=True)
+        dataset.download_precomputed(resolution=resolution)
 
-    def protein2graph(self, protein):
-        nodes = self.embedding(protein['sequence'])
+    def convert(self, protein):
+        resolution = 'atom' if 'atom' in protein else 'residue'
+        nodes = tokenize(protein['protein']['sequence'])
         mode = 'distance' if self.weighted_edges else 'connectivity'
+        coords = np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
         if self.construction == 'eps':
-            adj = radius_neighbors_graph(protein['coords'], radius=self.eps, mode=mode)
+            adj = radius_neighbors_graph(coords, radius=self.eps, mode=mode)
         elif self.construction == 'knn':
-            # reduce k if protein is smaller than self.k
-            n_neighbors = min(len(protein['coords']) - 1, self.k)
-            adj = kneighbors_graph(protein['coords'],
-                                   n_neighbors=n_neighbors,
-                                   mode=mode)
-        return (nodes, adj)
+            n_neighbors = min(len(coords) - 1, self.k) # reduce k if protein is smaller than self.k
+            adj = kneighbors_graph(coords,  n_neighbors=n_neighbors, mode=mode)
+        return nodes, adj
 
-    @checkpoint('{root}/processed/graph/{name}.pkl')
-    def convert(self, proteins):
-        return [self.protein2graph(p) for p in tqdm(proteins, desc='Converting proteins to graphs')]
-
-    def pyg(self, transform=None, pre_transform=None, pre_filter=None):
-        import torch
-        from torch_geometric.data import Data
-        from torch_geometric.utils import from_scipy_sparse_matrix
-        from .pyg_data import Dataset
-
-        def info2pyg(info):
-            """ Try to convert info dictionary to tensor."""
-            new_info = {}
-            for k,v in info.items():
-                try:
-                    new_info[k] = torch.Tensor(v)
-                except TypeError:
-                    new_info[k] = v
-                    pass
-            return new_info
-
-        def graph2pyg(graph, info={}):
-            nodes = torch.from_numpy(graph[0])
-            edges = from_scipy_sparse_matrix(graph[1])
-            return Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info2pyg(info))
-        data_list = [graph2pyg(p, info=info) for p,info in zip(self.proteins,self.info)]
-        return Dataset(f'{self.root}/processed/graph/{self.name}.pyg',
-                       data_list,
-                       transform=transform,
-                       pre_transform=pre_transform,
-                       pre_filter=pre_filter)
-
-    def dgl(self):
-        from .dgl_data import Dataset
-
-        ds = Dataset(f'{self.root}/processed/graph/{self.name}.dgl.pkl',
-                     self.proteins,
-                     self.info)
-        return ds
-
-        @checkpoint('{root}/processed/graph/{name}.nx.pkl')
-        def nx(self):
-            import networkx as nx
-            def graph2nx(graph, info={}):
-                g = nx.from_scipy_sparse_matrix(graph[1])
-                g.add_nodes_from(graph[0])
-                for key,value in info.items():
-                    if type(value) == list and len(value) == len(info['sequence']):
-                        nx.set_node_attributes(g, value, key)
-                    else:
-                        g.graph[key] = value
-                return g
-            return [graph2nx(p, info=info) for p,info in zip(self.proteins,self.info)]
-
+    def pyg(self, *args, **kwargs):
+        from proteinshake.frameworks import PygGraphDataset
+        return PygGraphDataset(self, *args, **kwargs)
