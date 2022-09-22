@@ -6,6 +6,24 @@ import numpy as np
 from proteinshake.utils import tokenize
 
 class Graph():
+    """ Graph representation of a protein.
+
+    Converts a protein object to a graph by using a k-nearest-neighbor or epsilon-neighborhood approach. Define either `k` or `eps` to determine which one is used.
+
+    Parameters
+    ----------
+    protein: dict
+        A protein object.
+    construction: str
+        Whether to use knn or eps construction.
+    eps: float
+        The epsilon radius to be used in graph construction (in Angstrom).
+    k: int
+        The number of neighbors to be used in the k-NN graph.
+    weighted_edges: bool, default False
+        If `True`, edges are attributed with their euclidean distance. If `False`, edges are unweighted.
+
+    """
 
     def __init__(self, protein, construction, k, eps, weighted_edges):
         resolution = 'atom' if 'atom' in protein else 'residue'
@@ -25,14 +43,16 @@ class Graph():
 class GraphDataset():
     """ Graph representation of a protein structure dataset.
 
-    Converts a protein object to a graph by using a k-nearest-neighbor or epsilon-neighborhood approach. Define either `k` or `eps` to determine which one is used.
-
-    Also embeds the protein sequence to attributes of the graph nodes using a supplied embedding function. See `utils.embeddings` for examples. If a list of functions is passed to `embedding`, the resulting features will be concatenated.
-
     Parameters
     ----------
-    embedding: Union[function, list]
-        A function or list of functions for embedding the protein sequence to node attributes.
+    proteins: generator
+        A generator of protein objects from a Dataset.
+    size: int
+        The size of the dataset.
+    path: str
+        Path to save the processed dataset.
+    resolution: str, default 'residue'
+        Resolution of the proteins to use in the graph representation. Can be 'atom' or 'residue'.
     eps: float
         The epsilon radius to be used in graph construction (in Angstrom).
     k: int

@@ -38,12 +38,34 @@ class ProgressParallel(Parallel):
         self._pbar.n = self.n_completed_tasks
         self._pbar.refresh()
 
-def fx2str(obj):
-    if obj is None:
-        return 'None'
-    return re.sub('(<.*?)\\s.*(>)', r'\1\2', obj.__repr__())
+def fx2str(fx):
+    """ Converts a function to a string representation.
+
+    Parameters
+    ----------
+    fx: function
+        A function.
+
+    Returns
+    -------
+    str
+        The stringified function.
+    """
+    return re.sub('(<.*?)\\s.*(>)', r'\1\2', fx.__repr__())
 
 def avro_schema_from_protein(protein):
+    """ Guesses the avro schema from a dictionary.
+
+    Parameters
+    ----------
+    protein: dict
+        A protein dictionary.
+
+    Returns
+    -------
+    schema
+        An avro schema.
+    """
     typedict = {'int':'int', 'float':'float', 'str':'string'}
     def field_spec(k,v):
         if type(v) == dict:
@@ -63,6 +85,15 @@ def avro_schema_from_protein(protein):
     return parse_avro_schema(schema)
 
 def write_avro(proteins, path):
+    """ Writes a list of protein dictionaries to an avro file.
+
+    Parameters
+    ----------
+    proteins: list
+        The list of proteins.
+    path:
+        The path to the output file.
+    """
     schema = avro_schema_from_protein(proteins[0])
     with open(path, 'wb') as file:
         avro_writer(file, schema, proteins, metadata={'number_of_proteins':str(len(proteins))})

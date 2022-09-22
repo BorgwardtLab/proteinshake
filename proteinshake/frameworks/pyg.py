@@ -21,6 +21,23 @@ def info2pyg(info):
     return new_info
 
 class PygGraphDataset(InMemoryDataset):
+        """ Dataset class for graph in pytorch-geometric.
+
+        Parameters
+        ----------
+        graphs: generator
+            A generator of graph objects from GraphDataset.
+        size: int
+            The size of the dataset.
+        path: str
+            Path to save the processed dataset.
+        transform: function
+            Compare torch_geometric.data.Dataset.
+        pre_transform: function
+            Compare torch_geometric.data.Dataset.
+        pre_filter: function
+            Compare torch_geometric.data.Dataset.
+        """
     def __init__(self, graphs, size, path, transform=None, pre_transform=None, pre_filter=None):
         super().__init__(None, transform, pre_transform, pre_filter)
         transforms_repr = fx2str(transform)+fx2str(pre_transform)+fx2str(pre_filter)

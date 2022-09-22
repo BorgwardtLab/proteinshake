@@ -18,6 +18,7 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
+    'latest': '1107273',
     '22SEP2022': '1107273'
 }
 
@@ -31,7 +32,7 @@ class Dataset():
     use_precomputed: bool, default True
         If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
     release: str, default '12JUL2022'
-        The GitHub tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. Latest (default) is recommended.
+        The tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. "latest" (default) is recommended.
     only_single_chain: bool, default False
         If `True`, will only use single-chain proteins.
     check_sequence: bool, default False
@@ -44,7 +45,7 @@ class Dataset():
     def __init__(self,
             root                = 'data',
             use_precomputed     = True,
-            release             = '22SEP2022',
+            release             = 'latest',
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
@@ -68,6 +69,21 @@ class Dataset():
             self.check_arguments_same_as_hosted()
 
     def proteins(self, resolution='residue'):
+        """ Returns a generator of proteins from the avro file.
+
+        Parameters
+        ----------
+        resolution: str, default 'residue'
+            The resolution of the proteins. Can be 'atom' or 'residue'.
+
+        Returns
+        -------
+        generator
+            An avro reader object.
+
+        int
+            The total number of proteins in the file.
+        """
         with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
             total = int(avro_reader(file).metadata['number_of_proteins'])
         def reader():
@@ -152,7 +168,7 @@ class Dataset():
         Parameters
         ----------
         protein: dict
-            A protein object with `ID`, `sequence`, `coords` and other features. See `Dataset.parse_pdb()` for details.
+            A protein object. See `Dataset.parse_pdb()` for details.
 
         Returns
         -------
@@ -168,9 +184,8 @@ class Dataset():
             file.write('done.')
 
     def start_download(self):
-        """ Helper function to prepare the download. Switches between precomputed and raw download. Creates necessary subdirectories.
+        """ Helper function to prepare the download. Creates necessary subdirectories.
         """
-        os.makedirs(f'{self.root}', exist_ok=True)
         if os.path.exists(f'{self.root}/raw/done.txt'):
             return
         os.makedirs(f'{self.root}/raw/files', exist_ok=True)
