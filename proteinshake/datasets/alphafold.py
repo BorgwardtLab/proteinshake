@@ -41,7 +41,7 @@ class AlphaFoldDataset(TorchPDBDataset):
         The organism name or a list of names or 'all' or 'swissprot'.
     """
 
-    def __init__(self, organism, **kwargs):
+    def __init__(self, organism, version='v3', **kwargs):
         if organism == 'all':
             self.organism = [o for o in AF_DATASET_NAMES.keys() if o != 'swissprot']
         else:
@@ -50,6 +50,7 @@ class AlphaFoldDataset(TorchPDBDataset):
             elif type(organism) == list:
                 self.organism = [o.lower().replace(' ','_') for o in organism]
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
+        self.version = version
         super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
@@ -79,8 +80,8 @@ class AlphaFoldDataset(TorchPDBDataset):
     def download(self):
         def _download(organism):
             os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
-            download_url(self.base_url+AF_DATASET_NAMES[organism]+'_v3.tar', f'{self.root}/raw/{organism}')
-            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_v3.tar', f'{self.root}/raw/{organism}')
+            download_url(self.base_url+AF_DATASET_NAMES[organism]+f'_{self.version}.tar', f'{self.root}/raw/{organism}')
+            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_{self.version}.tar', f'{self.root}/raw/{organism}')
         if type(self.organism) == str:
             _download(self.organism)
         elif type(self.organism) == list:

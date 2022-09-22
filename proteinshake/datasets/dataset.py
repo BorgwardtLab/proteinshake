@@ -10,9 +10,9 @@ from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 from joblib import delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
+from fastavro import reader as avro_reader
 
 from proteinshake.utils import download_url, save, load, unzip_file, ProgressParallel, write_avro
-from proteinshake.representations import GraphDataset, PointDataset, VoxelDataset
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
@@ -57,6 +57,15 @@ class TorchPDBDataset():
         self.check_arguments_same_as_hosted()
         self.start_download()
         self.parse()
+
+    def proteins(self, resolution='residue'):
+        with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+            total = int(avro_reader(file).metadata['number_of_proteins'])
+        def reader():
+            with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+                for x in avro_reader(file):
+                    yield x
+        return reader(), total
 
     def download_limit(self):
         """ Used only in testing, where this method is mock.patched to a small number. Default None.
@@ -326,7 +335,7 @@ class TorchPDBDataset():
                }
         return data
 
-    def to_graph(self, *args, **kwargs):
+    def to_graph(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
         Returns
@@ -334,9 +343,10 @@ class TorchPDBDataset():
         GraphDataset
             The dataset in graph representation.
         """
-        return GraphDataset(self, *args, **kwargs)
+        from proteinshake.representations import GraphDataset
+        return GraphDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
-    def to_point(self, *args, **kwargs):
+    def to_point(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
 
         Returns
@@ -344,9 +354,10 @@ class TorchPDBDataset():
         PointDataset
             The dataset in point cloud representation.
         """
-        return PointDataset(self, *args, **kwargs)
+        from proteinshake.representations import PointDataset
+        return PointDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
-    def to_voxel(self, *args, **kwargs):
+    def to_voxel(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
 
         Returns
@@ -354,4 +365,5 @@ class TorchPDBDataset():
         VoxelDataset
             The dataset in voxel representation.
         """
-        return VoxelDataset(self, *args, **kwargs)
+        from proteinshake.representations import VoxelDataset
+        return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)

@@ -4,7 +4,6 @@ import torch
 from torch_geometric.utils import from_scipy_sparse_matrix
 from torch_geometric.data import Data, InMemoryDataset
 from proteinshake.utils import fx2str
-from fastavro import reader as avro_reader
 from tqdm import tqdm
 
 
@@ -22,28 +21,29 @@ def info2pyg(info):
     return new_info
 
 class PygGraphDataset(InMemoryDataset):
-    def __init__(self, graphDataset, transform=None, pre_transform=None, pre_filter=None):
+    def __init__(self, graphs, size, path, transform=None, pre_transform=None, pre_filter=None):
         super().__init__(None, transform, pre_transform, pre_filter)
-        path = f'{graphDataset.dataset.root}/processed/graph/{graphDataset.name}.pyg'
         transforms_repr = fx2str(transform)+fx2str(pre_transform)+fx2str(pre_filter)
         if not os.path.exists(path):
-            data_list = []
-            with open(f'{graphDataset.dataset.root}/{graphDataset.dataset.__class__.__name__}.{graphDataset.resolution}.avro', 'rb') as file:
-                reader = avro_reader(file)
-                for protein in tqdm(reader, total=int(reader.metadata['number_of_proteins']), desc='Converting to graph'):
-                    nodes, adj = graphDataset.convert(protein)
-                    nodes = torch.from_numpy(nodes)
-                    edges = from_scipy_sparse_matrix(adj)
-                    data = Data(x=nodes, edge_index=edges[0].long(), edge_attr=edges[1].unsqueeze(1).float(), **info2pyg(protein['protein']), **info2pyg(protein[graphDataset.resolution]))
-                    data_list.append(data)
+            data_list = [Data(
+                x = torch.from_numpy(graph.nodes),
+                edge_index = from_scipy_sparse_matrix(graph.adj)[0].long(),
+                edge_attr = from_scipy_sparse_matrix(graph.adj)[1].unsqueeze(1).float(),
+                **info2pyg(graph.protein['protein']),
+                **info2pyg(graph.protein[graph.resolution])
+            ) for graph in tqdm(graphs, desc='Converting to graph', total=size)]
             if self.pre_filter is not None:
                 data_list = [data for data in data_list if self.pre_filter(data)]
             if self.pre_transform is not None:
                 data_list = [self.pre_transform(data) for data in data_list]
             data, slices = self.collate(data_list)
             torch.save((transforms_repr, data, slices), path)
+            del data_list, data, slices
         original_repr, self.data, self.slices = torch.load(path)
         assert original_repr == transforms_repr, f'The transforms are not the same as when the dataset was created. If you want to change them, delete the file at {path}'
+
+    def __len__(self):
+        return self.size
 
     def get(self, idx):
         data = Data()
