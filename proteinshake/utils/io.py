@@ -67,7 +67,7 @@ def avro_schema_from_protein(protein):
     schema
         An avro schema.
     """
-    typedict = {'int':'int', 'float':'float', 'str':'string'}
+    typedict = {'int':'int', 'float':'float', 'str':'string', 'bool':'boolean'}
     def field_spec(k,v):
         if type(v) == dict:
             return {'name':k, 'type':{'name':k, 'type':'record', 'fields': [field_spec(_k,_v) for _k,_v in v.items()]}}
@@ -76,7 +76,7 @@ def avro_schema_from_protein(protein):
         elif type(v).__name__ in typedict:
             return {'name':k, 'type': typedict[type(v).__name__]}
         else:
-            raise f'All fields in a protein object need to be either int, float or string, not {type(v).__name__}'
+            raise f'All fields in a protein object need to be either int, float, bool or string, not {type(v).__name__}'
     schema = {
         'name': 'Protein',
         'namespace': 'Dataset',

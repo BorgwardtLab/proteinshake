@@ -43,12 +43,12 @@ class ProteinLigandInterfaceDataset(Dataset):
         os.rename(f'{self.root}/raw/refined-set', f'{self.root}/raw/files')
 
     def add_protein_attributes(self, protein):
-        pocket = self.pdb2df(f'{self.root}/raw/files/{protein["ID"]}/{protein["ID"]}_pocket.pdb')
+        pocket = self.pdb2df(f'{self.root}/raw/files/{protein["protein"]["ID"]}/{protein["protein"]["ID"]}_pocket.pdb')
         is_site = np.zeros((len(pocket),))
         is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
         ).sum(axis=1).nonzero()] = 1.
-        protein['binding_site'] = is_site
+        protein['residue']['binding_site'] = is_site
 
         index_data = parse_pdbbind_PL_index(osp.join(self.root,
                                                     "raw",
@@ -59,8 +59,8 @@ class ProteinLigandInterfaceDataset(Dataset):
         ligand = Chem.MolFromMolFile(osp.join(self.root,
                                               'raw',
                                               'files',
-                                              protein['ID'],
-                                              f'{protein["ID"]}_ligand.sdf')
+                                              protein['protein']['ID'],
+                                              f'{protein["protein"]["ID"]}_ligand.sdf')
                                      )
         try:
             smiles = Chem.MolToSmiles(ligand)
@@ -68,15 +68,15 @@ class ProteinLigandInterfaceDataset(Dataset):
             return None
         is_site = np.zeros((len(pocket),))
         is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue_index']
+            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
         ).sum(axis=1).nonzero()] = 1.
-        protein['binding_site'] = is_site.tolist()
-        bind_data = index_data[protein['ID']]
-        protein['kd'] = bind_data['kd']['value']
-        protein['resolution'] = bind_data['resolution']
-        protein['year'] = bind_data['date']
-        protein['ligand_id'] = bind_data['ligand_id']
-        protein['ligand_smiles'] = smiles
+        protein['residue']['binding_site'] = is_site.tolist()
+        bind_data = index_data[protein['protein']['ID']]
+        protein['protein']['kd'] = bind_data['kd']['value']
+        protein['protein']['resolution'] = bind_data['resolution']
+        protein['protein']['year'] = bind_data['date']
+        protein['protein']['ligand_id'] = bind_data['ligand_id']
+        protein['protein']['ligand_smiles'] = smiles
         return protein
 
     def describe(self):

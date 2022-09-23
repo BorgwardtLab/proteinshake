@@ -19,11 +19,11 @@ def get_interfaces(protein, cutoff=6):
     """
 
     #3-D KD tree
-    df = pd.DataFrame({'x': [p[0] for p in protein['coords']],
-                       'y': [p[1] for p in protein['coords']],
-                       'z': [p[2] for p in protein['coords']],
-                       'chain': protein['chain_id'],
-                       'residue_index':protein['residue_index']
+    df = pd.DataFrame({'x': protein['residue']['x'],
+                       'y': protein['residue']['y'],
+                       'z': protein['residue']['z'],
+                       'chain': protein['residue']['chain_id'],
+                       'residue_index':protein['residue']['residue_number']
                        })
     resi_df = df.groupby(['residue_index', 'chain']).mean().reset_index()
     resi_coords = np.array([resi_df['x'].tolist(), resi_df['y'].tolist(), resi_df['z'].tolist()]).T
@@ -42,6 +42,6 @@ def get_interfaces(protein, cutoff=6):
                 interface.add(that_resi)
 
     resi_interface = []
-    for r in protein['residue_index']:
+    for r in protein['residue']['residue_number']:
         resi_interface.append(r in interface)
     return resi_interface

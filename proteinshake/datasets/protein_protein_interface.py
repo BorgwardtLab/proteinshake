@@ -40,7 +40,7 @@ class ProteinProteinInterfaceDataset(Dataset):
         os.rename(f'{self.root}/raw/PP', f'{self.root}/raw/files')
 
     def add_protein_attributes(self, protein):
-        protein['is_interface'] = get_interfaces(protein, self.cutoff)
+        protein['residue']['is_interface'] = get_interfaces(protein, self.cutoff)
         return protein
 
     def describe(self):
