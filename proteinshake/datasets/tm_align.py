@@ -79,8 +79,8 @@ class TMAlignDataset(Dataset):
     def get_id_from_filename(self, filename):
         return filename[:-4]
 
-    def download_precomputed(self):
-        super().download_precomputed()
+    def download_precomputed(self, resolution='residue'):
+        super().download_precomputed(resolution=resolution)
         if self.use_precomputed:
             download_url(f'{self.repository_url}/{self.release}/tmalign.json.gz', f'{self.root}')
             print('Unzipping...')
@@ -134,7 +134,7 @@ class TMAlignDataset(Dataset):
         dist = dict(dist)
         rmsd = dict(rmsd)
 
-        save((dist, rmsd), f'{self.root}/tmalign.json.gz')
+        save((dist, rmsd), f'{self.root}/tmalign.json')
         return dist, rmsd
 
     def describe(self):

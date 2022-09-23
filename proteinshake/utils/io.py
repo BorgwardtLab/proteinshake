@@ -9,6 +9,7 @@ import json
 import gzip
 import shutil
 import requests
+import re
 from tqdm import tqdm
 from joblib import Parallel
 from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
