@@ -64,7 +64,7 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
         print('Copying TM scores...')
         zip_file(f'{SCRATCH}/TMAlignDataset/tmalign.json')
         shutil.copyfile(f'{SCRATCH}/TMAlignDataset/tmalign.json.gz', f'{SCRATCH}/upload/tmalign.json.gz')
-exit()
+
 
 ###################
 # AlphaFold Datasets
