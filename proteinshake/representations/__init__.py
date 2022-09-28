@@ -1,12 +1,12 @@
 from .graph import GraphDataset
-from .point import PointDataset
-from .voxel import VoxelDataset
+#from .point import PointDataset
+#from .voxel import VoxelDataset
 
 
 __all__ = [
     'GraphDataset',
-    'PointDataset',
-    'VoxelDataset',
+    #'PointDataset',
+    #'VoxelDataset',
     ]
 
 classes = __all__
