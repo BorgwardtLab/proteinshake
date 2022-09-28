@@ -79,13 +79,6 @@ class TMAlignDataset(Dataset):
     def get_id_from_filename(self, filename):
         return filename[:-4]
 
-    def download_precomputed(self, resolution='residue'):
-        super().download_precomputed(resolution=resolution)
-        if self.use_precomputed:
-            download_url(f'{self.repository_url}/{self.release}/tmalign.json.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/tmalign.json.gz')
-
     def download(self):
         lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
         links = []
@@ -111,6 +104,11 @@ class TMAlignDataset(Dataset):
             RMSD between all pairs of proteins as a dictionary.
         """
         if os.path.exists(f'{self.root}/tmalign.json'):
+            return load(f'{self.root}/tmalign.json')
+        elif self.use_precomputed:
+            download_url(f'{self.repository_url}/tmalign.json.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/tmalign.json.gz')
             return load(f'{self.root}/tmalign.json')
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
