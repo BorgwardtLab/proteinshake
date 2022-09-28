@@ -1,3 +1,4 @@
+'''
 import os
 
 import dgl
@@ -49,3 +50,4 @@ def graph2dgl(graph, info={}):
             except:
                 pass
     return g
+'''
