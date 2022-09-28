@@ -18,8 +18,8 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1107273',
-    '22SEP2022': '1107273'
+    'latest': '1108736',
+    '23SEP2022': '1108736'
 }
 
 class Dataset():
@@ -196,9 +196,9 @@ class Dataset():
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
         if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.release}/{self.__class__.__name__}.{resolution}.avro', f'{self.root}')
+            download_url(f'{self.repository_url}/{self.__class__.__name__}.{resolution}.avro.gz', f'{self.root}')
             print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro')
+            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro.gz')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
