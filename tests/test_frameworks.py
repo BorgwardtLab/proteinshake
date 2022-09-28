@@ -17,7 +17,9 @@ class TestFrameworks(unittest.TestCase):
 
     def test_pyg(self):
         from torch_geometric.loader import DataLoader
-        loader = DataLoader(self.ds)
+        graphs = self.ds.to_graph(k=5).pyg()
+        loader = DataLoader(graphs)
+        x = next(iter(loader))
 
 
 if __name__ == '__main__':
