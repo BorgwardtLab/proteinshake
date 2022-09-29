@@ -1,10 +1,9 @@
-from .embeddings import residue_numeric, residue_one_hot, tokenize, positional_encoding, compose_embeddings
+from .embeddings import *
 from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
 
-__all__ = ['residue_one_hot',
-           'residue_numeric',
+__all__ = ['onehot',
            'tokenize',
            'positional_encoding',
            'compose_embeddings',
