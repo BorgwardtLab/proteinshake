@@ -27,6 +27,12 @@ class TestFrameworks(unittest.TestCase):
         loader = DataLoader(voxels)
         x = next(iter(loader))
 
+    def test_point_torch(self):
+        from torch.utils.data import DataLoader
+        points = self.ds.to_point().torch()
+        loader = DataLoader(points)
+        x = next(iter(loader))
+
 
 if __name__ == '__main__':
     unittest.main()
