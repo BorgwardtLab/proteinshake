@@ -3,43 +3,43 @@ Tests downloading the precomputed datasets and loading the data.
 '''
 
 import unittest, tempfile
-from proteinshake.datasets import PDBBindRefined, PDBBindPPI, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, AlphaFoldDataset
 from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDatasets(unittest.TestCase):
 
-    def test_pdbbind(self):
+    def test_pli(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = PDBBindRefined(root=tmp)
+            ds = ProteinLigandInterfaceDataset(root=tmp).download_precomputed()
 
-    def test_pdbbind_ppi(self):
+    def test_ppi(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = PDBBindPPI(root=tmp)
+            ds = ProteinProteinInterfaceDataset(root=tmp).download_precomputed()
 
     def test_tm(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = TMScoreBenchmark(root=tmp)
+            ds = TMAlignDataset(root=tmp).download_precomputed()
 
     def test_go(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = GODataset(root=tmp)
+            ds = GeneOntologyDataset(root=tmp).download_precomputed()
 
     def test_ec(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ECDataset(root=tmp)
+            ds = EnzymeCommissionDataset(root=tmp).download_precomputed()
 
     def test_pfam(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = PfamDataset(root=tmp)
+            ds = PfamDataset(root=tmp).download_precomputed()
 
     def test_rcsb(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = RCSBDataset(root=tmp)
+            ds = RCSBDataset(root=tmp).download_precomputed()
 
-    def test_alphafold(self):
+    def test_af(self):
         organism = 'methanocaldococcus jannaschii'
         with tempfile.TemporaryDirectory() as tmp:
-            ds = AlphaFoldDataset(root=tmp, organism=organism)
+            ds = AlphaFoldDataset(root=tmp, organism=organism).download_precomputed()
 
 if __name__ == '__main__':
     unittest.main()

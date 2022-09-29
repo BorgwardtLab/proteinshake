@@ -1,3 +1,4 @@
+'''
 import os
 from tqdm import tqdm
 from proteinshake.utils import checkpoint, residue_one_hot, compose_embeddings
@@ -64,3 +65,4 @@ class PointDataset():
                 yield p['coords']
         ds = tf.data.Dataset.from_generator(generator, tf.float32, output_shapes=[None,3])
         return ds
+'''

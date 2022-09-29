@@ -2,22 +2,27 @@
 """
 Base dataset class for protein 3D structures.
 """
-import os, gzip, inspect
+import os, gzip, inspect, time, itertools, tarfile, io
 
 import pandas as pd
+import numpy as np
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
-import numpy as np
+from joblib import delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
-from joblib import Parallel, delayed
+from fastavro import reader as avro_reader
 
-from proteinshake.utils import download_url, save, load, unzip_file
-from proteinshake.representations import GraphDataset, PointDataset, VoxelDataset
+from proteinshake.utils import download_url, save, load, unzip_file, ProgressParallel, write_avro
 
 three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
+# maps the date-format release to Zenodo identifier
+RELEASES = {
+    'latest': '1108736',
+    '23SEP2022': '1108736'
+}
 
-class TorchPDBDataset():
+class Dataset():
     """ Base dataset class. Holds the logic for downloading and parsing PDB files.
 
     Parameters
@@ -25,9 +30,9 @@ class TorchPDBDataset():
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
     use_precomputed: bool, default True
-        If `True`, will download the processed dataset from torch-pdb (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
+        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
     release: str, default '12JUL2022'
-        The GitHub tag of the dataset release. See https://github.com/BorgwardtLab/torch-pdb/releases for all available releases. Latest (default) is recommended.
+        The tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. "latest" (default) is recommended.
     only_single_chain: bool, default False
         If `True`, will only use single-chain proteins.
     check_sequence: bool, default False
@@ -40,23 +45,52 @@ class TorchPDBDataset():
     def __init__(self,
             root                = 'data',
             use_precomputed     = True,
-            release             = '12JUL2022',
+            release             = 'latest',
             only_single_chain   = False,
             check_sequence      = False,
             n_jobs              = 1,
-            min_size            = 10
+            minimum_length      = 10,
+            exclude_ids         = []
             ):
+        self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
         self.use_precomputed = use_precomputed
         self.root = root
-        self.min_size= min_size
+        self.minimum_length = minimum_length
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
-        self.check_arguments_same_as_hosted()
-        self._download()
-        self.parse()
-        self.proteins = load(f'{self.root}/{self.__class__.__name__}.json')
+        self.exclude_ids = exclude_ids
+        os.makedirs(f'{self.root}', exist_ok=True)
+        if not use_precomputed:
+            self.start_download()
+            self.parse()
+        else:
+            self.check_arguments_same_as_hosted()
+
+    def proteins(self, resolution='residue'):
+        """ Returns a generator of proteins from the avro file.
+
+        Parameters
+        ----------
+        resolution: str, default 'residue'
+            The resolution of the proteins. Can be 'atom' or 'residue'.
+
+        Returns
+        -------
+        generator
+            An avro reader object.
+
+        int
+            The total number of proteins in the file.
+        """
+        with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+            total = int(avro_reader(file).metadata['number_of_proteins'])
+        def reader():
+            with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+                for x in avro_reader(file):
+                    yield x
+        return reader(), total
 
     def download_limit(self):
         """ Used only in testing, where this method is mock.patched to a small number. Default None.
@@ -78,7 +112,7 @@ class TorchPDBDataset():
             if v.default is not inspect.Parameter.empty
             and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
         }
-        if self.__class__.__bases__[0].__name__ != 'TorchPDBDataset':
+        if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
             super_args = {
                 k: v.default
@@ -134,7 +168,7 @@ class TorchPDBDataset():
         Parameters
         ----------
         protein: dict
-            A protein object with `ID`, `sequence`, `coords` and other features. See `TorchPDBDataset.parse_pdb()` for details.
+            A protein object. See `Dataset.parse_pdb()` for details.
 
         Returns
         -------
@@ -149,42 +183,51 @@ class TorchPDBDataset():
         with open(f'{self.root}/raw/done.txt','w') as file:
             file.write('done.')
 
-    def _download(self):
-        """ Helper function to prepare the download. Switches between precomputed and raw download. Creates necessary subdirectories.
+    def start_download(self):
+        """ Helper function to prepare the download. Creates necessary subdirectories.
         """
-        os.makedirs(f'{self.root}', exist_ok=True)
-        if self.use_precomputed:
-            self.download_precomputed()
-        else:
-            if os.path.exists(f'{self.root}/raw/done.txt'):
-                return
-            os.makedirs(f'{self.root}/raw/files', exist_ok=True)
-            self.download()
-            self.download_complete()
+        if os.path.exists(f'{self.root}/raw/done.txt'):
+            return
+        os.makedirs(f'{self.root}/raw/files', exist_ok=True)
+        self.download()
+        self.download_complete()
 
-    def download_precomputed(self):
-        """ Downloads the precomputed dataset from torch-pdb.
+    def download_precomputed(self, resolution='residue'):
+        """ Downloads the precomputed dataset from the ProteinShake repository.
         """
-        os.makedirs(f'{self.root}', exist_ok=True)
-        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
-            download_url(f'https://github.com/BorgwardtLab/torch-pdb/releases/download/{self.release}/{self.__class__.__name__}.json.gz', f'{self.root}')
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
+            download_url(f'{self.repository_url}/{self.__class__.__name__}.{resolution}.avro.gz', f'{self.root}')
             print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}.json.gz')
+            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro.gz')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
         """
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.json'):
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
             return
-        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files'))
-        #proteins = [self.parse_pdb(path) for path in tqdm(self.get_raw_files(), desc='Parsing PDB files')]
+
+        # parse and filter
+        paths = self.get_raw_files()
+        chunk_size = 1000
+        chunks = [paths[i:i+chunk_size] for i in range(0,len(paths), chunk_size)]
+        def parse_pdbs(chunk):
+            return [self.parse_pdb(path) for path in chunk]
+        n_jobs = 1#min(self.n_jobs, len(chunks)) # Parallelization does not really work for some reason
+        if n_jobs == 1:
+            proteins = [self.parse_pdb(path) for path in tqdm(paths, desc='Parsing')]
+        else:
+            proteins = ProgressParallel(n_jobs=n_jobs, total=len(chunks), desc='Parsing')(delayed(parse_pdbs)(chunk) for chunk in chunks)
+            proteins = list(itertools.chain(*proteins))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
         print(f'Filtered {before-len(proteins)} proteins.')
-        save(proteins, f'{self.root}/{self.__class__.__name__}.json')
+        residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
+        atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
+        write_avro(residue_proteins, f'{self.root}/{self.__class__.__name__}.residue.avro')
+        write_avro(atom_proteins, f'{self.root}/{self.__class__.__name__}.atom.avro')
 
     def parse_pdb(self, path):
-        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Should return `None` if the protein was found to be invalid.
+        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
 
         Parameters
         ----------
@@ -196,17 +239,43 @@ class TorchPDBDataset():
         dict
             A protein object.
         """
-        df = self.pdb2df(path)
-        if not self.validate(df):
+        id = self.get_id_from_filename(os.path.basename(path))
+        if id in self.exclude_ids:
+            return None
+        atom_df = self.pdb2df(path)
+        residue_df = atom_df[atom_df['atom_type'] == 'CA']
+        if not self.validate(atom_df):
             return None
         protein = {
-            'ID': self.get_id_from_filename(os.path.basename(path)),
-            'sequence': ''.join(df['residue_name']),
-            'residue_index': df['residue_number'].tolist(),
-            'coords': df[['x_coord','y_coord','z_coord']].values.tolist(),
+            'protein': {
+                'ID': id,
+                'sequence': ''.join(residue_df['residue_type']),
+            },
+            'residue': {
+                'residue_number': residue_df['residue_number'].tolist(),
+                'residue_type': residue_df['residue_type'].tolist(),
+                'x': residue_df['x'].tolist(),
+                'y': residue_df['y'].tolist(),
+                'z': residue_df['z'].tolist(),
+            },
+            'atom': {
+                'atom_number': atom_df['residue_number'].tolist(),
+                'atom_type': atom_df['residue_type'].tolist(),
+                'residue_number': atom_df['residue_number'].tolist(),
+                'residue_type': atom_df['residue_type'].tolist(),
+                'x': atom_df['x'].tolist(),
+                'y': atom_df['y'].tolist(),
+                'z': atom_df['z'].tolist(),
+            },
         }
         if not self.only_single_chain: # only include chains if multi-chain protein
-            protein['chain_id'] = df['chain_id'].tolist()
+            protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
+            protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
+        # add pLDDT from AlphaFold
+        if self.__class__.__name__ == 'AlphaFoldDataset':
+            protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
+            protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
+        # add attributes
         protein = self.add_protein_attributes(protein)
         return protein
 
@@ -241,9 +310,15 @@ class TorchPDBDataset():
                 in_model = False
             filtered_lines.append(line)
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
-        df = df[df['atom_name'] == 'CA']
         df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
-        df = df.sort_values('residue_number')
+        df = df.sort_values('atom_number')
+        df = df.rename(columns={
+            'atom_name': 'atom_type',
+            'residue_name': 'residue_type',
+            'x_coord': 'x',
+            'y_coord': 'y',
+            'z_coord': 'z',
+        })
         return df
 
     def validate(self, df):
@@ -259,19 +334,19 @@ class TorchPDBDataset():
         bool
             Whether or not the DataFrame is valid.
         """
-        if len(df['residue_index']) < self.min_size:
+        if len(df['residue_number'].unique()) < self.minimum_length:
             return False
         # check if single chain protein
         if self.only_single_chain and len(df['chain_id'].unique()) > 1:
             return False
         # check if sequence and structure are consistent
-        if self.check_sequence and not np.array_equal(df.index, np.arange(1,len(df)+1)):
+        if self.check_sequence and not max(df['residue_number']) == len(df['residue_number'].unique()):
             return False
         # check if all standard amino acids
-        if not all(df['residue_name'].map(lambda x: not x is None)):
+        if not all(df['residue_type'].map(lambda x: not x is None)):
             return False
         # check if sequence is empty (e.g. with non-canonical amino acids)
-        if not sum(df['residue_name'].map(lambda x: not x is None)) > 0:
+        if not sum(df['residue_type'].map(lambda x: not x is None)) > 0:
             return False
         return True
 
@@ -290,7 +365,7 @@ class TorchPDBDataset():
                }
         return data
 
-    def to_graph(self, *args, **kwargs):
+    def to_graph(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
         Returns
@@ -298,9 +373,11 @@ class TorchPDBDataset():
         GraphDataset
             The dataset in graph representation.
         """
-        return GraphDataset(self.root, self.proteins, *args, **kwargs)
+        from proteinshake.representations import GraphDataset
+        self.download_precomputed(resolution=resolution)
+        return GraphDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
-    def to_point(self, *args, **kwargs):
+    def to_point(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
 
         Returns
@@ -308,9 +385,11 @@ class TorchPDBDataset():
         PointDataset
             The dataset in point cloud representation.
         """
-        return PointDataset(self.root, self.proteins, *args, **kwargs)
+        from proteinshake.representations import PointDataset
+        self.download_precomputed(resolution=resolution)
+        return PointDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
-    def to_voxel(self, *args, **kwargs):
+    def to_voxel(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
 
         Returns
@@ -318,4 +397,6 @@ class TorchPDBDataset():
         VoxelDataset
             The dataset in voxel representation.
         """
-        return VoxelDataset(self.root, self.proteins, *args, **kwargs)
+        from proteinshake.representations import VoxelDataset
+        self.download_precomputed(resolution=resolution)
+        return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)

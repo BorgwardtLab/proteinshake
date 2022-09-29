@@ -3,10 +3,10 @@ import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
-from proteinshake.datasets import TorchPDBDataset
+from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
-class RCSBDataset(TorchPDBDataset):
+class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
 
     This class also serves as a base class for all RCSB derived datasets. It can be subclassed by defining a default `query` argument. The query is a list of triplets `(attribute, operator, value)` according to https://search.rcsb.org/#attribute-queries and https://data.rcsb.org/data-attributes.html, which is passed to the REST API call to RCSB. See e.g. the GODataset subclass for an example. To find the right attributes, the queries can be constructed by doing an advanced search at RCSB (https://www.rcsb.org/search/advanced) and exporting to JSON. Also compare the API call in the `download` method.

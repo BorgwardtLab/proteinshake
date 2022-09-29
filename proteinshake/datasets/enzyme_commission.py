@@ -2,7 +2,7 @@ import json
 
 from proteinshake.datasets import RCSBDataset
 
-class ECDataset(RCSBDataset):
+class EnzymeCommissionDataset(RCSBDataset):
     """ Proteins from RCSB for which Enzyme Classification is known.
     Each item in this dataset has the attribute `EC` which is a string
     identifier.
@@ -18,9 +18,9 @@ class ECDataset(RCSBDataset):
         super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
-        with open(f'{self.root}/raw/files/{protein["ID"]}.annot.json','r') as file:
+        with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
-        protein['EC'] = annot['rcsb_polymer_entity']['rcsb_ec_lineage'][-1]['id']
+        protein['protein']['EC'] = annot['rcsb_polymer_entity']['rcsb_ec_lineage'][-1]['id']
         return protein
 
     def describe(self):
