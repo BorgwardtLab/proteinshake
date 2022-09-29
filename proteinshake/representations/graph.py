@@ -29,7 +29,7 @@ class Graph():
         resolution = 'atom' if 'atom' in protein else 'residue'
         mode = 'distance' if weighted_edges else 'connectivity'
         coords = np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
-        self.nodes = tokenize(protein['protein']['sequence'])
+        self.nodes = tokenize(protein[resolution][f'{resolution}_type'], resolution=resolution)
         if construction == 'eps':
             self.adj = radius_neighbors_graph(coords, radius=eps, mode=mode)
         elif construction == 'knn':

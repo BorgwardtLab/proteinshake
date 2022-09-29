@@ -7,6 +7,7 @@ All embeddings take a sequence string as an input and return the embedding as a 
 import numpy as np
 
 alphabet = 'ARNDCEQGHILKMFPSTWYV'
+atoms = 'NCOS'
 
 def residue_numeric(sequence):
     """ Compute the index of the residue
@@ -30,21 +31,25 @@ def residue_one_hot(sequence):
     return np.stack([np.eye(len(alphabet))[alphabet.index(aa)] for aa in sequence])
 
 
-def tokenize(sequence):
+def tokenize(sequence, resolution='residue'):
     """ Tokenizes the sequence.
 
     Parameters
     ----------
     sequence: str
-        The protein sequence
+        The protein sequence.
+    resolution: str, default 'resolution'
+        Resolution of the protein. 'residue' or 'atom'.
 
     Returns
     -------
     ndarray
         The embedded sequence.
     """
-
-    return np.array([alphabet.index(aa) for aa in sequence])
+    if resolution == 'residue':
+        return np.array([alphabet.index(aa) for aa in sequence])
+    else:
+        return np.array([atoms.index(aa[0]) for aa in sequence])
 
 # from: https://gist.github.com/foowaa/5b20aebd1dff19ee024b6c72e14347bb
 def sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
