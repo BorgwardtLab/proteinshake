@@ -15,10 +15,16 @@ class TestFrameworks(unittest.TestCase):
     def tearDown(self):
         self.tmpdir.cleanup()
 
-    def test_pyg(self):
+    def test_graph_pyg(self):
         from torch_geometric.loader import DataLoader
         graphs = self.ds.to_graph(k=5).pyg()
         loader = DataLoader(graphs)
+        x = next(iter(loader))
+
+    def test_voxel_torch(self):
+        from torch.utils.data import DataLoader
+        voxels = self.ds.to_voxel().torch()
+        loader = DataLoader(voxels)
         x = next(iter(loader))
 
 
