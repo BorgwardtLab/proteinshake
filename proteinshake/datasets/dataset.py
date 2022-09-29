@@ -311,6 +311,7 @@ class Dataset():
             filtered_lines.append(line)
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
         df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
+        df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
         df = df.sort_values('atom_number')
         df = df.rename(columns={
             'atom_name': 'atom_type',
