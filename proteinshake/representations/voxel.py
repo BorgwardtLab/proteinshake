@@ -1,5 +1,4 @@
 import os
-from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
@@ -8,7 +7,7 @@ from proteinshake.utils import onehot
 class Voxel():
     """ Voxel representation of a protein.
 
-    Voxelizes a protein. Each voxel
+    Voxelizes a protein.
 
     Parameters
     ----------

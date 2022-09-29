@@ -1,11 +1,11 @@
 from .graph import GraphDataset
-#from .point import PointDataset
+from .point import PointDataset
 from .voxel import VoxelDataset
 
 
 __all__ = [
     'GraphDataset',
-    #'PointDataset',
+    'PointDataset',
     'VoxelDataset',
     ]
 
