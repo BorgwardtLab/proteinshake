@@ -73,5 +73,5 @@ class GraphDataset():
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
     def pyg(self, *args, **kwargs):
-        from proteinshake.frameworks import PygGraphDataset
+        from proteinshake.frameworks.pyg import PygGraphDataset
         return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', *args, **kwargs)
