@@ -1,4 +1,5 @@
 import os
+import itertools
 from tqdm import tqdm
 import numpy as np
 
@@ -20,7 +21,7 @@ class Voxel():
 
     """
 
-    def __init__(self, protein, voxelsize, aggregation):
+    def __init__(self, protein, gridsize, voxelsize, aggregation):
         resolution = 'atom' if 'atom' in protein else 'residue'
         self.protein = protein
         self.resolution = resolution
@@ -33,11 +34,16 @@ class Voxel():
         voxel_indices = np.concatenate([voxel_indices, np.expand_dims(np.arange(len(coords)),1)], axis=1)
         voxels[tuple(voxel_indices.transpose())] = labels
         if aggregation == 'sum':
-            self.voxel = voxels.sum(axis=-2)
+            voxels = voxels.sum(axis=-2)
         elif aggregation == 'mean':
             counts[tuple(voxel_indices.transpose())] = np.ones_like(labels)
             counts = counts.sum(axis=-2)
-            self.voxel = np.divide(voxels.sum(axis=-2), counts, out=np.zeros_like(counts), where=counts!=0)
+            voxels = np.divide(voxels.sum(axis=-2), counts, out=np.zeros_like(counts), where=counts!=0)
+        # pad to gridsize
+        diff = gridsize-voxels.shape[:-1]
+        paddings = np.stack([np.ceil(diff/2), np.floor(diff/2)],1).astype(np.int32)
+        voxels = np.pad(voxels, (*paddings,(0,0)))
+        self.voxel = voxels
 
 
 
@@ -54,6 +60,8 @@ class VoxelDataset():
         Path to save the processed dataset.
     resolution: str, default 'residue'
         Resolution of the proteins to use in the graph representation. Can be 'atom' or 'residue'.
+    gridsize: tuple, default None
+        The size of the grid in voxels as a 3-tuple of x,y,z edge lengths. If None (default), the dimensions of the largest protein in the dataset is used.
     voxelsize: float, default 10
         The size of a voxel (in Angstrom).
     aggregation: str, defaul 'mean'
@@ -61,9 +69,17 @@ class VoxelDataset():
 
     """
 
-    def __init__(self, proteins, size, path, resolution='residue', voxelsize=10, aggregation='mean'):
+    def __init__(self, proteins, size, path, resolution='residue', gridsize=None, voxelsize=10, aggregation='mean'):
         self.path = f'{path}/processed/voxel/{resolution}_voxelsize_{voxelsize}'
-        self.voxels = (Voxel(protein, voxelsize, aggregation) for protein in proteins)
+        if gridsize is None:
+            proteins, proteins_copy = itertools.tee(proteins)
+            gridsize = np.array([[
+                np.ptp(protein[resolution]['x']),
+                np.ptp(protein[resolution]['y']),
+                np.ptp(protein[resolution]['z'])
+                ] for protein in proteins_copy]).max(0)
+            gridsize = np.ceil(gridsize/voxelsize)
+        self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
         self.size = size
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
