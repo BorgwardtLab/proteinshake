@@ -13,7 +13,8 @@ install_requires = [
                     'requests',
                     'joblib',
                     'rdkit',
-                    'tabulate'
+                    'tabulate',
+                    'fastavro'
                     ]
 test_requires = [
     'pytest',
@@ -37,4 +38,3 @@ setup(
     packages=find_packages(),
     include_package_data=True,
 )
-
