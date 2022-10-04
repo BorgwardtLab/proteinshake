@@ -110,7 +110,9 @@ class Dataset():
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
+            and k != 'root'
             and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
+            and (self.__class__.__name__ != 'Atom3DDataset' or k != 'atom_dataset')
         }
         if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
