@@ -41,7 +41,7 @@ class PygGraphDataset(InMemoryDataset):
     def __init__(self, graphs, size, path, transform=None, pre_transform=None, pre_filter=None):
         super().__init__(None, transform, pre_transform, pre_filter)
         self.size = size
-        transforms_repr = fx2str(transform)+fx2str(pre_transform)+fx2str(pre_filter)
+        transforms_repr = fx2str(pre_transform)+fx2str(pre_filter)
         if not os.path.exists(path):
             data_list = [Data(
                 x = torch.from_numpy(graph.nodes),

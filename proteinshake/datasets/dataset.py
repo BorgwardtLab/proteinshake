@@ -111,6 +111,7 @@ class Dataset():
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
             and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
+            and (self.__class__.__name__ != 'Atom3DDataset' or k != 'atom_dataset')
         }
         if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
@@ -259,8 +260,8 @@ class Dataset():
                 'z': residue_df['z'].tolist(),
             },
             'atom': {
-                'atom_number': atom_df['residue_number'].tolist(),
-                'atom_type': atom_df['residue_type'].tolist(),
+                'atom_number': atom_df['atom_number'].tolist(),
+                'atom_type': atom_df['atom_type'].tolist(),
                 'residue_number': atom_df['residue_number'].tolist(),
                 'residue_type': atom_df['residue_type'].tolist(),
                 'x': atom_df['x'].tolist(),
@@ -311,7 +312,7 @@ class Dataset():
             filtered_lines.append(line)
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
         df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
-        df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
+        #df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
         df = df.sort_values('atom_number')
         df = df.rename(columns={
             'atom_name': 'atom_type',
