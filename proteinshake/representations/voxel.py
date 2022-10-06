@@ -78,10 +78,11 @@ class VoxelDataset():
                 np.ptp(protein[resolution]['y']),
                 np.ptp(protein[resolution]['z'])
                 ] for protein in proteins_copy]).max(0)
-            gridsize = np.ceil(gridsize/voxelsize)
+            gridsize = np.ceil(gridsize/voxelsize).astype(int)
         gridsize = np.array(gridsize)
         self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
         self.size = size
+        self.gridsize = gridsize
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
     def torch(self, *args, **kwargs):
