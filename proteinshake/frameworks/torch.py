@@ -67,8 +67,8 @@ class TorchPointDataset(TorchDataset):
         if not os.path.exists(path):
             coords, labels, protein_dicts = [], [], []
             for point in tqdm(points, desc='Converting to point', total=size):
-                coords.append(torch.tensor(point.coords))
-                labels.append(torch.tensor(point.labels))
+                coords.append(torch.tensor(point.coords).float())
+                labels.append(torch.tensor(point.labels).float())
                 protein_dicts.append({
                     'protein': {k:convert_to_tensor(v) for k,v in point.protein['protein'].items()},
                     point.resolution: {k:convert_to_tensor(v) for k,v in point.protein[point.resolution].items() if k not in ['atom_type','atom_number','residue_type','residue_number','x','y','z']},
