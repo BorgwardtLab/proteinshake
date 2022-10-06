@@ -40,7 +40,13 @@ class ProteinProteinInterfaceDataset(Dataset):
         os.rename(f'{self.root}/raw/PP', f'{self.root}/raw/files')
 
     def add_protein_attributes(self, protein):
-        protein['residue']['is_interface'] = get_interfaces(protein, self.cutoff)
+        interface_atoms = get_interfaces(protein, self.cutoff, resolution='atom')
+        protein['atom']['is_interface'] = interface_atoms
+        protein['residue']['is_interface'] = [val
+                                              for val, atom_type in \
+                                              zip(interface_atoms, protein['atom']['atom_type']) \
+                                              if atom_type == 'CA'
+                                              ]
         return protein
 
     def describe(self):

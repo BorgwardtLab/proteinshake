@@ -4,7 +4,7 @@ from sklearn.neighbors import KDTree
 
 import numpy as np
 
-def get_interfaces(protein, cutoff=6):
+def get_interfaces(protein, cutoff=6, resolution='residue'):
     """Obtain interfacing residues within a single structure of polymers. Uses
     KDTree data structure for vector search.
 
@@ -19,11 +19,11 @@ def get_interfaces(protein, cutoff=6):
     """
 
     #3-D KD tree
-    df = pd.DataFrame({'x': protein['residue']['x'],
-                       'y': protein['residue']['y'],
-                       'z': protein['residue']['z'],
-                       'chain': protein['residue']['chain_id'],
-                       'residue_index':protein['residue']['residue_number']
+    df = pd.DataFrame({'x': protein[resolution]['x'],
+                       'y': protein[resolution]['y'],
+                       'z': protein[resolution]['z'],
+                       'chain': protein[resolution]['chain_id'],
+                       'residue_index':protein[resolution]['residue_number']
                        })
     resi_df = df.groupby(['residue_index', 'chain']).mean().reset_index()
     resi_coords = np.array([resi_df['x'].tolist(), resi_df['y'].tolist(), resi_df['z'].tolist()]).T
@@ -42,6 +42,6 @@ def get_interfaces(protein, cutoff=6):
                 interface.add(that_resi)
 
     resi_interface = []
-    for r in protein['residue']['residue_number']:
+    for r in protein[resolution]['residue_number']:
         resi_interface.append(r in interface)
     return resi_interface
