@@ -18,6 +18,7 @@ class Point():
         resolution = 'atom' if 'atom' in protein else 'residue'
         self.protein = protein
         self.resolution = resolution
+        self.labels = onehot(protein[resolution][f'{resolution}_type'])
         self.coords =  np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
 
 

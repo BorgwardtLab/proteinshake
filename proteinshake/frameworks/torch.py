@@ -27,24 +27,24 @@ class TorchVoxelDataset(TorchDataset):
         self.size = size
         self.transform = transform
         if not os.path.exists(path):
-            _voxels, _labels = [],[]
+            _voxels, _protein_dicts = [],[]
             for voxel in tqdm(voxels, desc='Converting to voxel', total=size):
                 _voxels.append(torch.tensor(voxel.voxel).float().to_sparse())
-                _labels.append({
+                _protein_dicts.append({
                     'protein': {k:convert_to_tensor(v) for k,v in voxel.protein['protein'].items()},
                     voxel.resolution: {k:convert_to_tensor(v) for k,v in voxel.protein[voxel.resolution].items() if k not in ['atom_type','atom_number','residue_type','residue_number','x','y','z']},
                 })
-            torch.save((_voxels, _labels), path)
+            torch.save((_voxels, _protein_dicts), path)
             del voxels
-        self.voxels, self.labels = torch.load(path)
+        self.voxels, self.protein_dicts = torch.load(path)
 
     def __len__(self):
         return len(self.voxels)
 
     def __getitem__(self, idx):
         if not self.transform is None:
-            return self.transform(self.voxels[idx].to_dense(), self.labels[idx])
-        return self.voxels[idx].to_dense(), self.labels[idx]
+            return self.transform(self.voxels[idx].to_dense(), self.protein_dicts[idx])
+        return self.voxels[idx].to_dense(), self.protein_dicts[idx]
 
 
 
@@ -61,17 +61,26 @@ class TorchPointDataset(TorchDataset):
         Path to save the processed dataset.
     """
 
-    def __init__(self, points, size, path):
+    def __init__(self, points, size, path, transform=None):
         self.size = size
+        self.transform = transform
         if not os.path.exists(path):
-            points = [torch.tensor(point.coords) for point in tqdm(points, desc='Converting to point', total=size)]
-            torch.save(points, path)
-            del points
-        self.points = torch.load(path)
-
+            coords, labels, protein_dicts = [], [], []
+            for point in tqdm(points, desc='Converting to point', total=size):
+                coords.append(torch.tensor(point.coords))
+                labels.append(torch.tensor(point.labels))
+                protein_dicts.append({
+                    'protein': {k:convert_to_tensor(v) for k,v in point.protein['protein'].items()},
+                    point.resolution: {k:convert_to_tensor(v) for k,v in point.protein[point.resolution].items() if k not in ['atom_type','atom_number','residue_type','residue_number','x','y','z']},
+                })
+            torch.save((coords, labels, protein_dicts), path)
+            del coords, labels
+        self.coords, self.labels, self.protein_dicts = torch.load(path)
 
     def __len__(self):
-        return len(self.points)
+        return len(self.coords)
 
     def __getitem__(self, idx):
-        return self.points[idx]
+        if not self.transform is None:
+            return self.transform(self.coords[idx], self.labels[idx], self.protein_dicts[idx])
+        return self.coords[idx], self.labels[idx], self.protein_dicts[idx]
