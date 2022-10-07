@@ -62,7 +62,7 @@ class GraphDataset():
 
     """
 
-    def __init__(self, proteins, size, path, resolution='residue', eps=None, k=None, weighted_edges=False):
+    def __init__(self, proteins, size, path, resolution='residue', eps=None, k=None, weighted_edges=False, root=None):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         construction = 'knn' if not k is None else 'eps'
         param = k if construction == 'knn' else eps
@@ -72,6 +72,6 @@ class GraphDataset():
         self.size = size
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
-    def pyg(self, *args, **kwargs):
+    def pyg(self, in_memory=True, *args, **kwargs):
         from proteinshake.frameworks.pyg import PygGraphDataset
-        return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', *args, **kwargs)
+        return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', in_memory=in_memory,  *args, **kwargs)
