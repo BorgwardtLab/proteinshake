@@ -5,6 +5,9 @@ import os.path as osp
 
 from rdkit import Chem
 from rdkit import RDLogger
+from rdkit.Chem import MACCSkeys
+from rdkit.Chem import AllChem
+
 import numpy as np
 
 from proteinshake.datasets import Dataset
@@ -56,10 +59,13 @@ class ProteinLigandInterfaceDataset(Dataset):
                                               protein['protein']['ID'],
                                               f'{protein["protein"]["ID"]}_ligand.sdf')
                                      )
-        try:
-            smiles = Chem.MolToSmiles(ligand)
-        except:
+
+        if ligand is None:
             return None
+        smiles = Chem.MolToSmiles(ligand)
+        fp_morgan = list(map(int, AllChem.GetMorganFingerprintAsBitVect(ligand, 2, nBits=1024).ToBitString()))
+        fp_maccs = list(map(int, MACCSkeys.GenMACCSKeys(ligand).ToBitString()))
+
         pocket_res = np.array(pocket.loc[pocket['atom_type'] == 'CA']['residue_number'].tolist())
         protein_res = np.array(protein['residue']['residue_number']).reshape(-1, 1)
 
@@ -82,6 +88,10 @@ class ProteinLigandInterfaceDataset(Dataset):
         protein['protein']['year'] = bind_data['date']
         protein['protein']['ligand_id'] = bind_data['ligand_id']
         protein['protein']['ligand_smiles'] = smiles
+
+        protein['protein']['fp_maccs'] = fp_maccs
+        protein['protein']['fp_morgan_r2'] = fp_morgan
+
         return protein
 
     def describe(self):
