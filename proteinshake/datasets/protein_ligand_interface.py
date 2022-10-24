@@ -44,12 +44,6 @@ class ProteinLigandInterfaceDataset(Dataset):
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["protein"]["ID"]}/{protein["protein"]["ID"]}_pocket.pdb')
-        is_site = np.zeros((len(pocket),))
-        is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
-        ).sum(axis=1).nonzero()] = 1.
-        protein['residue']['binding_site'] = is_site
-
         index_data = parse_pdbbind_PL_index(osp.join(self.root,
                                                     "raw",
                                                     "files",
@@ -66,11 +60,22 @@ class ProteinLigandInterfaceDataset(Dataset):
             smiles = Chem.MolToSmiles(ligand)
         except:
             return None
-        is_site = np.zeros((len(pocket),))
-        is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
-        ).sum(axis=1).nonzero()] = 1.
-        protein['residue']['binding_site'] = is_site.tolist()
+        pocket_res = np.array(pocket.loc[pocket['atom_type'] == 'CA']['residue_number'].tolist())
+        protein_res = np.array(protein['residue']['residue_number']).reshape(-1, 1)
+
+        pocket_atom = np.array(pocket['residue_number'].tolist())
+        protein_atom = np.array(protein['atom']['residue_number']).reshape(-1, 1)
+
+        is_site_res = np.zeros_like(protein_res)
+        is_site_atom  = np.zeros_like(protein_atom)
+
+        is_site_res[(pocket_res == protein_res).sum(axis=1).nonzero()] = 1.
+        is_site_atom[(pocket_atom == protein_atom).sum(axis=1).nonzero()] = 1.
+
+
+        protein['residue']['binding_site'] = list(is_site_res.squeeze())
+        protein['atom']['binding_site'] = list(is_site_atom.squeeze())
+
         bind_data = index_data[protein['protein']['ID']]
         protein['protein']['kd'] = bind_data['kd']['value']
         protein['protein']['resolution'] = bind_data['resolution']
