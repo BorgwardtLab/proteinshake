@@ -19,20 +19,19 @@ from datetime import datetime
 from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset
 from proteinshake.utils import zip_file
 
-RELEASE = datetime.now().strftime('%d%b%Y').upper()
-
-os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload'), exist_ok=True)
-
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
-parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}'))
+parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/Datasets/proteinshake'))
+parser.add_argument('--tag', type=str, help='Release tag', default=datetime.now().strftime('%d%b%Y').upper())
 parser.add_argument('--njobs', type=int, help='Number of jobs.', default=20)
 args = parser.parse_args()
 
 PATH = args.path
-SCRATCH = args.scratch if args.scratch != '' else args.path
+SCRATCH = args.scratch+'/'+args.tag if args.scratch != '' else args.path
+RELEASE = args.tag
 n_jobs = args.njobs
 
+os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload'), exist_ok=True)
 
 ###################
 # PDB Datasets
