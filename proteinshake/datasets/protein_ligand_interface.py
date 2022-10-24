@@ -79,8 +79,8 @@ class ProteinLigandInterfaceDataset(Dataset):
         is_site_atom[(pocket_atom == protein_atom).sum(axis=1).nonzero()] = 1.
 
 
-        protein['residue']['binding_site'] = list(is_site_res.squeeze())
-        protein['atom']['binding_site'] = list(is_site_atom.squeeze())
+        protein['residue']['binding_site'] = list(map(int, is_site_res.squeeze()))
+        protein['atom']['binding_site'] = list(map(int, is_site_atom.squeeze()))
 
         bind_data = index_data[protein['protein']['ID']]
         protein['protein']['kd'] = bind_data['kd']['value']
@@ -91,6 +91,8 @@ class ProteinLigandInterfaceDataset(Dataset):
 
         protein['protein']['fp_maccs'] = fp_maccs
         protein['protein']['fp_morgan_r2'] = fp_morgan
+
+        print(protein['atom'])
 
         return protein
 
