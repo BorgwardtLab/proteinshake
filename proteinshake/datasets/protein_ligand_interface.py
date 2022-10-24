@@ -5,6 +5,9 @@ import os.path as osp
 
 from rdkit import Chem
 from rdkit import RDLogger
+from rdkit.Chem import MACCSkeys
+from rdkit.Chem import AllChem
+
 import numpy as np
 
 from proteinshake.datasets import Dataset
@@ -44,12 +47,6 @@ class ProteinLigandInterfaceDataset(Dataset):
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["protein"]["ID"]}/{protein["protein"]["ID"]}_pocket.pdb')
-        is_site = np.zeros((len(pocket),))
-        is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
-        ).sum(axis=1).nonzero()] = 1.
-        protein['residue']['binding_site'] = is_site
-
         index_data = parse_pdbbind_PL_index(osp.join(self.root,
                                                     "raw",
                                                     "files",
@@ -62,21 +59,39 @@ class ProteinLigandInterfaceDataset(Dataset):
                                               protein['protein']['ID'],
                                               f'{protein["protein"]["ID"]}_ligand.sdf')
                                      )
-        try:
-            smiles = Chem.MolToSmiles(ligand)
-        except:
+
+        if ligand is None:
             return None
-        is_site = np.zeros((len(pocket),))
-        is_site[(
-            np.expand_dims(np.array(pocket['residue_number'].tolist()), axis=1) == protein['residue']['residue_number']
-        ).sum(axis=1).nonzero()] = 1.
-        protein['residue']['binding_site'] = is_site.tolist()
+        smiles = Chem.MolToSmiles(ligand)
+        fp_morgan = list(map(int, AllChem.GetMorganFingerprintAsBitVect(ligand, 2, nBits=1024).ToBitString()))
+        fp_maccs = list(map(int, MACCSkeys.GenMACCSKeys(ligand).ToBitString()))
+
+        pocket_res = np.array(pocket.loc[pocket['atom_type'] == 'CA']['residue_number'].tolist())
+        protein_res = np.array(protein['residue']['residue_number']).reshape(-1, 1)
+
+        pocket_atom = np.array(pocket['residue_number'].tolist())
+        protein_atom = np.array(protein['atom']['residue_number']).reshape(-1, 1)
+
+        is_site_res = np.zeros_like(protein_res)
+        is_site_atom  = np.zeros_like(protein_atom)
+
+        is_site_res[(pocket_res == protein_res).sum(axis=1).nonzero()] = 1.
+        is_site_atom[(pocket_atom == protein_atom).sum(axis=1).nonzero()] = 1.
+
+
+        protein['residue']['binding_site'] = list(is_site_res.squeeze())
+        protein['atom']['binding_site'] = list(is_site_atom.squeeze())
+
         bind_data = index_data[protein['protein']['ID']]
         protein['protein']['kd'] = bind_data['kd']['value']
         protein['protein']['resolution'] = bind_data['resolution']
         protein['protein']['year'] = bind_data['date']
         protein['protein']['ligand_id'] = bind_data['ligand_id']
         protein['protein']['ligand_smiles'] = smiles
+
+        protein['protein']['fp_maccs'] = fp_maccs
+        protein['protein']['fp_morgan_r2'] = fp_morgan
+
         return protein
 
     def describe(self):
