@@ -92,8 +92,6 @@ class ProteinLigandInterfaceDataset(Dataset):
         protein['protein']['fp_maccs'] = fp_maccs
         protein['protein']['fp_morgan_r2'] = fp_morgan
 
-        print(protein['atom'])
-
         return protein
 
     def describe(self):
