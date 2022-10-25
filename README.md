@@ -5,9 +5,6 @@
 
 # ML-ready protein 3D structure datasets
 
-* Fetch clean protein datasets in one line
-* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
-* Convert proteins to graphs, point clouds, voxels, and surfaces (coming soon).
 
 [pypi-url]: https://pypi.org/project/proteinshake
 ![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
@@ -17,8 +14,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
+* Fetch clean protein datasets in one line
+* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
+* Convert proteins to graphs, point clouds, voxels, and surfaces (coming soon).
 
-This is a collection of protein structure datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
+
+
+proteinshake is a collection of protein structure datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
 After installing, datasets can be passed directly to ML loaders for model training.
 
 ## PDB Datasets
