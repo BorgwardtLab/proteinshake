@@ -1,4 +1,5 @@
 from proteinshake.tasks.task import ShakeTask
+from sklearn import metrics
 
 class LigandAffinityTask(ShakeTask):
     def __init__(self, dataset, *args, **kwargs):
