@@ -82,13 +82,6 @@ class ShakeTask:
     def evaluator(self):
         raise NotImplementedError
 
-    def set_target_pyg(self, pyg_dataset, batch_size=32, framework='pyg'):
-        d = []
-        for p in pyg_dataset:
-            p.y = [self.token_map[self.label_process(getattr(p, self.target)[0])]]
-            d.append(p)
-        return d
-
     def create_cache(self):
         if not osp.exists(self.cache_dir):
             os.makedirs(self.cache_dir)

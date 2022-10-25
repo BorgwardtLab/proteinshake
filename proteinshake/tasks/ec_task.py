@@ -13,7 +13,7 @@ class EnzymeCommissionTask(ShakeTask):
 
     @property
     def target(self, idx):
-        return self.dataset[idx]['EC'].split(".")[0]
+        return self.token_map[self.dataset[idx]['EC'].split(".")[0]]
 
     @property
     def evaluator(self):
