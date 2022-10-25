@@ -1,3 +1,4 @@
+from proteinshake.tasks.task import ShakeTask
 from sklearn import metrics
 
 class EnzymeCommissionTask(ShakeTask):
