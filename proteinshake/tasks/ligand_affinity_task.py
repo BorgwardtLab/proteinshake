@@ -7,7 +7,7 @@ class LigandAffinityTask(ShakeTask):
 
     @property
     def target(self, idx):
-        return self.dataset[idx]['kd']
+        return self.proteins[idx]['kd']
 
     def evaluator(self):
         return metrics.mean_squared_error

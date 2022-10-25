@@ -1,6 +1,9 @@
 from itertools import combinations
 
 from sklearn import metrics
+from sklearn.model_selection import train_test_split
+
+from proteinshake.tasks import ShakeTask
 
 class RetrieveTask(ShakeTask):
     def __init__(self, dataset, *args, **kwargs):
@@ -19,16 +22,17 @@ class RetrieveTask(ShakeTask):
         self.val_ind = val
         self.test_ind = test
 
-    @property
     def target(self, idx):
-        return self.dataset[idx[0]][idx[1]]['TM']
+        pdbid_1 = self.proteins[idx[0]]['protein']['ID']
+        pdbid_2 = self.proteins[idx[1]]['protein']['ID']
+        return self.dataset.tm_score[pdbid_1][pdbid_2]
 
     @property
     def evaluator(self):
         return metrics.mean_squared_error
-        pass
 
 if __name__ == "__main__":
     from proteinshake.datasets import TMAlignDataset
     dataset = TMAlignDataset(root='tm')
     task = RetrieveTask(dataset)
+    print(task.target(task.train_ind[0]))

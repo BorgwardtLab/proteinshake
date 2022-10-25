@@ -22,6 +22,10 @@ class ShakeTask:
         self.random_state = random_state
         self.cache_dir = cache_dir
 
+        proteins, size = list(self.dataset.proteins())
+        self.proteins = list(proteins)
+        self.size = size
+
         self._process()
 
     def _process(self):
@@ -43,8 +47,7 @@ class ShakeTask:
 
     def compute_splits(self):
         print(f">>> computing splits")
-        _, size = self.dataset.proteins()
-        inds = range(size)
+        inds = range(self.size)
         train, test = train_test_split(inds, test_size=1 - self.train_ratio)
         val, test = train_test_split(test, test_size=self.test_ratio/(self.test_ratio + self.validation_ratio))
 
