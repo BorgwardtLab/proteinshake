@@ -9,11 +9,8 @@ class EnzymeCommissionTask(ShakeTask):
         self.token_map = {label: i for i, label in enumerate(sorted(list(labels)))}
 
     @property
-    def target(self):
-        return 'EC'
-
-    def label_process(self, label):
-        return  label.split(".")[0]
+    def target(self, idx):
+        return self.dataset[idx]['EC'].split(".")[0]
 
     @property
     def evaluator(self):

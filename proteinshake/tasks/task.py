@@ -64,7 +64,7 @@ class ShakeTask:
         raise NotImplementedError
 
     @property
-    def target(self):
+    def target(self, idx):
         raise NotImplementedError
 
     @property

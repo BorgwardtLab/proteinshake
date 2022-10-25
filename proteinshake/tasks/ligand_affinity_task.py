@@ -3,8 +3,8 @@ class LigandAffinityTask(ShakeTask):
         super().__init__(dataset, *args, **kwargs)
 
     @property
-    def target(self):
-        return 'kd'
+    def target(self, idx):
+        return self.dataset[idx]['kd']
 
     def evaluator(self):
         return metrics.mean_squared_error
