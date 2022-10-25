@@ -1,5 +1,7 @@
 from itertools import combinations
 
+from sklearn import metrics
+
 class RetrieveTask(ShakeTask):
     def __init__(self, dataset, *args, **kwargs):
 
@@ -23,11 +25,8 @@ class RetrieveTask(ShakeTask):
 
     @property
     def evaluator(self):
+        return metrics.mean_squared_error
         pass
-
-    @property
-    def level(self):
-        return 'protein'
 
 if __name__ == "__main__":
     from proteinshake.datasets import TMAlignDataset
