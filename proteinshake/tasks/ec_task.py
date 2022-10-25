@@ -1,8 +1,11 @@
-from proteinshake.tasks.task import ShakeTask
 from sklearn import metrics
 
+from proteinshake.datasets import EnzymeCommissionDataset
+from proteinshake.tasks import ShakeTask
+
 class EnzymeCommissionTask(ShakeTask):
-    def __init__(self, dataset, *args, **kwargs):
+    def __init__(self, root, *args, **kwargs):
+        dataset = EnzymeCommissionDataset(root)
 
         super().__init__(dataset, *args, **kwargs)
 

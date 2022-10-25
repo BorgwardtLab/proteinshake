@@ -1,8 +1,11 @@
-from proteinshake.tasks.task import ShakeTask
 from sklearn import metrics
 
+from proteinshake.datasets import ProteinLigandInterfaceDataset
+from proteinshake.tasks import ShakeTask
+
 class LigandAffinityTask(ShakeTask):
-    def __init__(self, dataset, *args, **kwargs):
+    def __init__(self, root, *args, **kwargs):
+        dataset = ProteinLigandInterfaceDataset(root=root)
         super().__init__(dataset, *args, **kwargs)
 
     @property
@@ -11,3 +14,6 @@ class LigandAffinityTask(ShakeTask):
 
     def evaluator(self):
         return metrics.mean_squared_error
+
+if __name__ == "__main__":
+    task = LigandAffinityTask(root='bob')
