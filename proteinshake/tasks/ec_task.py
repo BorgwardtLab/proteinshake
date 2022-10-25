@@ -1,3 +1,5 @@
+from sklearn import metrics
+
 class EnzymeCommissionTask(ShakeTask):
     def __init__(self, dataset, *args, **kwargs):
 
@@ -22,5 +24,3 @@ class EnzymeCommissionTask(ShakeTask):
     @property
     def level(self):
         return 'protein'
-
-
