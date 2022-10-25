@@ -15,8 +15,9 @@
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
 * Fetch clean protein datasets in one line
-* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
 * Convert proteins to graphs, point clouds, voxels, and surfaces (coming soon).
+* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
+
 
 
 
