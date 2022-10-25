@@ -1,3 +1,5 @@
+from proteinshake.tasks.task import ShakeTask
+
 class LigandAffinityTask(ShakeTask):
     def __init__(self, dataset, *args, **kwargs):
         super().__init__(dataset, *args, **kwargs)
@@ -15,5 +17,3 @@ class LigandAffinityTask(ShakeTask):
             p.y = getattr(p, self.target)
             d.append(p)
         return d
-
-
