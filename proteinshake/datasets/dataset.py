@@ -84,6 +84,7 @@ class Dataset():
         int
             The total number of proteins in the file.
         """
+        self.download_precomputed(resolution=resolution)
         with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
             total = int(avro_reader(file).metadata['number_of_proteins'])
         def reader():
@@ -376,7 +377,6 @@ class Dataset():
             The dataset in graph representation.
         """
         from proteinshake.representations import GraphDataset
-        self.download_precomputed(resolution=resolution)
         return GraphDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
     def to_point(self, resolution='residue', *args, **kwargs):
@@ -388,7 +388,6 @@ class Dataset():
             The dataset in point cloud representation.
         """
         from proteinshake.representations import PointDataset
-        self.download_precomputed(resolution=resolution)
         return PointDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
 
     def to_voxel(self, resolution='residue', *args, **kwargs):
@@ -400,5 +399,4 @@ class Dataset():
             The dataset in voxel representation.
         """
         from proteinshake.representations import VoxelDataset
-        self.download_precomputed(resolution=resolution)
         return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
