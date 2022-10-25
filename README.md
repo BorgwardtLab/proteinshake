@@ -3,7 +3,11 @@
 <img src="https://github.com/BorgwardtLab/proteinshake/raw/main/images/proteinshake_banner.png" width="70%">
 </p>
 
-# The largest repository of ML-ready protein 3D structure datasets
+# ML-ready protein 3D structure datasets
+
+* Fetch clean protein datasets in one line
+* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
+* Convert proteins to graphs, point clouds, voxels, and surfaces (coming soon).
 
 [pypi-url]: https://pypi.org/project/proteinshake
 ![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
