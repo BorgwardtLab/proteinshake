@@ -1,5 +1,5 @@
-proteinshake.representations
-========================
+Protein Numerical Representations
+===================================
 
 .. currentmodule:: proteinshake.representations
 

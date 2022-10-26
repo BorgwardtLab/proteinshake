@@ -50,6 +50,7 @@ Who is proteinshake for?
 
    modules/datasets
    modules/representations
+   modules/tasks
    modules/utils
 
 
