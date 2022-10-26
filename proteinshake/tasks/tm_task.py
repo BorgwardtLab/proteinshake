@@ -32,8 +32,8 @@ class RetrieveTask(ShakeTask):
         self.test_ind = test
 
     def target(self, idx):
-        pdbid_1 = self.proteins[idx[0]]['protein']['ID']
-        pdbid_2 = self.proteins[idx[1]]['protein']['ID']
+        pdbid_1 = protein['protein']['ID']
+        pdbid_2 = protein['protein']['ID']
         return self.dataset.tm_score[pdbid_1][pdbid_2]
 
     def evaluate(self, pred, true):
