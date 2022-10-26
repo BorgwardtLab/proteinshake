@@ -11,6 +11,20 @@ class ShakeTask:
     Users should use this class to build their own dataloaders for training
     and evaluating models.
 
+    Sample usage (assuming you have a model and dataloader in the namespace):
+
+     .. code-block:: python
+
+        >>> from proteinshake.tasks import EnzymeCommissionTask
+        >>> task = EnzymeCommissionTask(root='foo')
+        >>> task.train_ind
+        ... [1, 3, 4, 5, 9, ...]
+        >>> out = model(dataloader[task.test_ind])
+        >>> targets = [task.target(i) for i in task.test_ind]
+        >>> task.evaluate(out, targets)
+        ... {'roc_auc_score': 0.7}
+
+
     Parameters
     ----------
     dataset: pytorch.datasets.Dataset
@@ -108,7 +122,7 @@ class ShakeTask:
         raise NotImplementedError
 
     @property
-    def num_labels(self):
+    def num_classes(self):
         """ Size of the output dimension for this task """
         raise NotImplementedError
 
