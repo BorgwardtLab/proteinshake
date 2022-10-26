@@ -2,7 +2,7 @@ import os
 from tqdm import tqdm
 import numpy as np
 
-from proteinshake.utils import onehot
+from proteinshake.utils import tokenize
 
 class Point():
     """ Point representation of a protein.
@@ -16,10 +16,11 @@ class Point():
 
     def __init__(self, protein):
         resolution = 'atom' if 'atom' in protein else 'residue'
-        self.protein = protein
+        self.protein_dict = protein
         self.resolution = resolution
-        self.labels = onehot(protein[resolution][f'{resolution}_type'])
-        self.coords =  np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
+        labels = tokenize(protein[resolution][f'{resolution}_type'], resolution=resolution)
+        coords =  np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
+        self.data = np.concatenate((coords,np.expand_dims(labels,-1)), axis=-1)
 
 
 
@@ -43,7 +44,6 @@ class PointDataset():
         self.path = f'{path}/processed/point/{resolution}'
         self.points = (Point(protein) for protein in proteins)
         self.size = size
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchPointDataset

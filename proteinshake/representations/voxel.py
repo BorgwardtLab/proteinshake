@@ -23,7 +23,7 @@ class Voxel():
 
     def __init__(self, protein, gridsize, voxelsize, aggregation):
         resolution = 'atom' if 'atom' in protein else 'residue'
-        self.protein = protein
+        self.protein_dict = protein
         self.resolution = resolution
         labels = onehot(protein[resolution][f'{resolution}_type'])
         coords = np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
@@ -43,7 +43,7 @@ class Voxel():
         diff = gridsize-voxels.shape[:-1]
         paddings = np.stack([np.ceil(diff/2), np.floor(diff/2)],1).astype(np.int32)
         voxels = np.pad(voxels, (*paddings,(0,0)))
-        self.voxel = voxels
+        self.data = voxels
 
 
 
@@ -83,7 +83,6 @@ class VoxelDataset():
         self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
         self.size = size
         self.gridsize = gridsize
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchVoxelDataset
