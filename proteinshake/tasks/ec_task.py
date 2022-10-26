@@ -28,3 +28,6 @@ class EnzymeCommissionTask(ShakeTask):
 
     def evaluate(self, pred, true):
         return {'precision': metrics.precision_score(pred, true, average='macro')}
+
+if __name__ == "__main__":
+    task = EnzymeCommissionTask(root='ec')

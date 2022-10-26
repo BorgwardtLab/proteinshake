@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import json
+from pathlib import Path
 
 from sklearn.model_selection import train_test_split
 
@@ -46,14 +47,14 @@ class ShakeTask:
                  train_ratio=0.75,
                  val_ratio=.15,
                  test_ratio=.1,
-                 cache_dir='.proteinshake'):
+                ):
         self.dataset = dataset
         self.data_name = dataset.__class__.__name__
         self.train_ratio = train_ratio
         self.validation_ratio = val_ratio
         self.test_ratio = test_ratio
         self.random_state = random_state
-        self.cache_dir = cache_dir
+        self.cache_dir = osp.join(self.dataset.root, "tasks")
 
         proteins, size = list(self.dataset.proteins())
         self.proteins = list(proteins)
@@ -150,7 +151,7 @@ class ShakeTask:
 
     def create_cache(self):
         """ Creates the task info cache directory """
-        if not osp.exists(self.cache_dir):
+        if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
     def load_cache(self):
