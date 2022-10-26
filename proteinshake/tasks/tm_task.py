@@ -28,9 +28,8 @@ class RetrieveTask(ShakeTask):
         pdbid_2 = self.proteins[idx[1]]['protein']['ID']
         return self.dataset.tm_score[pdbid_1][pdbid_2]
 
-    @property
-    def evaluator(self):
-        return metrics.mean_squared_error
+    def evaluate(self, pred, true):
+        return {'mse': metrics.mean_squared_error(pred, true)}
 
 if __name__ == "__main__":
     # from proteinshake.datasets import TMAlignDataset

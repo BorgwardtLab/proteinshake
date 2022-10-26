@@ -18,9 +18,8 @@ class EnzymeCommissionTask(ShakeTask):
     def target(self, idx):
         return self.token_map[self.proteins[idx]['EC'].split(".")[0]]
 
-    @property
-    def evaluator(self):
-        return metrics.precision_score
+    def evaluate(self, pred, true):
+        return {'precision': metrics.precision_score(pred, true)}
 
     @property
     def level(self):
