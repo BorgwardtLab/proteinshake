@@ -117,6 +117,11 @@ class ShakeTask:
         raise NotImplementedError
 
     @property
+    def task_type(self):
+        """ Returns a string describing the type of task."""
+        raise NotImplementedError
+
+    @property
     def num_features(self):
         """ Number of input features to use for this task """
         raise NotImplementedError

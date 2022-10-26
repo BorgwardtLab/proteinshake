@@ -15,6 +15,10 @@ class RetrieveTask(ShakeTask):
         dataset = TMAlignDataset(root=root)
         super().__init__(dataset, *args, **kwargs)
 
+    @property
+    def task_type(self):
+        return "regression"
+
     def compute_splits(self):
         print(f">>> computing splits")
         _, size = self.dataset.proteins()

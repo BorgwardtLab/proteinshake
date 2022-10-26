@@ -12,6 +12,10 @@ class LigandAffinityTask(ShakeTask):
         dataset = ProteinLigandInterfaceDataset(root=root)
         super().__init__(dataset, *args, **kwargs)
 
+    @property
+    def task_type(self):
+        return "regression"
+
     def target(self, idx):
         return self.proteins[idx]['kd']
 

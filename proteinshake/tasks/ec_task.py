@@ -19,6 +19,9 @@ class EnzymeCommissionTask(ShakeTask):
     @property
     def num_classes(self):
         return len(self.token_map)
+    @property
+    def task_type(self):
+        return 'classification, multi-class'
 
     def target(self, idx):
         return self.token_map[self.proteins[idx]['protein']['EC'].split(".")[0]]
