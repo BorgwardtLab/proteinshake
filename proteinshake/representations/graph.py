@@ -81,3 +81,7 @@ class GraphDataset():
     def dgl(self, *args, **kwargs):
         from proteinshake.frameworks.dgl import DGLGraphDataset
         return DGLGraphDataset(self.graphs, self.size, self.path+'.dgl', *args, **kwargs)
+
+    def nx(self, *args, **kwargs):
+        from proteinshake.frameworks.nx import NetworkxGraphDataset
+        return NetworkxGraphDataset(self.graphs, self.size, self.path+'.nx', *args, **kwargs)
