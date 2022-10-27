@@ -40,5 +40,6 @@ class NetworkxGraphDataset():
             raise StopIteration
         data, protein_dict = load(f'{self.path}/{idx}.pkl')
         if not self.transform is None:
-            data, protein_dict = self.transform(data, protein_dict)
-        return data, protein_dict
+            return self.transform(data, protein_dict)
+        else:
+            return data, protein_dict

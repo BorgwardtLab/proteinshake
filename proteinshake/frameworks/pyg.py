@@ -58,5 +58,6 @@ class PygGraphDataset(Dataset):
             raise StopIteration
         data, protein_dict = torch.load(f'{self.path}/{idx}.pt')
         if not self.transform is None:
-            data, protein_dict = self.transform(data, protein_dict)
-        return data, protein_dict
+            return self.transform(data, protein_dict)
+        else:
+            return data, protein_dict
