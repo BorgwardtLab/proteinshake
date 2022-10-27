@@ -23,8 +23,8 @@ class EnzymeCommissionTask(ShakeTask):
     def task_type(self):
         return 'classification, multi-class'
 
-    def target(self, idx):
-        return self.token_map[self.proteins[idx]['protein']['EC'].split(".")[0]]
+    def target(self, protein):
+        return self.token_map[protein['protein']['EC'].split(".")[0]]
 
     def evaluate(self, pred, true):
         return {'precision': metrics.precision_score(pred, true, average='macro')}

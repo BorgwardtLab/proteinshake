@@ -29,14 +29,15 @@ class Graph():
         resolution = 'atom' if 'atom' in protein else 'residue'
         mode = 'distance' if weighted_edges else 'connectivity'
         coords = np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
-        self.nodes = tokenize(protein[resolution][f'{resolution}_type'], resolution=resolution)
+        nodes = tokenize(protein[resolution][f'{resolution}_type'], resolution=resolution)
         if construction == 'eps':
-            self.adj = radius_neighbors_graph(coords, radius=eps, mode=mode)
+            adj = radius_neighbors_graph(coords, radius=eps, mode=mode)
         elif construction == 'knn':
             n_neighbors = min(len(coords) - 1, k) # reduce k if protein is smaller than self.k
-            self.adj = kneighbors_graph(coords,  n_neighbors=n_neighbors, mode=mode)
-        self.protein = protein
+            adj = kneighbors_graph(coords,  n_neighbors=n_neighbors, mode=mode)
+        self.protein_dict = protein
         self.resolution = resolution
+        self.data = (nodes, adj)
 
 
 

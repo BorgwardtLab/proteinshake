@@ -107,13 +107,13 @@ class ShakeTask:
         return label
 
     @property
-    def target(self, idx):
-        """ Return the prediction target for one item in the dataset.
+    def target(self, protein):
+        """ Return the prediction target for one protein in the dataset.
 
         Parameters:
         ------------
-        idx: int or tuple
-            Index or pair of indices (tuple) from which we get the prediction target.
+        protein: dict
+            proteinshake protein dictionary
         """
         raise NotImplementedError
 
