@@ -16,6 +16,8 @@ class TorchVoxelDataset(Dataset):
         The size of the dataset.
     path: str
         Path to save the processed dataset.
+    transform: function
+        A transform function to be applied in the __getitem__ method. Signature: transform(data, protein_dict) -> (data, protein_dict)
     """
 
     def __init__(self, data_list, size, path, transform=None):
@@ -53,6 +55,8 @@ class TorchPointDataset(Dataset):
         The size of the dataset.
     path: str
         Path to save the processed dataset.
+    transform: function
+        A transform function to be applied in the __getitem__ method. Signature: transform(data, protein_dict) -> (data, protein_dict)
     """
 
     def __init__(self, data_list, size, path, transform=None):

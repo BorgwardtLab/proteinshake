@@ -1,53 +1,47 @@
-'''
 import os
-
 import dgl
 import torch
 from dgl.data import DGLDataset
 from dgl import save_graphs, load_graphs
+from tqdm import tqdm
 
-def dgl(self):
-    from .dgl_data import Dataset
 
-    ds = Dataset(f'{self.root}/processed/graph/{self.name}.dgl.pkl',
-                 self.proteins,
-                 self.info)
-    return ds
+class DGLGraphDataset(DGLDataset):
+    """ Dataset class for graphs in DGL.
 
-    @checkpoint('{root}/processed/graph/{name}.nx.pkl')
-    def nx(self):
-        import networkx as nx
-        def graph2nx(graph, info={}):
-            g = nx.from_scipy_sparse_matrix(graph[1])
-            g.add_nodes_from(graph[0])
-            for key,value in info.items():
-                if type(value) == list and len(value) == len(info['sequence']):
-                    nx.set_node_attributes(g, value, key)
-                else:
-                    g.graph[key] = value
-            return g
-        return [graph2nx(p, info=info) for p,info in zip(self.proteins,self.info)]
+    Parameters
+    ----------
+    data_list: generator
+        A generator of objects from a representation.
+    size: int
+        The size of the dataset.
+    path: str
+        Path to save the processed dataset.
+    transform: function
+        A transform function to be applied in the __getitem__ method. Signature: transform(data, protein_dict) -> (data, protein_dict)
+    """
 
-class Dataset(DGLDataset):
-    def __init__(self, path, proteins, info):
-        if os.path.exists(path):
-            self.proteins = load_graphs(path)
-        else:
-            self.proteins = [graph2dgl(p, info=info) for p,info in zip(proteins,info)]
-            save_graphs(path, self.proteins)
-    def __getitem__(self, i):
-            return self.proteins[i]
+    def __init__(self, data_list, size, path, transform=None):
+        os.makedirs(path, exist_ok=True)
+        self.path = path
+        self.size = size
+        self.transform = transform
+        if not os.path.exists(f'{path}/{size-1}.pt'):
+            for i, data_item in enumerate(tqdm(data_list, desc='Converting', total=size)):
+                nodes, adj = data_item.data
+                data = dgl.from_scipy(adj, eweight_name='edge_weight')
+                if data_item.weighted_edges:
+                    data.ndata[f'{data_item.resolution}'] = torch.tensor(nodes).long()
+                protein_dict = data_item.protein_dict
+                torch.save((data, protein_dict), f'{path}/{i}.pt')
+
     def __len__(self):
-            return len(self.proteins)
+        return self.size
 
-
-def graph2dgl(graph, info={}):
-    g = dgl.from_scipy(graph[1])
-    for key,value in info.items():
-        if type(value) == list and len(value) == len(info['sequence']):
-            try:
-                g.ndata[key] = torch.tensor(value)
-            except:
-                pass
-    return g
-'''
+    def __getitem__(self, idx):
+        if idx > self.size - 1:
+            raise StopIteration
+        data, protein_dict = torch.load(f'{self.path}/{idx}.pt')
+        if not self.transform is None:
+            data, protein_dict = self.transform(data, protein_dict)
+        return data, protein_dict

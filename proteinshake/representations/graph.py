@@ -38,6 +38,7 @@ class Graph():
         self.protein_dict = protein
         self.resolution = resolution
         self.data = (nodes, adj)
+        self.weighted_edges = weighted_edges
 
 
 
@@ -76,3 +77,7 @@ class GraphDataset():
     def pyg(self, *args, **kwargs):
         from proteinshake.frameworks.pyg import PygGraphDataset
         return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', *args, **kwargs)
+
+    def dgl(self, *args, **kwargs):
+        from proteinshake.frameworks.dgl import DGLGraphDataset
+        return DGLGraphDataset(self.graphs, self.size, self.path+'.dgl', *args, **kwargs)
