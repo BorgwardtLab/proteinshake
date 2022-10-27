@@ -48,3 +48,7 @@ class PointDataset():
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchPointDataset
         return TorchPointDataset(self.points, self.size, self.path+'.torch', *args, **kwargs)
+
+    def tf(self, *args, **kwargs):
+        from proteinshake.frameworks.tf import TensorflowPointDataset
+        return TensorflowPointDataset(self.points, self.size, self.path+'.tf', *args, **kwargs)

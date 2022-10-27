@@ -87,3 +87,7 @@ class VoxelDataset():
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchVoxelDataset
         return TorchVoxelDataset(self.voxels, self.size, self.path+'.torch', *args, **kwargs)
+
+    def tf(self, *args, **kwargs):
+        from proteinshake.frameworks.tf import TensorflowVoxelDataset
+        return TensorflowVoxelDataset(self.voxels, self.size, self.path+'.tf', *args, **kwargs)

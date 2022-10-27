@@ -1,11 +1,9 @@
-import torch
 import os
-import numpy as np
+import tensorflow as tf
+from proteinshake.utils import save, load
 from tqdm import tqdm
-from torch.utils.data import Dataset
 
-
-class TorchVoxelDataset(Dataset):
+class TensorflowVoxelDataset():
     """ Dataset class for voxels in torch.
 
     Parameters
@@ -25,11 +23,11 @@ class TorchVoxelDataset(Dataset):
         self.path = path
         self.size = size
         self.transform = transform
-        if not os.path.exists(f'{path}/{size-1}.pt'):
+        if not os.path.exists(f'{path}/{size-1}.pkl'):
             for i, data_item in enumerate(tqdm(data_list, desc='Converting', total=size)):
-                data = torch.tensor(data_item.data).float().to_sparse()
+                data = tf.sparse.from_dense(tf.convert_to_tensor(data_item.data, dtype=tf.float32))
                 protein_dict = data_item.protein_dict
-                torch.save((data, protein_dict), f'{path}/{i}.pt')
+                save((data, protein_dict), f'{path}/{i}.pkl')
 
     def __len__(self):
         return self.size
@@ -37,15 +35,14 @@ class TorchVoxelDataset(Dataset):
     def __getitem__(self, idx):
         if idx > self.size - 1:
             raise StopIteration
-        data, protein_dict = torch.load(f'{self.path}/{idx}.pt')
-        data = data.to_dense()
+        data, protein_dict = load(f'{self.path}/{idx}.pkl')
+        data = tf.sparse.to_dense(data)
         if not self.transform is None:
             data, protein_dict = self.transform(data, protein_dict)
         return data, protein_dict
 
-
-class TorchPointDataset(Dataset):
-    """ Dataset class for points in torch.
+class TensorflowPointDataset():
+    """ Dataset class for voxels in torch.
 
     Parameters
     ----------
@@ -64,11 +61,11 @@ class TorchPointDataset(Dataset):
         self.path = path
         self.size = size
         self.transform = transform
-        if not os.path.exists(f'{path}/{size-1}.pt'):
+        if not os.path.exists(f'{path}/{size-1}.pkl'):
             for i, data_item in enumerate(tqdm(data_list, desc='Converting', total=size)):
-                data = torch.tensor(data_item.data).float()
+                data = tf.convert_to_tensor(data_item.data, dtype=tf.float32)
                 protein_dict = data_item.protein_dict
-                torch.save((data, protein_dict), f'{path}/{i}.pt')
+                save((data, protein_dict), f'{path}/{i}.pkl')
 
     def __len__(self):
         return self.size
@@ -76,7 +73,7 @@ class TorchPointDataset(Dataset):
     def __getitem__(self, idx):
         if idx > self.size - 1:
             raise StopIteration
-        data, protein_dict = torch.load(f'{self.path}/{idx}.pt')
+        data, protein_dict = load(f'{self.path}/{idx}.pkl')
         if not self.transform is None:
             data, protein_dict = self.transform(data, protein_dict)
         return data, protein_dict
