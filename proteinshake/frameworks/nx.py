@@ -27,7 +27,7 @@ class NetworkxGraphDataset():
         if not os.path.exists(f'{path}/{size-1}.pkl'):
             for i, data_item in enumerate(tqdm(data_list, desc='Converting', total=size)):
                 nodes, adj = data_item.data
-                data = nx.from_scipy_sparse_matrix(adj)
+                data = nx.from_scipy_sparse_array(adj)
                 data.add_nodes_from(nodes)
                 protein_dict = data_item.protein_dict
                 save((data, protein_dict), f'{path}/{i}.pkl')
