@@ -32,6 +32,7 @@ class EnzymeCommissionTask(ShakeTask):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
 
     def evaluate(self, pred, true):
+        """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         return {'precision': metrics.precision_score(pred, true, average='macro'),
                 'recall': metrics.recall_score(pred, true, average='macro')}
 
