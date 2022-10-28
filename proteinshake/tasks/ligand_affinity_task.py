@@ -19,7 +19,7 @@ class LigandAffinityTask(ShakeTask):
     def target(self, protein):
         return protein['protein']['kd']
 
-    def evaluator(self, pred, true ):
+    def evaluate(self, pred, true ):
         return {'mse': metrics.mean_squared_error(pred, true)}
 
 if __name__ == "__main__":
