@@ -23,6 +23,10 @@ class EnzymeCommissionTask(ShakeTask):
     def task_type(self):
         return 'classification, multi-class'
 
+    @property
+    def num_features(self):
+        return 20
+
     def target(self, protein):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
 

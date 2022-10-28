@@ -12,6 +12,6 @@ class SetPyGTarget(object):
 
         self.task = task
 
-    def __call(self, protein):
-        protein.y = task.target(protein)
-        return protein
+    def __call__(self, data, protein_dict):
+        data.y = self.task.target(protein_dict)
+        return data, protein_dict
