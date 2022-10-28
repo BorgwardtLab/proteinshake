@@ -33,8 +33,8 @@ class EnzymeCommissionTask(ShakeTask):
 
     def evaluate(self, pred, true):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
-        return {'precision': metrics.precision_score(pred, true, average='macro'),
-                'recall': metrics.recall_score(pred, true, average='macro')}
+        return {'precision': metrics.precision_score(pred, true, average='macro', zero_division=0),
+                'recall': metrics.recall_score(pred, true, average='macro', zero_division=0)}
 
 if __name__ == "__main__":
     task = EnzymeCommissionTask(root='ec')
