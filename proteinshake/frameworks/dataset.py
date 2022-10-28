@@ -46,7 +46,7 @@ class FrameworkDataset():
         assert original_repr == transforms_repr, f'The pre_transform and/or pre_filter are not the same as when the dataset was created. If you want to change them, delete the folder at {path}'
 
     def convert_to_framework(self, data_item):
-        return data_item
+        return data_item.data
 
     def load_transform(self, data, protein_dict):
         return data, protein_dict
