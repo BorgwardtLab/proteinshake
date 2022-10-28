@@ -55,6 +55,10 @@ class FrameworkDataset():
         return self.size
 
     def __getitem__(self, idx):
+        try:
+            idx = int(idx)
+        except:
+            return [self.__getitem__(i) for i in idx]
         if idx > self.size - 1:
             raise StopIteration
         data, protein_dict = self.load_transform(*load(f'{self.path}/{idx}.pkl'))
