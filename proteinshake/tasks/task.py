@@ -75,6 +75,7 @@ class ShakeTask:
                 self.compute_token_map()
             except NotImplementedError:
                 print(">>> No tokenizer implemented. Make sure this is a regression task.")
+                self.token_map = None
                 pass
             self.process()
             self.cache()
