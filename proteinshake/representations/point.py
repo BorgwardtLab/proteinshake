@@ -52,3 +52,7 @@ class PointDataset():
     def tf(self, *args, **kwargs):
         from proteinshake.frameworks.tf import TensorflowPointDataset
         return TensorflowPointDataset(self.points, self.size, self.path+'.tf', *args, **kwargs)
+
+    def np(self, *args, **kwargs):
+        from proteinshake.frameworks.np import NumpyPointDataset
+        return NumpyPointDataset(self.points, self.size, self.path+".np", *args, **kwargs)

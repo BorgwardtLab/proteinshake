@@ -91,3 +91,7 @@ class VoxelDataset():
     def tf(self, *args, **kwargs):
         from proteinshake.frameworks.tf import TensorflowVoxelDataset
         return TensorflowVoxelDataset(self.voxels, self.size, self.path+'.tf', *args, **kwargs)
+
+    def np(self, *args, **kwargs):
+        from proteinshake.frameworks.np import NumpyVoxelDataset
+        return NumpyVoxelDataset(self.voxels, self.size, self.path+".np", *args, **kwargs)
