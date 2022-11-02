@@ -31,10 +31,15 @@ class EnzymeCommissionTask(ShakeTask):
     def target(self, protein):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
 
-    def evaluate(self, pred, true):
+    def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
-        return {'precision': metrics.precision_score(pred, true, average='macro', zero_division=0),
-                'recall': metrics.recall_score(pred, true, average='macro', zero_division=0)}
+        return {
+            'precision': metrics.precision_score(y_true, y_pred, average='macro', zero_division=0),
+            'recall': metrics.recall_score(y_true, y_pred, average='macro', zero_division=0),
+            'accuracy': metrics.accuracy_score(y_true, y_pred),
+            'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro'),
+            'AUPR': metrics.average_precision_score(y_true, y_pred, average='macro'),
+        }
 
 if __name__ == "__main__":
     task = EnzymeCommissionTask(root='ec')
