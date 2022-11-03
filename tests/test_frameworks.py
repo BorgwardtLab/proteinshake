@@ -48,6 +48,15 @@ class TestFrameworks(unittest.TestCase):
         loader = tf.data.Dataset.from_generator(generator, output_types=(tf.float32))
         x = next(iter(loader))
 
+    def test_voxel_np(self):
+        import numpy as np
+        points = self.ds.to_point().np()
+        def generator():
+            for data, protein_dict in points:
+                yield data
+        loader = np.fromiter(generator(), object)
+        x = next(iter(loader))
+
     def test_point_torch(self):
         from torch.utils.data import DataLoader
         points = self.ds.to_point().torch()
@@ -61,6 +70,15 @@ class TestFrameworks(unittest.TestCase):
             for data, protein_dict in points:
                 yield data
         loader = tf.data.Dataset.from_generator(generator, output_types=(tf.float32))
+        x = next(iter(loader))
+
+    def test_point_np(self):
+        import numpy as np
+        points = self.ds.to_point().np()
+        def generator():
+            for data, protein_dict in points:
+                yield data
+        loader = np.fromiter(generator(), object)
         x = next(iter(loader))
 
 
