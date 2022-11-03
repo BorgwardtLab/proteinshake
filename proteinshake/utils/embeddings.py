@@ -6,8 +6,8 @@ All embeddings take a sequence string as an input and return the embedding as a 
 
 import numpy as np
 
-alphabet = 'ARNDCEQGHILKMFPSTWYV'
-atoms = 'NCOS'
+residue_alphabet = 'ARNDCEQGHILKMFPSTWYV'
+atom_alphabet = 'NCOS'
 
 def onehot(sequence, resolution='residue'):
     """ Compute the one-hot encoding of a protein sequence.
@@ -25,9 +25,9 @@ def onehot(sequence, resolution='residue'):
         The embedded sequence.
     """
     if resolution == 'residue':
-        return np.stack([np.eye(len(alphabet))[alphabet.index(aa)] for aa in sequence])
+        return np.stack([np.eye(len(residue_alphabet))[residue_alphabet.index(aa)] for aa in sequence])
     else:
-        return np.stack([np.eye(len(atoms))[atoms.index(aa[0])] for aa in sequence])
+        return np.stack([np.eye(len(atom_alphabet))[atom_alphabet.index(aa[0])] for aa in sequence])
 
 
 
@@ -47,9 +47,9 @@ def tokenize(sequence, resolution='residue'):
         The embedded sequence.
     """
     if resolution == 'residue':
-        return np.array([alphabet.index(aa) for aa in sequence])
+        return np.array([residue_alphabet.index(aa) for aa in sequence])
     else:
-        return np.array([atoms.index(aa[0]) for aa in sequence])
+        return np.array([atom_alphabet.index(aa[0]) for aa in sequence])
 
 # from: https://gist.github.com/foowaa/5b20aebd1dff19ee024b6c72e14347bb
 def sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
