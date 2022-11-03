@@ -16,7 +16,7 @@ class FrameworkDataset():
     transform: function
         A transform function to be applied in the __getitem__ method. Signature: transform(data, protein_dict) -> (data, protein_dict)
     pre_transform: function
-        A transform function to be applied before writing the data. Signature: transform(data, protein_dict) -> (data, protein_dict)
+        A transform function to be applied before writing the data. Signature: transform((data, protein_dict)) -> (data, protein_dict)
     pre_filter: function
         A filter function to be applied before writing the data. Signature: transform(data, protein_dict) -> bool
     """
@@ -63,6 +63,6 @@ class FrameworkDataset():
             raise StopIteration
         data, protein_dict = self.load_transform(*load(f'{self.path}/{idx}.pkl'))
         if not self.transform is None:
-            return self.transform(data, protein_dict)
+            return self.transform((data, protein_dict))
         else:
             return data, protein_dict
