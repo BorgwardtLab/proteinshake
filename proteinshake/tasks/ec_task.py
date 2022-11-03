@@ -37,7 +37,7 @@ class EnzymeCommissionTask(ShakeTask):
             'precision': metrics.precision_score(y_true, y_pred, average='macro', zero_division=0),
             'recall': metrics.recall_score(y_true, y_pred, average='macro', zero_division=0),
             'accuracy': metrics.accuracy_score(y_true, y_pred),
-            'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro', multi_class='ovo'),
+            #'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro', multi_class='ovo'),
         }
 
 if __name__ == "__main__":
