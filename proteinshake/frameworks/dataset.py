@@ -63,6 +63,6 @@ class FrameworkDataset():
             raise StopIteration
         data, protein_dict = self.load_transform(*load(f'{self.path}/{idx}.pkl'))
         if not self.transform is None:
-            return self.transform((data, protein_dict))
+            return self.transform(data, protein_dict)
         else:
             return data, protein_dict
