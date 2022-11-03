@@ -4,12 +4,9 @@ class Compose():
     def __init__(self, *transforms):
         self.transforms = transforms
 
-    def __call__(self, *args):
+    def __call__(self, data):
         for transform in self.transforms:
-            if isinstance(args, (list, tuple)):
-                data = transform(*args)
-            else:
-                data = transform(args)
+            data = transform(data)
         return data
 
     def __repr__(self):
