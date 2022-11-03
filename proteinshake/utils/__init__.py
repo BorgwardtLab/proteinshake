@@ -2,7 +2,7 @@ from .embeddings import *
 from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
-from .transforms import SetPyGTarget
+from .transforms import *
 
 __all__ = ['onehot',
            'tokenize',
@@ -18,7 +18,7 @@ __all__ = ['onehot',
            'unzip_file',
            'ProgressParallel',
            'write_avro',
-           'SetPyGTarget'
+           'Compose'
            ]
 
 classes = __all__

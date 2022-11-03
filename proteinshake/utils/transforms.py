@@ -1,17 +1,14 @@
-class SetPyGTarget(object):
-    """ Apply this to PyG dataset before model training.
-    """
-    def __init__(self, task):
-        """ Initialize transform.
 
-        Parameters
-        -----------
-        task: proteinshake.ShakeTask
-            Proteinshake task object
-        """
+class Compose():
 
-        self.task = task
+    def __init__(self, transforms):
+        self.transforms = transforms
 
-    def __call__(self, data, protein_dict):
-        data.y = self.task.target(protein_dict)
-        return data, protein_dict
+    def __call__(self, data):
+        for transform in self.transforms:
+            data = transform(data)
+        return data
+
+    def __repr__(self):
+        args = [f'  {transform}' for transform in self.transforms]
+        return '{}([\n{}\n])'.format(self.__class__.__name__, ',\n'.join(args))
