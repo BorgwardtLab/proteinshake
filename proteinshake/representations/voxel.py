@@ -39,6 +39,11 @@ class Voxel():
             counts[tuple(voxel_indices.transpose())] = np.ones_like(labels)
             counts = counts.sum(axis=-2)
             voxels = np.divide(voxels.sum(axis=-2), counts, out=np.zeros_like(counts), where=counts!=0)
+        # trim to gridsize
+        diff = gridsize-voxels.shape[:-1]
+        lower = -((diff < 0) * np.ceil(diff/2)).astype(int)
+        upper = (voxels.shape[:-1] * (diff >= 0) + (diff < 0) * np.floor(diff/2)).astype(int)
+        voxels = voxels[lower[0]:upper[0],lower[1]:upper[1],lower[2]:upper[2]]
         # pad to gridsize
         diff = gridsize-voxels.shape[:-1]
         paddings = np.stack([np.ceil(diff/2), np.floor(diff/2)],1).astype(np.int32)
