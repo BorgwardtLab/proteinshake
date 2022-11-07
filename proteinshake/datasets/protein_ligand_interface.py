@@ -32,14 +32,14 @@ class ProteinLigandInterfaceDataset(Dataset):
 
     def __init__(self, version='2020', **kwargs):
         self.version = version
-        super().__init__(**kwargs)
 
-        self.index_data = parse_pdbbind_PL_index(osp.join(self.root,
+        self.index_data = parse_pdbbind_PL_index(osp.join(kwargs['root'],
                                                  "raw",
                                                  "files",
                                                  "index",
                                                  f"INDEX_refined_data.{self.version}")
                                                 )
+        super().__init__(**kwargs)
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.download_limit()]
