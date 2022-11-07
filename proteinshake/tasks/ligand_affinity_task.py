@@ -17,7 +17,7 @@ class LigandAffinityTask(ShakeTask):
         return "regression"
 
     def target(self, protein):
-        return protein['protein']['kd']
+        return protein['protein']['neglog_aff']
 
     def evaluate(self, pred, true ):
         return {
