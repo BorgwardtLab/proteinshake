@@ -34,6 +34,13 @@ class ProteinLigandInterfaceDataset(Dataset):
         self.version = version
         super().__init__(**kwargs)
 
+        self.index_data = parse_pdbbind_PL_index(osp.join(self.root,
+                                                 "raw",
+                                                 "files",
+                                                 "index",
+                                                 f"INDEX_refined_data.{self.version}")
+                                                )
+
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.download_limit()]
 
@@ -47,12 +54,6 @@ class ProteinLigandInterfaceDataset(Dataset):
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["protein"]["ID"]}/{protein["protein"]["ID"]}_pocket.pdb')
-        index_data = parse_pdbbind_PL_index(osp.join(self.root,
-                                                    "raw",
-                                                    "files",
-                                                    "index",
-                                                    f"INDEX_refined_set.{self.version}")
-                                            )
         ligand = Chem.MolFromMolFile(osp.join(self.root,
                                               'raw',
                                               'files',
@@ -82,8 +83,9 @@ class ProteinLigandInterfaceDataset(Dataset):
         protein['residue']['binding_site'] = list(map(int, is_site_res.squeeze()))
         protein['atom']['binding_site'] = list(map(int, is_site_atom.squeeze()))
 
-        bind_data = index_data[protein['protein']['ID']]
+        bind_data = self.index_data[protein['protein']['ID']]
         protein['protein']['kd'] = bind_data['kd']['value']
+        protein['protein']['neglog_aff'] = bind_data['neglog_aff']
         protein['protein']['resolution'] = bind_data['resolution']
         protein['protein']['year'] = bind_data['date']
         protein['protein']['ligand_id'] = bind_data['ligand_id']
