@@ -33,12 +33,6 @@ class ProteinLigandInterfaceDataset(Dataset):
     def __init__(self, version='2020', **kwargs):
         self.version = version
 
-        self.index_data = parse_pdbbind_PL_index(osp.join(kwargs['root'],
-                                                 "raw",
-                                                 "files",
-                                                 "index",
-                                                 f"INDEX_refined_data.{self.version}")
-                                                )
         super().__init__(**kwargs)
 
     def get_raw_files(self):
@@ -51,6 +45,13 @@ class ProteinLigandInterfaceDataset(Dataset):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_refined.tar.gz', f'{self.root}/raw')
         extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_refined.tar.gz', f'{self.root}/raw')
         os.rename(f'{self.root}/raw/refined-set', f'{self.root}/raw/files')
+
+        self.index_data = parse_pdbbind_PL_index(osp.join(self.root,
+                                                          "raw",
+                                                          "files",
+                                                          "index",
+                                                          f"INDEX_refined_data.{self.version}")
+                                                )
 
     def add_protein_attributes(self, protein):
         pocket = self.pdb2df(f'{self.root}/raw/files/{protein["protein"]["ID"]}/{protein["protein"]["ID"]}_pocket.pdb')
