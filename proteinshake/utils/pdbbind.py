@@ -31,18 +31,19 @@ def affinity_parse(s):
 
 def parse_pdbbind_PL_index(index_path):
     """
+    > INDEX_refined_data.2020
     # ==============================================================================
-    # List of protein-ligand complexes with known binding data in PDBbind v.2020
-    # 19443 protein-ligand complexes in total, sorted by their release year.
+    # List of the protein-ligand complexes in the PDBbind refined set v.2020
+    # 5316 protein-ligand complexes in total, which are ranked by binding data
     # Latest update: July 2021
-    # PDB code, resolution, release year, binding data, reference, ligand name
+    # PDB code, resolution, release year, -logKd/Ki, Kd/Ki, reference, ligand name
     # ==============================================================================
-    2tpi  2.10  1982  Kd=49uM       // 2tpi.pdf (2-mer)
-    5tln  2.30  1982  Ki=0.43uM     // 5tln.pdf (BAN) incomplete ligand structure
-    4tln  2.30  1982  Ki=190uM      // 4tln.pdf (LNO)
-    4cts  2.90  1984  Kd<10uM       // 4cts.pdf (OAA)
-    6rsa   NMR  1986  Ki=40uM       // 6rsa.pdf (UVC)
-    1rnt  1.90  1987  Kd=6.5uM      // 1rnt.pdf (2GP)
+    2r58  2.00  2007   2.00  Kd=10mM       // 2r58.pdf (MLY)
+    3c2f  2.35  2008   2.00  Kd=10.1mM     // 3c2f.pdf (PRP)
+    3g2y  1.31  2009   2.00  Ki=10mM       // 3g2y.pdf (GF4)
+    3pce  2.06  1998   2.00  Ki=10mM       // 3pce.pdf (3HP)
+    4qsu  1.90  2014   2.00  Kd=10mM       // 4qsu.pdf (TDR)
+    4qsv  1.90  2014   2.00  Kd=10mM       // 4qsv.pdf (THM)
     """
     data = {}
     with open(index_path, 'r') as ind_file:
@@ -50,13 +51,18 @@ def parse_pdbbind_PL_index(index_path):
             if line.startswith("#"):
                 continue
             pre, post = line.split("//")
-            pdbid, res, date, kd = pre.split()
+            pdbid, res, date, neglog, kd = pre.split()
             kd = affinity_parse(kd)
 
             lig_id = post.split("(")[1].rstrip(")")
+
+            # remove peptide ligands
+            if lig_id.endswith('-mer'):
+                continue
             data[pdbid] = {'resolution': float(res),
                            'date': int(date),
                            'kd': kd,
+                           'neglog_aff': float(neglog),
                            'ligand_id': lig_id
                            }
 
