@@ -18,11 +18,11 @@ class BindingSitePredictionTask(ShakeTask):
     def target(self, protein):
         return protein['residue']['binding_site']
 
-    def evaluate(self, pred, true ):
+    def evaluate(self, pred, true):
         return {
-            'mse': metrics.mean_squared_error(pred, true),
-            'r2': metrics.r2_score(pred, true)
-        }
+                'accuracy': metrics.accuracy_score(true, pred),
+                'jaccard': metrics.jaccard_score(true, pred),
+                }
 
 if __name__ == "__main__":
     task = BindingSitePredictionTask(root='lbp')
