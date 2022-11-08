@@ -27,8 +27,8 @@ parser.add_argument('--njobs', type=int, help='Number of jobs.', default=20)
 args = parser.parse_args()
 
 PATH = args.path
-SCRATCH = args.scratch+'/'+args.tag if args.scratch != '' else args.path
 RELEASE = args.tag
+SCRATCH = args.scratch+'/'+RELEASE if args.scratch != '' else args.path
 n_jobs = args.njobs
 
 os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload'), exist_ok=True)
