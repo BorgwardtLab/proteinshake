@@ -21,7 +21,7 @@ class BindingSitePredictionTask(ShakeTask):
     def evaluate(self, pred, true):
         return {
                 'accuracy': metrics.accuracy_score(true, pred),
-                'jaccard': metrics.jaccard_score(true, pred),
+                'mcc': metrics.matthews_corrcoef(true, pred),
                 }
 
 if __name__ == "__main__":
