@@ -1,4 +1,6 @@
-from setuptools import find_packages, setup, Extension
+from setuptools import find_packages, setup
+from setuptools.command.install import install
+import subprocess
 
 __version__ = '0.1.0'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
