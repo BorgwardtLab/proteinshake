@@ -22,25 +22,22 @@ test_requires = [
     'pytest',
 ]
 
-def compile_and_install_software():
-    """Used the subprocess module to compile/install the C software."""
-    src_path = './some_c_package/'
-
-    # compile the software
-    cmd = "./configure CFLAGS='-03 -w -fPIC'"
-    venv = get_virtualenv_path()
-    if venv:
-        cmd += ' --prefix=' + os.path.abspath(venv)
-    subprocess.check_call(cmd, cwd=src_path, shell=True)
-
-    # install the software (into the virtualenv bin dir if present)
-    subprocess.check_call('make install', cwd=src_path, shell=True)
-
+def get_virtualenv_path():
+    """Used to work out path to install compiled binaries to."""
+    if hasattr(sys, 'real_prefix'):
+        return sys.prefix
+    if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
+        return sys.prefix
+    if 'conda' in sys.prefix:
+        return sys.prefix
+    return None
 
 class CustomInstall(install):
     """Custom handler for the 'install' command."""
     def run(self):
-        subprocess.check_call('g++ -static -O3 -ffast-math -lm -o TMalign TMalign.cpp', cwd='.', shell=True)
+        print('##################')
+        venv = get_virtualenv_path()
+        subprocess.check_call(f'g++ -static -O3 -ffast-math -lm -o {venv}/TMalign TMalign.cpp', cwd='.', shell=True)
         super().run()
 
 setup(
