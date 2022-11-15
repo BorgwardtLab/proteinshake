@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 from setuptools.command.install import install
-import subprocess
+import subprocess, sys
 
 __version__ = '0.1.0'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
@@ -32,13 +32,27 @@ def get_virtualenv_path():
         return sys.prefix
     return None
 
-class CustomInstall(install):
-    """Custom handler for the 'install' command."""
+def install_tm():
+    venv = get_virtualenv_path()
+    print('#',venv)
+    subprocess.check_call(f'g++ -static -O3 -ffast-math -lm -o {venv}/TMalign TMalign.cpp', cwd='.', shell=True)
+
+
+class CustomInstallCommand(install):
     def run(self):
-        print('##################')
-        venv = get_virtualenv_path()
-        subprocess.check_call(f'g++ -static -O3 -ffast-math -lm -o {venv}/TMalign TMalign.cpp', cwd='.', shell=True)
-        super().run()
+        install_tm()
+        install.run(self)
+
+class CustomDevelopCommand(develop):
+    def run(self):
+        install_tm()
+        develop.run(self)
+
+class CustomEggInfoCommand(egg_info):
+    def run(self):
+        install_tm()
+        egg_info.run(self)
+
 
 setup(
     name='proteinshake',
@@ -57,5 +71,9 @@ setup(
     install_requires=install_requires,
     packages=find_packages(),
     include_package_data=True,
-    cmdclass={'install': CustomInstall}
+    cmdclass={
+        'install': CustomInstallCommand,
+        'develop': CustomDevelopCommand,
+        'egg_info': CustomEggInfoCommand,
+    }
 )
