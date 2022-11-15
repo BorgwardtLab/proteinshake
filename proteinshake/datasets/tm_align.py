@@ -13,9 +13,7 @@ from tqdm import tqdm
 from proteinshake.datasets import Dataset
 from proteinshake.utils import extract_tar, download_url, save, load, unzip_file
 
-# short-term absolute path hack for TMalign
-# we need to include this with the setuptools
-TMPATH = os.path.dirname(os.path.realpath(__file__))+'/../../TMalign'
+TMPATH = os.path.expandvars('$VIRTUAL_ENV/TMalign')
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
