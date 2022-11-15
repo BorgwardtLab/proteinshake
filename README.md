@@ -25,7 +25,7 @@ After installing, datasets can be passed directly to ML loaders for model traini
 
 ## Demo
 
-How to load an AlphaFold dataset as a dataset of torch-geometric graphs. 
+How to load an AlphaFold dataset as of pytorch-geometric graphs. 
 
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
