@@ -15,7 +15,7 @@ from proteinshake.utils import extract_tar, download_url, save, load, unzip_file
 
 # short-term absolute path hack for TMalign
 # we need to include this with the setuptools
-TMPATH = 'TMalign'
+TMPATH = os.path.expandvars('$VIRTUAL_ENV/TMalign')
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
