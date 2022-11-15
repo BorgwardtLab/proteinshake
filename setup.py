@@ -25,7 +25,6 @@ test_requires = [
 ]
 
 def get_virtualenv_path():
-    """Used to work out path to install compiled binaries to."""
     if hasattr(sys, 'real_prefix'):
         return sys.prefix
     if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
@@ -36,7 +35,6 @@ def get_virtualenv_path():
 
 def install_tm():
     venv = get_virtualenv_path()
-    print('#',venv)
     subprocess.check_call(f'g++ -static -O3 -ffast-math -lm -o {venv}/TMalign TMalign.cpp', cwd='.', shell=True)
 
 
