@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+TMalign needs to be in your $PATH. Follow the instructions at https://zhanggroup.org/TM-align/readme.c++.txt
+'''
 import glob
 import requests
 import os
@@ -13,7 +16,6 @@ from tqdm import tqdm
 from proteinshake.datasets import Dataset
 from proteinshake.utils import extract_tar, download_url, save, load, unzip_file
 
-TMPATH = os.path.expandvars('$VIRTUAL_ENV/TMalign')
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
@@ -33,7 +35,7 @@ def tmalign_wrapper(pdb1, pdb2):
         RMSD between structures
     """
     try:
-        out = subprocess.run([TMPATH,'-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
+        out = subprocess.run(['TMalign','-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
         path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
     except Exception as e:
         print(e)
