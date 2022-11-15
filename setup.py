@@ -1,5 +1,7 @@
 from setuptools import find_packages, setup
 from setuptools.command.install import install
+from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
 import subprocess, sys
 
 __version__ = '0.1.0'
