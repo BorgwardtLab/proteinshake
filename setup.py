@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+import subprocess, sys
 
 __version__ = '0.2.0'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
@@ -24,7 +25,7 @@ setup(
     name='proteinshake',
     version=__version__,
     description='Deep learning ready datasets of 3D protein structures.',
-    author = "Tim Kucera, Carlos Oliver, Leslie O'Bray, Dexiong Chen, Karsten Borgwardt",
+    author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt",
     author_email = "tim.kucera@bsse.ethz.ch",
     url=URL,
     keywords = ['bioinformatics',

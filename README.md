@@ -20,9 +20,26 @@
 
 
 
-
 proteinshake is a collection of protein structure datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
 After installing, datasets can be passed directly to ML loaders for model training.
+
+## Demo
+
+How to load an AlphaFold dataset as of pytorch-geometric graphs. 
+
+```python
+>>> from proteinshake.datasets import AlphaFoldDataset
+
+>>> data = AlphaFoldDataset(root='.', organism='escherichia_coli').to_graph(k=5).pyg()
+>>> protein_tensor, protein_data = data[0]
+>>> protein_tensor
+Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
+>>> protein_data['protein']['ID']
+'P0A9H5'
+>>> protein_data['protein']['sequence']
+'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGKGKTTAAFGTATRAVGHGKKVGVVQFIKGTWPNGERNLLEPHGVEFQVMATGFTWDTQNRESDTAACREVWQHAKRMLADSSLDMVLLDELTYMVAYDYLPLEEVVQALNERPHQQTVIITGRGCHRDILELADTVSELRPVKHAFDAGVKAQIGIDY'
+```
+
 
 ## PDB Datasets
 | name                                           |   num_proteins |   avg size (# residues) | property                                | values      | type                      |
