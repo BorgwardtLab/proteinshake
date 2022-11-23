@@ -7,7 +7,7 @@ class SCOPDataset(RCSBDataset):
     """ Proteins for which the SCOP classification is known.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, test=False, **kwargs):
         """
 
         Args:
@@ -16,14 +16,20 @@ class SCOPDataset(RCSBDataset):
         """
         query = [
                  ['rcsb_polymer_instance_annotation.type','exact_match', 'SCOP'],
-                 ['rcsb_entry_info.deposited_polymer_entity_instance_count', 'equals', 1]
                  ]
-        super().__init__(query=query, **kwargs)
+        self.test = test
+        super().__init__(query=query, only_single_chain=True, **kwargs)
 
 
     def _parse_scop(self, path):
         names = ['FA-DOMID', 'FA-PDBID', 'FA-PDBREG', 'FA-UNIID', 'FA-UNIREG', 'SF-DOMID', 'SF-PDBID', 'SF-PDBREG', 'SF-UNIID', 'SF-UNIREG', 'SCOPCLA']
-        return pd.read_csv(path, comment='#', names=names)
+        return pd.read_csv(path, sep=' ', comment='#', names=names)
+
+    def download_limit(self):
+        if self.test:
+            return 5
+        else:
+            return None
 
     def download(self):
         # get the proteins
@@ -39,6 +45,7 @@ class SCOPDataset(RCSBDataset):
         """
         try:
             match = self.scop.loc[self.scop['FA-PDBID'] == protein['protein']['id']].iloc[0]
+            print(match)
         except KeyError:
             return None
         scop_classes = dict([cla.split("=") for cla in match['SCOPCLA'].split(",")])
