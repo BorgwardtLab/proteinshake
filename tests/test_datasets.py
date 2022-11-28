@@ -3,7 +3,16 @@ Tests downloading the precomputed datasets and loading the data.
 '''
 
 import unittest, tempfile
-from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, AlphaFoldDataset
+from proteinshake.datasets import (RCSBDataset,
+                                   GeneOntologyDataset,
+                                   EnzymeCommissionDataset,
+                                   PfamDataset,
+                                   ProteinProteinInterfaceDataset,
+                                   ProteinLigandInterfaceDataset,
+                                   TMAlignDataset,
+                                   AlphaFoldDataset,
+                                   SCOPDataset
+                                   )
 from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDatasets(unittest.TestCase):
