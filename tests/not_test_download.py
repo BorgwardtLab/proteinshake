@@ -57,7 +57,7 @@ class TestDownload(unittest.TestCase):
     def test_pfam(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             organism = 'methanocaldococcus jannaschii'
-            ds = AlphaFoldDataset(root=tmp, organism=organism, use_precomputed=False)
+            ds = AlphaFoldDataset(root=tmp, version='v4', organism=organism, use_precomputed=False)
 
     @mock.patch('proteinshake.datasets.SCOPDataset.download_limit', return_value=5)
     def test_scop(self, mock):
