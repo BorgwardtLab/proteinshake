@@ -16,7 +16,7 @@ How to add a new dataset to the release pipeline:
 
 import os, shutil, argparse
 from datetime import datetime
-from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset
+from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, SCOPDataset
 from proteinshake.utils import zip_file
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
@@ -36,7 +36,7 @@ os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload
 ###################
 # PDB Datasets
 ###################
-for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset]:
+for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, SCOPDataset]:
     # name it after class name
     name = Dataset.__name__
     if os.path.exists(f'{SCRATCH}/upload/{name}.atom.avro.gz'):

@@ -18,8 +18,8 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1128229',
-    '23SEP2022': '1128229'
+    'latest': '1132621',
+    '23SEP2022': '1132621'
 }
 
 class Dataset():

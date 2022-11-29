@@ -22,7 +22,6 @@ class SCOPDataset(RCSBDataset):
         download_url(f'http://scop.mrc-lmb.cam.ac.uk/files/scop-cla-latest.txt', f'{self.root}/raw/scop.txt')
         self.scop = self._parse_scop(f'{self.root}/raw/scop.txt')
         ids = list(self.scop['FA-PDBID'].unique())
-        print(f">>> Found {len(ids)} proteins in SCOP.")
 
         # get the proteins
         if self.n_jobs == 1:
