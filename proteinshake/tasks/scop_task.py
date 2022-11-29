@@ -1,6 +1,6 @@
 from sklearn import metrics
 
-from proteinshake.datasets import EnzymeCommissionDataset
+from proteinshake.datasets import SCOPDataset
 from proteinshake.tasks import ShakeTask
 
 class SCOPTask(ShakeTask):
