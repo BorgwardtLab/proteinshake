@@ -30,11 +30,10 @@ class TestTasks(unittest.TestCase):
             task = LigandAffinityTask(root=tmp)
             self.task_check(task)
 
-    # commented until preprocess is uploaded
-    # def test_scop(self):
-        # with tempfile.TemporaryDirectory() as tmp:
-            # task = SCOPTask(root=tmp)
-            # self.task_check(task)
+    def test_scop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            task = SCOPTask(root=tmp)
+            self.task_check(task)
 
     def test_retrieve(self):
         with tempfile.TemporaryDirectory() as tmp:
