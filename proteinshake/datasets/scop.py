@@ -10,19 +10,8 @@ class SCOPDataset(RCSBDataset):
     """ Proteins for which the SCOP classification is known.
     """
 
-    def __init__(self, test=False, **kwargs):
-        """
-
-        Args:
-            query: REST-API query.
-
-        """
-        query = [
-                 ['rcsb_polymer_instance_annotation.type','exact_match', 'SCOP'],
-                 ]
-        self.test = test
-        super().__init__(query=query, only_single_chain=True, **kwargs)
-
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _parse_scop(self, path):
         names = ['FA-DOMID', 'FA-PDBID', 'FA-PDBREG', 'FA-UNIID', 'FA-UNIREG', 'SF-DOMID', 'SF-PDBID', 'SF-PDBREG', 'SF-UNIID', 'SF-UNIREG', 'SCOPCLA']
@@ -33,6 +22,7 @@ class SCOPDataset(RCSBDataset):
         download_url(f'http://scop.mrc-lmb.cam.ac.uk/files/scop-cla-latest.txt', f'{self.root}/raw/scop.txt')
         self.scop = self._parse_scop(f'{self.root}/raw/scop.txt')
         ids = list(self.scop['FA-PDBID'].unique())
+        print(f">>> Found {len(ids)} proteins in SCOP.")
 
         # get the proteins
         if self.n_jobs == 1:
