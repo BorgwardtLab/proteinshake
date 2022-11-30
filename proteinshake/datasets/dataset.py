@@ -18,8 +18,8 @@ three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1128229',
-    '23SEP2022': '1128229'
+    'latest': '1132621',
+    '23SEP2022': '1132621'
 }
 
 class Dataset():
@@ -241,8 +241,8 @@ class Dataset():
         dict
             A protein object.
         """
-        id = self.get_id_from_filename(os.path.basename(path))
-        if id in self.exclude_ids:
+        pdbid = self.get_id_from_filename(os.path.basename(path))
+        if pdbid in self.exclude_ids:
             return None
         atom_df = self.pdb2df(path)
         residue_df = atom_df[atom_df['atom_type'] == 'CA']
@@ -250,7 +250,7 @@ class Dataset():
             return None
         protein = {
             'protein': {
-                'ID': id,
+                'ID': pdbid,
                 'sequence': ''.join(residue_df['residue_type']),
             },
             'residue': {

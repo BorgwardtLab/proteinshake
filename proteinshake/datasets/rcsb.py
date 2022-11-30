@@ -23,10 +23,10 @@ class RCSBDataset(Dataset):
         The sequence similarity threshold to remove redundant protein structures.
     """
 
-    def __init__(self, query=[], similarity_cutoff=70, **kwargs):
+    def __init__(self, query=[], only_single_chain=True, similarity_cutoff=70, **kwargs):
         self.similarity_cutoff = similarity_cutoff
         self.query = query
-        super().__init__(only_single_chain=True, **kwargs)
+        super().__init__(only_single_chain=only_single_chain, **kwargs)
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*.pdb.gz')

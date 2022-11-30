@@ -41,7 +41,7 @@ class AlphaFoldDataset(Dataset):
         The organism name or a list of names or 'all' or 'swissprot'.
     """
 
-    def __init__(self, organism, version='v3', **kwargs):
+    def __init__(self, organism, version='v4', **kwargs):
         if organism == 'all':
             self.organism = [o for o in AF_DATASET_NAMES.keys() if o != 'swissprot']
         else:
