@@ -18,7 +18,8 @@ __all__ = ['onehot',
            'unzip_file',
            'ProgressParallel',
            'write_avro',
-           'Compose'
+           'Compose',
+           'protein_to_pdb'
            ]
 
 classes = __all__
