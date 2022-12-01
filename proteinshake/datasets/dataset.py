@@ -12,9 +12,16 @@ from joblib import delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.utils import download_url, save, load, unzip_file, ProgressParallel, write_avro
+from proteinshake.utils import (download_url,
+                                save,
+                                load,
+                                unzip_file,
+                                ProgressParallel,
+                                write_avro,
+                                )
 
-three2one = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
+AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
+AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
@@ -101,7 +108,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return None
+        return 2
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -312,7 +319,7 @@ class Dataset():
                 in_model = False
             filtered_lines.append(line)
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
-        df['residue_name'] = df['residue_name'].map(lambda x: three2one[x] if x in three2one else None)
+        df['residue_name'] = df['residue_name'].map(lambda x: AA_THREE_TO_ONE[x] if x in AA_THREE_TO_ONE else None)
         #df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
         df = df.sort_values('atom_number')
         df = df.rename(columns={
@@ -400,3 +407,14 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
+
+    def to_surface(self, resolution='residue', *args, **kwargs):
+        """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
+
+        Returns
+        -------
+        VoxelDataset
+            The dataset in voxel representation.
+        """
+        from proteinshake.representations import SurfaceDataset
+        return SurfaceDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
