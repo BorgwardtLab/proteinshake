@@ -108,7 +108,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 2
+        return None
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -407,14 +407,3 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
-
-    def to_surface(self, resolution='residue', *args, **kwargs):
-        """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
-
-        Returns
-        -------
-        VoxelDataset
-            The dataset in voxel representation.
-        """
-        from proteinshake.representations import SurfaceDataset
-        return SurfaceDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
