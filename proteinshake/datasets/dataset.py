@@ -407,3 +407,14 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         return VoxelDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
+
+    def to_surface(self, resolution='residue', *args, **kwargs):
+        """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
+
+        Returns
+        -------
+        SurfaceDataset
+            The dataset in surface representation.
+        """
+        from proteinshake.representations import SurfaceDataset
+        return SurfaceDataset(*self.proteins(resolution), self.root, resolution, *args, **kwargs)
