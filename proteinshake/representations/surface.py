@@ -1,8 +1,11 @@
+import shutil
 import os
 import subprocess
 
 from tqdm import tqdm
 import numpy as np
+from scipy.spatial.distance import euclidean
+from sklearn.clustering import KMeans
 
 from proteinshake.utils import protein_to_pdb
 
@@ -42,17 +45,15 @@ class Surface():
         """
         with tempfile.TemporaryDirectory() as tf:
             pdb_path = os.path.join(tf, "in.pdb")
+            dest = os.path.join(tf, "out.surf")
             protein_to_pdb(protein, pdb_path)
-            cmd = ['dms', pdb_path, '-n', '-d', d, '-o', 'surf.txt']
+            assert shutil.which('dms') is not None, "DMS executable not in PATH go here to install https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/dms1.html#ref."
+            cmd = ['dms', pdb_path, '-n', '-d', d, '-o', dest]
+            subprocess.run(cmd)
+            data = self._parse_dms(dest)
             pass
 
     def _parse_dms(self, path):
-        """
-        LYS 215A    N-100.374   29.066   -7.068 A
-        LYS 215A    N-101.056   27.395   -7.760 SR0  0.185 -0.756 -0.000 -0.655
-        LYS 215A    N-101.148   27.825   -7.760 SR0  0.185 -0.690 -0.307 -0.655
-        LYS 215A    N-100.760   28.179   -8.265 SR0  0.185 -0.437 -0.318 -0.841
-        """
         pass
 
 class SurfaceDataset():
