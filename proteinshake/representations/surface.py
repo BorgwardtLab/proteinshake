@@ -3,7 +3,6 @@ import subprocess
 
 from tqdm import tqdm
 import numpy as np
-import open3d as o3d
 
 from proteinshake.utils import protein_to_pdb
 
@@ -21,12 +20,12 @@ class Surface():
 
     """
 
-    def __init__(self, protein):
+    def __init__(self, protein, density=0.2):
         resolution = 'atom' if 'atom' in protein else 'residue'
 
-        self.data = self._compute_surface(protein)
+        self.data = self._compute_surface(protein, d=density)
 
-    def _compute_surface(self, protein):
+    def _compute_surface(self, protein, d=0.2):
         """ Call DMS to compute a surface for the PDB.
 
         Usage: dms input_file [-a] [-d density] [-g file] [-i file] [-n] [-w radius] [-v] -o file
@@ -44,7 +43,7 @@ class Surface():
         with tempfile.TemporaryDirectory() as tf:
             pdb_path = os.path.join(tf, "in.pdb")
             protein_to_pdb(protein, pdb_path)
-            cmd = ['dms', pdb_path, '-n', '-o', 'surf.txt']
+            cmd = ['dms', pdb_path, '-n', '-d', d, '-o', 'surf.txt']
             pass
 
     def _parse_dms(self, path):
