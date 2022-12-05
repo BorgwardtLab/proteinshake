@@ -4,8 +4,6 @@ import subprocess
 
 from tqdm import tqdm
 import numpy as np
-from scipy.spatial.distance import euclidean
-from sklearn.clustering import KMeans
 
 from proteinshake.utils import protein_to_pdb
 
@@ -54,6 +52,8 @@ class Surface():
             pass
 
     def _parse_dms(self, path):
+        with open(path, 'r') as p:
+            print(p.readlines())
         pass
 
 class SurfaceDataset():
