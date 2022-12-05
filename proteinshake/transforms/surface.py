@@ -52,8 +52,10 @@ class SurfaceTransform(ShakeTransform):
             }
 
         if resolution == 'atom':
-            new_data['atom_number'] = list(range(len(surface_df))),
-            new_data['atom_type'] = surface_df['atom_name'].tolist(),
+            new_data['atom_number'] = list(range(len(surface_df)))
+            new_data['atom_type'] = surface_df['atom_name'].tolist()
+        
+        print(new_data)
         return new_data
 
     def _compute_surface(self, protein, d=0.2):
