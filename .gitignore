@@ -2,6 +2,7 @@ debug.py
 setup.sh
 .proteinshake
 *TemporaryDirectory*/
+release/
 
 TMalign
 data/
