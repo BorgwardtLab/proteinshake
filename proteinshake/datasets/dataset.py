@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
-from joblib import delayed
+from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
@@ -16,7 +16,6 @@ from proteinshake.utils import (download_url,
                                 save,
                                 load,
                                 unzip_file,
-                                ProgressParallel,
                                 write_avro,
                                 )
 
@@ -217,16 +216,7 @@ class Dataset():
 
         # parse and filter
         paths = self.get_raw_files()
-        chunk_size = 1000
-        chunks = [paths[i:i+chunk_size] for i in range(0,len(paths), chunk_size)]
-        def parse_pdbs(chunk):
-            return [self.parse_pdb(path) for path in chunk]
-        n_jobs = 1#min(self.n_jobs, len(chunks)) # Parallelization does not really work for some reason
-        if n_jobs == 1:
-            proteins = [self.parse_pdb(path) for path in tqdm(paths, desc='Parsing')]
-        else:
-            proteins = ProgressParallel(n_jobs=n_jobs, total=len(chunks), desc='Parsing')(delayed(parse_pdbs)(chunk) for chunk in chunks)
-            proteins = list(itertools.chain(*proteins))
+        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
         print(f'Filtered {before-len(proteins)} proteins.')

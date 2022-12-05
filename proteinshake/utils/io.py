@@ -10,7 +10,6 @@ import gzip
 import shutil
 import requests
 import re
-from joblib import Parallel
 
 import pandas as pd
 from tqdm import tqdm
@@ -19,29 +18,6 @@ from fastavro import writer as avro_writer, reader as avro_reader, parse_schema 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
-class ProgressParallel(Parallel):
-    """ Extends joblib's Parallel with a progress bar.
-
-    Parameters
-    ----------
-    total:
-        The total number of jobs.
-    desc: A description to display.
-    """
-    def __init__(self, total=None, desc=None, *args, **kwargs):
-        self._total = total
-        self._desc = desc
-        super().__init__(*args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        with tqdm(total=self._total, desc=self._desc) as self._pbar:
-            return Parallel.__call__(self, *args, **kwargs)
-
-    def print_progress(self):
-        if self._total is None:
-            self._pbar.total = self.n_dispatched_tasks
-        self._pbar.n = self.n_completed_tasks
-        self._pbar.refresh()
 
 def fx2str(fx):
     """ Converts a function to a string representation.
