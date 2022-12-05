@@ -126,6 +126,6 @@ if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tf:
         da = TMAlignDataset(root=tf)
         da_surf = da.to_point(
-                              resolution='residue',
+                              resolution='atom',
                               transform=SurfaceTransform()
                               ).torch()

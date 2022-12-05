@@ -10,6 +10,6 @@ class ShakeTransform:
         """
         raise NotImplementedError
 
-class Identity(ShakeTransform):
+class IdentityTransform(ShakeTransform):
     def __call__(self, protein):
         return protein

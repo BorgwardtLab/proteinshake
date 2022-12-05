@@ -1,8 +1,8 @@
 from .transforms import ShakeTransform
-from .transforms import Identity
+from .transforms import IdentityTransform
 from .surface import SurfaceTransform
 
 __all__ = ['ShakeTransform',
-          'Identity',
-          'SurfaceTransform'
+          'IdentityTransform',
+          'SurfaceTransform',
           ]

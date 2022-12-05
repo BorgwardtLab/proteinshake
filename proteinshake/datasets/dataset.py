@@ -12,7 +12,7 @@ from joblib import delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.transforms import Identity
+from proteinshake.transforms import IdentityTransform
 from proteinshake.utils import (download_url,
                                 save,
                                 load,
@@ -376,7 +376,7 @@ class Dataset():
                }
         return data
 
-    def to_graph(self, resolution='residue', transform=Identity(), *args, **kwargs):
+    def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
         Returns
@@ -393,7 +393,7 @@ class Dataset():
                             *args,
                             **kwargs)
 
-    def to_point(self, resolution='residue', transform=Identity(), *args, **kwargs):
+    def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
 
         Returns
@@ -410,7 +410,7 @@ class Dataset():
                             *args,
                             **kwargs)
 
-    def to_voxel(self, resolution='residue', transform=Identity(), *args, **kwargs):
+    def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
 
         Returns
