@@ -8,6 +8,8 @@ import pandas as pd
 from proteinshake.transforms import ShakeTransform
 from proteinshake.utils import protein_to_pdb
 
+AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
+
 class SurfaceTransform(ShakeTransform):
     def __init__(self, d=0.2):
         super().__init__()
@@ -18,7 +20,7 @@ class SurfaceTransform(ShakeTransform):
         mode = 'atom' if 'atom' in protein.keys() else 'residue'
         new_prot = dict()
         new_prot['protein'] = protein['protein']
-        new_prot['protein']['residue'] = self._surf_filter(protein, surf, resolution='residue')
+        new_prot['residue'] = self._surf_filter(protein, surf, resolution='residue')
         if mode == 'atom':
             new_prot['atom'] = self._surf_filter(protein, surf, resolution='atom')
         return new_prot
@@ -39,10 +41,9 @@ class SurfaceTransform(ShakeTransform):
                  'z_norm'
                  ]
         """
-        print(surface_df.head())
         new_data = {
             'residue_number': surface_df['residue_index'].tolist(),
-            'residue_type': surface_df['residue_name'].tolist(),
+            'residue_type': [AA_THREE_TO_ONE[a] for a in surface_df['residue_name'].tolist()],
             'x': surface_df['x'].tolist(),
             'y': surface_df['y'].tolist(),
             'z': surface_df['z'].tolist(),
@@ -55,7 +56,6 @@ class SurfaceTransform(ShakeTransform):
             new_data['atom_number'] = list(range(len(surface_df)))
             new_data['atom_type'] = surface_df['atom_name'].tolist()
         
-        print(new_data)
         return new_data
 
     def _compute_surface(self, protein, d=0.2):
@@ -126,6 +126,6 @@ if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tf:
         da = TMAlignDataset(root=tf)
         da_surf = da.to_point(
-                              resolution='atom',
+                              resolution='residue',
                               transform=SurfaceTransform()
                               ).torch()

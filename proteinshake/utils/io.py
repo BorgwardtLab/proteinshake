@@ -273,7 +273,7 @@ def protein_to_pdb(protein, path):
         mode = 'atom'
     except KeyError:
         df = pd.DataFrame(protein['residue'])
-        mode == 'residue'
+        mode = 'residue'
 
     df['residue_name_full'] = df['residue_type'].apply(lambda x : AA_ONE_TO_THREE[x])
     if 'chain_id' not in df.columns:
