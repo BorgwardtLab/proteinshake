@@ -115,7 +115,6 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 5
         return None
 
     def check_arguments_same_as_hosted(self):
@@ -415,7 +414,6 @@ class Dataset():
             dist[name1][name2] = (d[0], d[2])
             dist[name2][name1] = (d[0], d[2])
 
-        print(dist)
         save(dist, dump_path)
         return dist
 
