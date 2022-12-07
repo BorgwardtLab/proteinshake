@@ -244,13 +244,26 @@ def protein_to_pdb(protein, path):
 
     """
     # ATOM      1  N   PRO A   1       8.316  21.206  21.530  1.00 17.44           N
-    df = pd.DataFrame(protein['atom'])
+    try:
+        df = pd.DataFrame(protein['atom'])
+        mode = 'atom'
+    except KeyError:
+        df = pd.DataFrame(protein['residue'])
+        mode = 'residue'
+
     df['residue_name_full'] = df['residue_type'].apply(lambda x : AA_ONE_TO_THREE[x])
     if 'chain_id' not in df.columns:
-        df['chain_id'] = ['A'] * len(df)
+        df['chain_id'] = 'A'
     df['occupancy'] = [1.00] * len(df)
     df['temp'] = [20.00] * len(df)
-    df['element'] = df['atom_type'].apply(lambda x: x[:1])
+
+    if mode == 'atom':
+        df['element'] = df['atom_type'].apply(lambda x: x[:1])
+    else:
+        df['element'] = 'C'
+        df['atom_number'] = df['residue_number']
+        df['atom_type'] = 'CA'
+
     lines = []
     for row in df.itertuples():
         line = "{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   " \
