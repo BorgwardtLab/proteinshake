@@ -40,7 +40,7 @@ os.makedirs(f'{PATH}', exist_ok=True)
 for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, SCOPDataset]:
     # name it after class name
     name = Dataset.__name__
-    if os.path.exists(f'{SCRATCH}/{name}.atom.avro.gz'):
+    if os.path.exists(f'{PATH}/{name}.atom.avro.gz'):
         print(f'Skipping {name}')
         continue
     print()
@@ -76,7 +76,7 @@ from proteinshake.datasets import AlphaFoldDataset
 
 # create one dataset for each organism
 for organism in AF_DATASET_NAMES.keys():
-    if os.path.exists(f'{SCRATCH}/AlphaFoldDataset_{organism}.atom.avro.gz'):
+    if os.path.exists(f'{PATH}/AlphaFoldDataset_{organism}.atom.avro.gz'):
         print(f'Skipping AlphaFold {organism}')
         continue
     print()
