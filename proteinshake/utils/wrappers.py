@@ -122,7 +122,7 @@ def _parse_dms(path):
     names = ['residue_name',
              'residue_index',
              'atom_name',
-             'x',
+    t        'x',
              'y',
              'z',
              'point_type',
