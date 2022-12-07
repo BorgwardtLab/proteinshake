@@ -19,7 +19,8 @@ from proteinshake.utils import (download_url,
                                 load,
                                 unzip_file,
                                 write_avro,
-                                tmalign_wrapper
+                                tmalign_wrapper,
+                                cdhit_wrapper
                                 )
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -62,8 +63,9 @@ class Dataset():
             n_jobs              = 1,
             minimum_length      = 10,
             exclude_ids         = [],
-            all_pairs_distance_struc  = False
-            all_pairs_distance_seq = False
+            cluster_struc       = False,
+            cluster_seq         = False,
+            distance_threshold  = 0.3
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -74,14 +76,14 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
+        self.cluster_struc = cluster_struc
+        self.cluster_seq = cluster_seq
+        self.distance_threshold = distance_threshold
+
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
             self.start_download()
             self.parse()
-            if all_pairs_distance_struc:
-                self.compute_struc_distances()
-            if all_pairs_distance_seq:
-                self.compute_seq_distances()
         else:
             self.check_arguments_same_as_hosted()
 
@@ -230,6 +232,10 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
+        if self.cluster_struc:
+            self.compute_clusters_struc(proteins)
+        if self.cluster_seq:
+            self.compute_clusters_struc(proteins)
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
@@ -376,19 +382,22 @@ class Dataset():
                }
         return data
 
-    def compute_seq_distances(self, n_jobs=1):
+    def compute_clusters_seq(self, proteins, n_jobs=1):
+        """ Use CDHit to cluster sequences
+        """
+        sequences = [p['protein']['sequence'] for p in proteins]
+        clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold)
+        for p, c in zip(proteins, clusters):
+            p['protein']['cluster_seq'] = c
         pass
 
-    def compute_struc_distances(self, n_jobs=1):
+    def compute_clusters_struc(self, proteins, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
+        Assign a cluster ID to each protein.
+
         Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
-        Returns
-        -------
-        dict
-            TM score between all pairs of proteins as a dictionary.
-        dict
-            RMSD between all pairs of proteins as a dictionary.
         """
+        from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.__class__.__name__}_tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
         if os.path.exists(dump_path):
@@ -402,6 +411,7 @@ class Dataset():
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
         pdbs = self.get_raw_files()
+        pdbids = [os.path.basename(p).split('.')[0] for p in pdbs]
         [unzip_file(p) for p in pdbs]
         pdbs = [p.rstrip('.gz') for p in pdbs]
         pairs = list(itertools.combinations(range(len(pdbs)), 2))
@@ -420,8 +430,23 @@ class Dataset():
             dist[name1][name2] = (d[0], d[2])
             dist[name2][name1] = (d[0], d[2])
 
+        DM = np.zeros(len(pdbs), len(pdbs))
+        for i in range(len(pdbs)):
+            for j in range(i, len(pdbs)):
+                DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]],
+                             dist[pdbids[j][pdbids[i]]
+                             )
+
         save(dist, dump_path)
-        return dist
+
+        DM += DM.T
+        clusterer = AgglomerativeClustering(n_clusters=None,
+                                            distance_threshold=self.distance_threshold
+                                            )
+        clusterer.fit(DM)
+        for i, p in enumerate(proteins):
+            p['protein']['struc_clust'] = clusterer.labels_[i]
+        pass
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.

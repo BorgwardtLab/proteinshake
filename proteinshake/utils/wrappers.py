@@ -72,11 +72,15 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
             print(e)
             return -1
         else:
-            with open(out_file, "r") as out:
+            clusters = [0] * len(sequences)
+            with open(out_file + ".clstr", "r") as out:
                 inds = []
                 for line in out:
-                    inds.append(int(line.split()[-1]))
-            return inds
+                    if line.startswith(">)"):
+                        clust_id = int(line.split()[1])
+                    ind = int(line.split(">").split('.')[0])
+                    clusters[ind] = clust_id
+            return clusters
 
 def dms_wrapper(protein, d=0.2):
     """ Call DMS to compute a surface for the PDB.
