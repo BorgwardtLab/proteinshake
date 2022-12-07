@@ -3,6 +3,7 @@ from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
 from .transforms import *
+from .wrappers import tmalign_wrapper
 
 __all__ = ['onehot',
            'tokenize',
@@ -19,7 +20,8 @@ __all__ = ['onehot',
            'ProgressParallel',
            'write_avro',
            'Compose',
-           'protein_to_pdb'
+           'protein_to_pdb',
+           'tmalign_wrapper'
            ]
 
 classes = __all__
