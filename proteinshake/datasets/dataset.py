@@ -76,8 +76,8 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
-        self.cluster_struc = cluster_struc
-        self.cluster_seq = cluster_seq
+        self.cluster_structures = cluster_structures
+        self.cluster_sequences = cluster_sequences
         self.distance_threshold = distance_threshold
 
         os.makedirs(f'{self.root}', exist_ok=True)
@@ -232,10 +232,10 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
-        if self.cluster_struc:
-            self.compute_clusters_struc(proteins)
-        if self.cluster_seq:
-            self.compute_clusters_struc(proteins)
+        if self.cluster_structures:
+            self.compute_clusters_structure(proteins)
+        if self.cluster_sequences:
+            self.compute_clusters_sequence(proteins)
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
@@ -382,16 +382,16 @@ class Dataset():
                }
         return data
 
-    def compute_clusters_seq(self, proteins, n_jobs=1):
+    def compute_clusters_sequence(self, proteins, n_jobs=1):
         """ Use CDHit to cluster sequences
         """
         sequences = [p['protein']['sequence'] for p in proteins]
         clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold)
         for p, c in zip(proteins, clusters):
-            p['protein']['cluster_seq'] = c
+            p['protein']['cluster_sequence'] = c
         pass
 
-    def compute_clusters_struc(self, proteins, n_jobs=1):
+    def compute_clusters_structure(self, proteins, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
         Assign a cluster ID to each protein.
 
@@ -445,7 +445,7 @@ class Dataset():
                                             )
         clusterer.fit(DM)
         for i, p in enumerate(proteins):
-            p['protein']['struc_clust'] = clusterer.labels_[i]
+            p['protein']['structure_cluster'] = clusterer.labels_[i]
         pass
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
