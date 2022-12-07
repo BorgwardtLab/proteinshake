@@ -62,7 +62,8 @@ class Dataset():
             n_jobs              = 1,
             minimum_length      = 10,
             exclude_ids         = [],
-            all_pairs_distance  = False
+            all_pairs_distance_struc  = False
+            all_pairs_distance_seq = False
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -73,13 +74,14 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
-        self.compute_all_pairs_distance = all_pairs_distance
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
             self.start_download()
             self.parse()
-            if all_pairs_distance:
-                self.compute_distances()
+            if all_pairs_distance_struc:
+                self.compute_struc_distances()
+            if all_pairs_distance_seq:
+                self.compute_seq_distances()
         else:
             self.check_arguments_same_as_hosted()
 
@@ -374,7 +376,10 @@ class Dataset():
                }
         return data
 
-    def compute_distances(self, n_jobs=1):
+    def compute_seq_distances(self, n_jobs=1):
+        pass
+
+    def compute_struc_distances(self, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
         Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
         Returns
