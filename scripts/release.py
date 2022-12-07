@@ -20,18 +20,19 @@ from proteinshake.datasets import RCSBDataset, GeneOntologyDataset, EnzymeCommis
 from proteinshake.utils import zip_file
 
 parser = argparse.ArgumentParser(description='Script to generate all datasets for release.')
-parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='.')
-parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/Datasets/proteinshake'))
+parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='./release')
+parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/proteinshake'))
 parser.add_argument('--tag', type=str, help='Release tag', default=datetime.now().strftime('%d%b%Y').upper())
 parser.add_argument('--njobs', type=int, help='Number of jobs.', default=20)
 args = parser.parse_args()
 
-PATH = args.path
 RELEASE = args.tag
+PATH = args.path+'/'+RELEASE
 SCRATCH = args.scratch+'/'+RELEASE if args.scratch != '' else args.path
 n_jobs = args.njobs
 
-os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload'), exist_ok=True)
+os.makedirs(f'{SCRATCH}', exist_ok=True)
+os.makedirs(f'{PATH}', exist_ok=True)
 
 ###################
 # PDB Datasets
@@ -39,7 +40,7 @@ os.makedirs(os.path.expandvars(f'$SCRATCH/Datasets/proteinshake/{RELEASE}/upload
 for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, SCOPDataset]:
     # name it after class name
     name = Dataset.__name__
-    if os.path.exists(f'{SCRATCH}/upload/{name}.atom.avro.gz'):
+    if os.path.exists(f'{SCRATCH}/{name}.atom.avro.gz'):
         print(f'Skipping {name}')
         continue
     print()
@@ -53,8 +54,8 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
     del ds
     # copy from scratch to target
     print('Copying...')
-    shutil.copyfile(f'{SCRATCH}/{name}/{name}.residue.avro.gz', f'{SCRATCH}/upload/{name}.residue.avro.gz')
-    shutil.copyfile(f'{SCRATCH}/{name}/{name}.atom.avro.gz', f'{SCRATCH}/upload/{name}.atom.avro.gz')
+    shutil.copyfile(f'{SCRATCH}/{name}/{name}.residue.avro.gz', f'{PATH}/{name}.residue.avro.gz')
+    shutil.copyfile(f'{SCRATCH}/{name}/{name}.atom.avro.gz', f'{PATH}/{name}.atom.avro.gz')
     #if SCRATCH != PATH and not os.path.exists(f'{PATH}/{name}.json.gz'):
     #    print('Copying...')
     #    shutil.copyfile(f'{SCRATCH}/{name}/{name}.json.gz', f'{PATH}/{name}.json.gz')
@@ -62,8 +63,10 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
         # copy the extra file (pairwise distances) from the TM dataset
         print('Copying TM scores...')
         zip_file(f'{SCRATCH}/TMAlignDataset/tmalign.json')
-        shutil.copyfile(f'{SCRATCH}/TMAlignDataset/tmalign.json.gz', f'{SCRATCH}/upload/tmalign.json.gz')
-
+        shutil.copyfile(f'{SCRATCH}/TMAlignDataset/tmalign.json.gz', f'{PATH}/tmalign.json.gz')
+    # cleanup
+    print('Cleaning up...')
+    shutil.rmtree(f'{SCRATCH}/{name}')
 
 ###################
 # AlphaFold Datasets
@@ -73,7 +76,7 @@ from proteinshake.datasets import AlphaFoldDataset
 
 # create one dataset for each organism
 for organism in AF_DATASET_NAMES.keys():
-    if os.path.exists(f'{SCRATCH}/upload/AlphaFoldDataset_{organism}.atom.avro.gz'):
+    if os.path.exists(f'{SCRATCH}/AlphaFoldDataset_{organism}.atom.avro.gz'):
         print(f'Skipping AlphaFold {organism}')
         continue
     print()
@@ -84,8 +87,11 @@ for organism in AF_DATASET_NAMES.keys():
     zip_file(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.atom.avro')
     del ds
     print('Copying...')
-    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.residue.avro.gz', f'{SCRATCH}/upload/AlphaFoldDataset_{organism}.residue.avro.gz')
-    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.atom.avro.gz', f'{SCRATCH}/upload/AlphaFoldDataset_{organism}.atom.avro.gz')
+    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.residue.avro.gz', f'{PATH}/AlphaFoldDataset_{organism}.residue.avro.gz')
+    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.atom.avro.gz', f'{PATH}/AlphaFoldDataset_{organism}.atom.avro.gz')
+    # cleanup
+    print('Cleaning up...')
+    shutil.rmtree(f'{SCRATCH}/AlphaFoldDataset_{organism}')
     #if SCRATCH != PATH and not os.path.exists(f'{PATH}/AlphaFoldDataset_{organism}.json.gz'):
     #    print('Copying...')
     #    shutil.copyfile(f'{SCRATCH}/AlphaFoldDataset_{organism}/AlphaFoldDataset.json.gz', f'{PATH}/AlphaFoldDataset_{organism}.json.gz')

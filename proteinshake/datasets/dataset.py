@@ -3,12 +3,13 @@
 Base dataset class for protein 3D structures.
 """
 import os, gzip, inspect, time, itertools, tarfile, io
+from collections import defaultdict
 
 import pandas as pd
 import numpy as np
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
-from joblib import delayed
+from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
@@ -17,8 +18,8 @@ from proteinshake.utils import (download_url,
                                 save,
                                 load,
                                 unzip_file,
-                                ProgressParallel,
                                 write_avro,
+                                tmalign_wrapper
                                 )
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -49,6 +50,8 @@ class Dataset():
         The number of jobs for downloading and parsing files. It is recommended to increase the number of jobs with `use_precomputed=False`.
     min_size: int, default 10
         Proteins smaller than min_size residues will be skipped.
+    all_pairs_sim: bool, default False
+        Compute and store TMAlign similarity between all pairs of proteins.
     """
     def __init__(self,
             root                = 'data',
@@ -58,7 +61,8 @@ class Dataset():
             check_sequence      = False,
             n_jobs              = 1,
             minimum_length      = 10,
-            exclude_ids         = []
+            exclude_ids         = [],
+            all_pairs_distance  = False
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -69,10 +73,13 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
+        self.compute_all_pairs_distance = all_pairs_distance
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
             self.start_download()
             self.parse()
+            if all_pairs_distance:
+                self.compute_distances()
         else:
             self.check_arguments_same_as_hosted()
 
@@ -218,16 +225,7 @@ class Dataset():
 
         # parse and filter
         paths = self.get_raw_files()
-        chunk_size = 1000
-        chunks = [paths[i:i+chunk_size] for i in range(0,len(paths), chunk_size)]
-        def parse_pdbs(chunk):
-            return [self.parse_pdb(path) for path in chunk]
-        n_jobs = 1#min(self.n_jobs, len(chunks)) # Parallelization does not really work for some reason
-        if n_jobs == 1:
-            proteins = [self.parse_pdb(path) for path in tqdm(paths, desc='Parsing')]
-        else:
-            proteins = ProgressParallel(n_jobs=n_jobs, total=len(chunks), desc='Parsing')(delayed(parse_pdbs)(chunk) for chunk in chunks)
-            proteins = list(itertools.chain(*proteins))
+        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
         print(f'Filtered {before-len(proteins)} proteins.')
@@ -375,6 +373,50 @@ class Dataset():
                 'avg size (# residues)': n_resi
                }
         return data
+
+    def compute_distances(self, n_jobs=1):
+        """ Launch TMalign on all pairs of proteins in dataset.
+        Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
+        Returns
+        -------
+        dict
+            TM score between all pairs of proteins as a dictionary.
+        dict
+            RMSD between all pairs of proteins as a dictionary.
+        """
+        dump_name = f'{self.__class__.__name__}_tmalign.json'
+        dump_path = os.path.join(self.root, dump_name)
+        if os.path.exists(dump_path):
+            return load(dump_path)
+        elif self.use_precomputed:
+            download_url(os.path.join(self.repository_url, dump_name), self.root)
+            print('Unzipping...')
+            unzip_file(os.path.join(self.root, dump_name + ".gz"))
+            return load(dump_path)
+        if self.n_jobs == 1:
+            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
+
+        pdbs = self.get_raw_files()
+        [unzip_file(p) for p in pdbs]
+        pdbs = [p.rstrip('.gz') for p in pdbs]
+        pairs = list(itertools.combinations(range(len(pdbs)), 2))
+        todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
+
+        output = Parallel(n_jobs=self.n_jobs)(
+            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
+        )
+
+        dist = defaultdict(lambda: {})
+        rmsd = defaultdict(lambda: {})
+        for (pdb1, pdb2), d in zip(todo, output):
+            name1 = os.path.basename(pdb1).split('.')[0]
+            name2 = os.path.basename(pdb2).split('.')[0]
+            # each value is a tuple (tm-core, RMSD)
+            dist[name1][name2] = (d[0], d[2])
+            dist[name2][name1] = (d[0], d[2])
+
+        save(dist, dump_path)
+        return dist
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
