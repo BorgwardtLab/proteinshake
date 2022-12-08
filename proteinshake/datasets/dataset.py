@@ -71,7 +71,7 @@ class Dataset():
             exclude_ids                   = [],
             cluster_structure             = False,
             cluster_sequence              = False,
-            distance_threshold_structure  = 0.3
+            distance_threshold_structure  = 0.3,
             distance_threshold_sequence   = .3
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
@@ -253,12 +253,10 @@ class Dataset():
 
     def parse_pdb(self, path):
         """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
-
         Parameters
         ----------
         path: str
             Path to PDB file.
-
         Returns
         -------
         dict
@@ -280,8 +278,31 @@ class Dataset():
                 'residue_number': residue_df['residue_number'].tolist(),
                 'residue_type': residue_df['residue_type'].tolist(),
                 'x': residue_df['x'].tolist(),
+                'y': residue_df['y'].tolist(),
+                'z': residue_df['z'].tolist(),
+            },
+            'atom': {
+                'atom_number': atom_df['atom_number'].tolist(),
+                'atom_type': atom_df['atom_type'].tolist(),
+                'residue_number': atom_df['residue_number'].tolist(),
+                'residue_type': atom_df['residue_type'].tolist(),
+                'x': atom_df['x'].tolist(),
+                'y': atom_df['y'].tolist(),
+                'z': atom_df['z'].tolist(),
+            },
+        }
+        if not self.only_single_chain: # only include chains if multi-chain protein
+            protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
+            protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
+        # add pLDDT from AlphaFold
+        if self.__class__.__name__ == 'AlphaFoldDataset':
+            protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
+            protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
+        # add attributes
+        protein = self.add_protein_attributes(protein)
+        return protein
 
-        def proteins(self, resolution='residue'):
+    def proteins(self, resolution='residue'):
         """ Returns a generator of proteins from the avro file.
 
         Parameters
@@ -314,6 +335,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
+        return 10
         return None
 
     def check_arguments_same_as_hosted(self):
@@ -592,7 +614,6 @@ class Dataset():
             return
         for p, c in zip(proteins, clusters):
             p['protein']['sequence_cluster'] = c
-            print(p['protein'])
         pass
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
