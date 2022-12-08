@@ -104,69 +104,6 @@ class ShakeTask:
         self.val_ind = val
         self.test_ind = test
 
-    def cluster(by='structure', distance_threshold=0.3):
-        pass
-
-
-    def compute_clusters_struc(self, n_jobs=1):
-        """ Launch TMalign on all pairs of proteins in dataset.
-        Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
-        Returns
-        -------
-        dict
-            TM score between all pairs of proteins as a dictionary.
-        dict
-            RMSD between all pairs of proteins as a dictionary.
-        """
-        from sklearn.cluster import AgglomerativeClustering
-        dump_name = f'{self.__class__.__name__}_tmalign.json'
-        dump_path = os.path.join(self.root, dump_name)
-        if os.path.exists(dump_path):
-            return load(dump_path)
-        elif self.use_precomputed:
-            download_url(os.path.join(self.repository_url, dump_name), self.root)
-            print('Unzipping...')
-            unzip_file(os.path.join(self.root, dump_name + ".gz"))
-            return load(dump_path)
-        if self.n_jobs == 1:
-            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
-
-        pdbs = self.get_raw_files()
-        pdbids = [os.path.basename(p).split('.')[0] for p in pdbs]
-        [unzip_file(p) for p in pdbs]
-        pdbs = [p.rstrip('.gz') for p in pdbs]
-        pairs = list(itertools.combinations(range(len(pdbs)), 2))
-        todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
-
-        output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
-        )
-
-        dist = defaultdict(lambda: {})
-        rmsd = defaultdict(lambda: {})
-        for (pdb1, pdb2), d in zip(todo, output):
-            name1 = os.path.basename(pdb1).split('.')[0]
-            name2 = os.path.basename(pdb2).split('.')[0]
-            # each value is a tuple (tm-core, RMSD)
-            dist[name1][name2] = (d[0], d[2])
-            dist[name2][name1] = (d[0], d[2])
-
-        DM = np.zeros(len(pdbs), len(pdbs))
-        for i in range(len(pdbs)):
-            for j in range(i, len(pdbs)):
-                DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]],
-                             dist[pdbids[j][pdbids[i]]
-                             )
-
-        save(dist, dump_path)
-
-        DM += DM.T
-        clusterer = AgglomerativeClustering(n_clusters=None,
-                                            distance_threshold=self.distance_threshold
-                                            )
-        clusterer.fit(DM)
-        return clusterer.labels_
-
     def compute_token_map(self):
         """ Computes and sets a dictionary that maps discrete labels to integers for classification tasks."""
         raise NotImplementedError
