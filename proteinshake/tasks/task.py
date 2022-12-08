@@ -2,8 +2,13 @@ import os
 import os.path as osp
 import json
 from pathlib import Path
+from joblib import Parallel, delayed
 
+import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.cluster import AgglomerativeClustering
+
+from proteinshake.utils import tmalign_wrapper, cdhit_wrapper
 
 class ShakeTask:
     """ Base class for task-related utilities.
