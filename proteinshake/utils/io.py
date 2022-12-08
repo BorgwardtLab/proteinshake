@@ -56,7 +56,7 @@ def avro_schema_from_protein(protein):
         elif type(v).__name__ in typedict:
             return {'name':k, 'type': typedict[type(v).__name__]}
         else:
-            raise ValueError(f"All fields in a protein object need to be either int, float, bool or string, not {type(v).__name__}")
+            raise TypeError(f"All fields in a protein object need to be either int, float, bool or string, not {type(v).__name__}")
     schema = {
         'name': 'Protein',
         'namespace': 'Dataset',
