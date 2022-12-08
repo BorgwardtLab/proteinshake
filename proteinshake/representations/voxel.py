@@ -88,7 +88,7 @@ class VoxelDataset():
         self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
         self.size = size
         self.gridsize = gridsize
-        self.path = f'{path}/processed/voxel/{resolution}_voxelsize_{voxelsize}_gridsize_{gridsize_string}'
+        self.path = f'{path}/processed/voxel/{resolution}_voxelsize_{voxelsize}_gridsize_{gridsize_string}_aggregation_{aggregation}'
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchVoxelDataset
