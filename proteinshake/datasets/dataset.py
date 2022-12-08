@@ -28,8 +28,7 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1132621',
-    '23SEP2022': '1132621'
+    'latest': '1134474',
 }
 
 class Dataset():
@@ -728,4 +727,3 @@ class Dataset():
                             resolution,
                             *args,
                             **kwargs)
-
