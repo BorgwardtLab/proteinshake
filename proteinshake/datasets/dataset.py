@@ -51,21 +51,28 @@ class Dataset():
         The number of jobs for downloading and parsing files. It is recommended to increase the number of jobs with `use_precomputed=False`.
     min_size: int, default 10
         Proteins smaller than min_size residues will be skipped.
-    all_pairs_sim: bool, default False
-        Compute and store TMAlign similarity between all pairs of proteins.
+    cluster_structure: bool, default False
+        Assign a cluster to each protein based on CD-hit clustering.
+    cluster_structure: bool, default False
+        Assign a cluster to each protein based on hierarchical clustering of TM-scores
+    distance_threshold_sequence: int, default 0.3
+        Maximum dissimilarity to allow during clustering of sequences.
+    distance_threshold_sequence: int, default 0.3
+        Maximum dissimilarity to allow during clustering of sequences.
     """
     def __init__(self,
-            root                = 'data',
-            use_precomputed     = True,
-            release             = 'latest',
-            only_single_chain   = False,
-            check_sequence      = False,
-            n_jobs              = 1,
-            minimum_length      = 10,
-            exclude_ids         = [],
-            cluster_structure   = False,
-            cluster_sequence    = False,
-            distance_threshold  = 0.3
+            root                          = 'data',
+            use_precomputed               = True,
+            release                       = 'latest',
+            only_single_chain             = False,
+            check_sequence                = False,
+            n_jobs                        = 1,
+            minimum_length                = 10,
+            exclude_ids                   = [],
+            cluster_structure             = False,
+            cluster_sequence              = False,
+            distance_threshold_structure  = 0.3
+            distance_threshold_sequence   = .3
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -78,7 +85,8 @@ class Dataset():
         self.exclude_ids = exclude_ids
         self.cluster_structure = cluster_structure
         self.cluster_sequence = cluster_sequence
-        self.distance_threshold = distance_threshold
+        self.distance_threshold_sequence = distance_threshold_sequence
+        self.distance_threshold_structure = distance_threshold_structure
 
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
@@ -121,6 +129,191 @@ class Dataset():
             The limit to be applied to the number of downloaded/parsed files.
         """
         return 10
+        return None
+
+    def check_arguments_same_as_hosted(self):
+        """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
+        """
+        signature = inspect.signature(self.__init__)
+        default_args = {
+            k: v.default
+            for k, v in signature.parameters.items()
+            if v.default is not inspect.Parameter.empty
+            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
+            and (self.__class__.__name__ != 'Atom3DDataset' or k != 'atom_dataset')
+        }
+        if self.__class__.__bases__[0].__name__ != 'Dataset':
+            signature = inspect.signature(self.__class__.__bases__[0].__init__)
+            super_args = {
+                k: v.default
+                for k, v in signature.parameters.items()
+                if v.default is not inspect.Parameter.empty
+            }
+            default_args = {**super_args, **default_args}
+        if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
+            print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
+            exit()
+
+    def get_raw_files(self):
+        """ Implement me in a subclass!
+
+        Returns a list of all valid PDB file paths for this dataset. Usually takes the form `glob.glob(f'{self.root}/raw/files/*.pdb')` to search for all pdb files in the root, but can be different in some cases (e.g. with pdb.gz files).
+
+        Returns
+        -------
+        list
+            The list of raw PDB files used in this dataset.
+        """
+        raise NotImplementedError
+
+    def get_id_from_filename(self, filename):
+        """ Implement me in a subclass!
+
+        Extracts an identifier from the pdb filename. This identifier is used in the `ID` field of the parsed protein object. Usually something like `filename[:4]`.
+
+        Parameters
+        ----------
+        filename: str
+            Path to a PDB file.
+
+        Returns
+        -------
+        str
+            A PDB identifier or other ID.
+        """
+        raise NotImplementedError
+
+    def download(self):
+        """ Implement me in a subclass!
+
+        This method is responsible for downloading and extracting raw pdb files from a databank source. All PDB files should be dumped in `f'{self.root}/raw/files`. See e.g. PDBBindRefined for an example.
+        """
+        raise NotImplementedError
+
+    def add_protein_attributes(self, protein):
+        """ Implement me in a subclass!
+
+        This method annotates protein objects with addititional information, such as functional labels or classes. It takes a protein object (a dictionary), modifies, and returns it. Usually, this would utilize the `ID` attribute to load an annotation file or to query information from a database.
+
+        Parameters
+        ----------
+        protein: dict
+            A protein object. See `Dataset.parse_pdb()` for details.
+
+        Returns
+        -------
+        dict
+            The protein object with a new attribute added.
+        """
+        return protein
+
+    def download_complete(self):
+        """ Dumps a marker file when the download was successful, to skip downloading next time.
+        """
+        with open(f'{self.root}/raw/done.txt','w') as file:
+            file.write('done.')
+
+    def start_download(self):
+        """ Helper function to prepare the download. Creates necessary subdirectories.
+        """
+        if os.path.exists(f'{self.root}/raw/done.txt'):
+            return
+        os.makedirs(f'{self.root}/raw/files', exist_ok=True)
+        self.download()
+        self.download_complete()
+
+    def download_precomputed(self, resolution='residue'):
+        """ Downloads the precomputed dataset from the ProteinShake repository.
+        """
+        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
+            download_url(f'{self.repository_url}/{self.__class__.__name__}.{resolution}.avro.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro.gz')
+
+    def parse(self):
+        """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
+        """
+        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
+            return
+
+        # parse and filter
+        paths = self.get_raw_files()
+        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
+        before = len(proteins)
+        proteins = [p for p in proteins if p is not None]
+        if self.cluster_structure:
+            self.compute_clusters_structure(proteins)
+        if self.cluster_sequence:
+            self.compute_clusters_sequence(proteins)
+        print(f'Filtered {before-len(proteins)} proteins.')
+        residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
+        atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
+        write_avro(residue_proteins, f'{self.root}/{self.__class__.__name__}.residue.avro')
+        write_avro(atom_proteins, f'{self.root}/{self.__class__.__name__}.atom.avro')
+
+    def parse_pdb(self, path):
+        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
+
+        Parameters
+        ----------
+        path: str
+            Path to PDB file.
+
+        Returns
+        -------
+        dict
+            A protein object.
+        """
+        pdbid = self.get_id_from_filename(os.path.basename(path))
+        if pdbid in self.exclude_ids:
+            return None
+        atom_df = self.pdb2df(path)
+        residue_df = atom_df[atom_df['atom_type'] == 'CA']
+        if not self.validate(atom_df):
+            return None
+        protein = {
+            'protein': {
+                'ID': pdbid,
+                'sequence': ''.join(residue_df['residue_type']),
+            },
+            'residue': {
+                'residue_number': residue_df['residue_number'].tolist(),
+                'residue_type': residue_df['residue_type'].tolist(),
+                'x': residue_df['x'].tolist(),
+
+        def proteins(self, resolution='residue'):
+        """ Returns a generator of proteins from the avro file.
+
+        Parameters
+        ----------
+        resolution: str, default 'residue'
+            The resolution of the proteins. Can be 'atom' or 'residue'.
+
+        Returns
+        -------
+        generator
+            An avro reader object.
+
+        int
+            The total number of proteins in the file.
+        """
+        self.download_precomputed(resolution=resolution)
+        with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+            total = int(avro_reader(file).metadata['number_of_proteins'])
+        def reader():
+            with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+                for x in avro_reader(file):
+                    yield x
+        return reader(), total
+
+    def download_limit(self):
+        """ Used only in testing, where this method is mock.patched to a small number. Default None.
+
+        Returns
+        -------
+        int
+            The limit to be applied to the number of downloaded/parsed files.
+        """
         return None
 
     def check_arguments_same_as_hosted(self):
@@ -384,10 +577,16 @@ class Dataset():
         return data
 
     def compute_clusters_sequence(self, proteins, n_jobs=1):
-        """ Use CDHit to cluster sequences
+        """ Use CDHit to cluster sequences. Assigns the field 'sequence_cluster' to an integer cluster ID for each protein.
+
+        Parameters:
+        -----------
+        proteins: list
+            List of protein dictionaries to cluster.
+
         """
         sequences = [p['protein']['sequence'] for p in proteins]
-        clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold)
+        clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold_sequence)
         if clusters == -1:
             print("Seq. clustering failed.")
             return
@@ -398,9 +597,14 @@ class Dataset():
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
-        Assign a cluster ID to each protein.
+        Assign a cluster ID to each protein at protein-level key 'structure_cluster'.
 
         Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
+
+        Parameters:
+        -----------
+        proteins: list
+            List of proteins to cluster by structure.
         """
         from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.__class__.__name__}_tmalign.json'
@@ -447,7 +651,7 @@ class Dataset():
 
         DM += DM.T
         clusterer = AgglomerativeClustering(n_clusters=None,
-                                            distance_threshold=self.distance_threshold
+                                            distance_threshold=self.distance_threshold_structure
                                             )
         clusterer.fit(DM)
         for i, p in enumerate(proteins):
