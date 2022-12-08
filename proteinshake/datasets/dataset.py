@@ -128,7 +128,6 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 10
         return None
 
     def check_arguments_same_as_hosted(self):
