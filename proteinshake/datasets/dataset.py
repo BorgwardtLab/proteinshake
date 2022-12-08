@@ -63,8 +63,8 @@ class Dataset():
             n_jobs              = 1,
             minimum_length      = 10,
             exclude_ids         = [],
-            cluster_struc       = False,
-            cluster_seq         = False,
+            cluster_structure   = False,
+            cluster_sequence    = False,
             distance_threshold  = 0.3
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
@@ -76,8 +76,8 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
-        self.cluster_structures = cluster_structures
-        self.cluster_sequences = cluster_sequences
+        self.cluster_structure = cluster_structure
+        self.cluster_sequence = cluster_sequence
         self.distance_threshold = distance_threshold
 
         os.makedirs(f'{self.root}', exist_ok=True)
@@ -120,6 +120,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
+        return 10
         return None
 
     def check_arguments_same_as_hosted(self):
@@ -232,9 +233,9 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
-        if self.cluster_structures:
+        if self.cluster_structure:
             self.compute_clusters_structure(proteins)
-        if self.cluster_sequences:
+        if self.cluster_sequence:
             self.compute_clusters_sequence(proteins)
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
@@ -387,8 +388,12 @@ class Dataset():
         """
         sequences = [p['protein']['sequence'] for p in proteins]
         clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold)
+        if clusters == -1:
+            print("Seq. clustering failed.")
+            return
         for p, c in zip(proteins, clusters):
-            p['protein']['cluster_sequence'] = c
+            p['protein']['sequence_cluster'] = c
+            print(p['protein'])
         pass
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
@@ -430,14 +435,15 @@ class Dataset():
             dist[name1][name2] = (d[0], d[2])
             dist[name2][name1] = (d[0], d[2])
 
-        DM = np.zeros(len(pdbs), len(pdbs))
-        for i in range(len(pdbs)):
-            for j in range(i, len(pdbs)):
-                DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]],
-                             dist[pdbids[j][pdbids[i]]
-                             )
-
         save(dist, dump_path)
+        num_proteins = len(pdbs)
+        DM = np.zeros((num_proteins, num_proteins))
+        for i in range(num_proteins):
+            for j in range(i+1, num_proteins):
+                DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]][0],
+                                   dist[pdbids[j]][pdbids[i]][0]
+                                  )
+
 
         DM += DM.T
         clusterer = AgglomerativeClustering(n_clusters=None,
@@ -445,7 +451,7 @@ class Dataset():
                                             )
         clusterer.fit(DM)
         for i, p in enumerate(proteins):
-            p['protein']['structure_cluster'] = clusterer.labels_[i]
+            p['protein']['structure_cluster'] = int(clusterer.labels_[i])
         pass
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):

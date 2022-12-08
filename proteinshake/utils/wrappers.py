@@ -5,6 +5,8 @@ import subprocess
 
 import pandas as pd
 
+""" Wrappers for external programs. """
+
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
     Parameters
@@ -62,12 +64,15 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
                    '-c',
                    str(sim_thresh),
                    '-i',
-                   inp,
+                   in_file,
                    '-o',
                    out_file
                   ]
 
-            subprocess.run(cmd)
+            subprocess.run(cmd,
+                           stdout=subprocess.DEVNULL,
+                           stderr=subprocess.STDOUT
+                          )
         except Exception as e:
             print(e)
             return -1
@@ -76,9 +81,10 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
             with open(out_file + ".clstr", "r") as out:
                 inds = []
                 for line in out:
-                    if line.startswith(">)"):
+                    if line.startswith(">"):
                         clust_id = int(line.split()[1])
-                    ind = int(line.split(">").split('.')[0])
+                        continue
+                    ind = int(line.split(">")[1].split('.')[0])
                     clusters[ind] = clust_id
             return clusters
 
@@ -126,7 +132,7 @@ def _parse_dms(path):
     names = ['residue_name',
              'residue_index',
              'atom_name',
-    t        'x',
+             'x',
              'y',
              'z',
              'point_type',
