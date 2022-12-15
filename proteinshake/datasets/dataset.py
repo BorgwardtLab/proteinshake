@@ -54,9 +54,9 @@ class Dataset():
         Assign a cluster to each protein based on CD-hit clustering.
     cluster_structure: bool, default False
         Assign a cluster to each protein based on hierarchical clustering of TM-scores
-    distance_threshold_sequence: int, default 0.3
+    distance_threshold_sequence: int or list, default 0.3
         Maximum dissimilarity to allow during clustering of sequences.
-    distance_threshold_sequence: int, default 0.3
+    distance_threshold_sequence: int or lits, default 0.3
         Maximum dissimilarity to allow during clustering of sequences.
     """
     def __init__(self,
@@ -67,7 +67,7 @@ class Dataset():
             check_sequence                = False,
             n_jobs                        = 1,
             minimum_length                = 10,
-            exclude_ids                   = [],
+            exclude_ids                   = None,
             cluster_structure             = False,
             cluster_sequence              = False,
             distance_threshold_structure  = 0.3,
@@ -81,7 +81,7 @@ class Dataset():
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
-        self.exclude_ids = exclude_ids
+        self.exclude_ids = [] if exclude_ids is None else exclude_ids
         self.cluster_structure = cluster_structure
         self.cluster_sequence = cluster_sequence
         self.distance_threshold_sequence = distance_threshold_sequence
@@ -324,17 +324,6 @@ class Dataset():
                 for x in avro_reader(file):
                     yield x
         return reader(), total
-
-    def download_limit(self):
-        """ Used only in testing, where this method is mock.patched to a small number. Default None.
-
-        Returns
-        -------
-        int
-            The limit to be applied to the number of downloaded/parsed files.
-        """
-        return 10
-        return None
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -605,14 +594,20 @@ class Dataset():
             List of protein dictionaries to cluster.
 
         """
-        sequences = [p['protein']['sequence'] for p in proteins]
-        clusters = cdhit_wrapper(sequences, sim_thresh=1-self.distance_threshold_sequence)
-        if clusters == -1:
-            print("Seq. clustering failed.")
-            return
-        for p, c in zip(proteins, clusters):
-            p['protein']['sequence_cluster'] = c
-        pass
+        if isinstance(self.distance_threshold_sequence, float):
+            thresholds = [self.distance_threshold_sequence]
+        else:
+            thresholds = self.distance_threshold_sequence
+        
+        for d in thresholds:
+            sequences = [p['protein']['sequence'] for p in proteins]
+            clusters = cdhit_wrapper(sequences, sim_thresh=1-d)
+            if clusters == -1:
+                print("Seq. clustering failed.")
+                return
+            for p, c in zip(proteins, clusters):
+                p['protein'][f'sequence_cluster_{d}'] = c
+            pass
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
@@ -669,13 +664,19 @@ class Dataset():
 
 
         DM += DM.T
-        clusterer = AgglomerativeClustering(n_clusters=None,
-                                            distance_threshold=self.distance_threshold_structure
-                                            )
-        clusterer.fit(DM)
-        for i, p in enumerate(proteins):
-            p['protein']['structure_cluster'] = int(clusterer.labels_[i])
-        pass
+        if isinstance(self.distance_threshold_structure, float):
+            thresholds = [self.distance_threshold_structure]
+        else:
+            thresholds = self.distance_threshold_structure
+        
+        for d in thresholds:
+            clusterer = AgglomerativeClustering(n_clusters=None,
+                                                distance_threshold=d
+                                                )
+            clusterer.fit(DM)
+            for i, p in enumerate(proteins):
+                p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
+            pass
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
