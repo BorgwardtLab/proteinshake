@@ -49,7 +49,8 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
         List of sequence indices to preserve as representatives.
     """
 
-    assert shutil.which('cd-hit') is not None, "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
+    assert shutil.which('cd-hit') is not None,\
+    "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
 
     with tempfile.TemporaryDirectory() as tmpdir:
         in_file = osp.join(tmpdir, 'in.fasta')
