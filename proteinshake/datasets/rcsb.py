@@ -87,7 +87,7 @@ class RCSBDataset(Dataset):
             if total is None:
                 total = response_dict['group_by_count']
             i += batch_size
-        ids = ids[:self.download_limit()] # for testing
+        ids = ids[:self.limit] # for testing
 
         failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]

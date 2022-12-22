@@ -119,7 +119,8 @@ class Dataset():
                     yield x
         return reader(), total
 
-    def download_limit(self):
+    @property
+    def limit(self):
         """ Used only in testing, where this method is mock.patched to a small number. Default None.
 
         Returns
@@ -127,7 +128,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return None
+        return 10
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -235,7 +236,7 @@ class Dataset():
             return
 
         # parse and filter
-        paths = self.get_raw_files()
+        paths = self.get_raw_files()[:self.limit]
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]

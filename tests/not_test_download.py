@@ -18,48 +18,48 @@ from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDownload(unittest.TestCase):
 
-    @mock.patch('proteinshake.datasets.ProteinLigandInterfaceDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.ProteinLigandInterfaceDataset.limit', return_value=5)
     def test_protein_ligand(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = ProteinLigandInterfaceDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.ProteinProteinInterfaceDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.ProteinProteinInterfaceDataset.limit', return_value=5)
     def test_protein_protein(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = ProteinProteinInterfaceDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.RCSBDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.RCSBDataset.limit', return_value=5)
     def test_rcsb(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = RCSBDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.GeneOntologyDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.GeneOntologyDataset.limit', return_value=5)
     def test_go(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = GeneOntologyDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.EnzymeCommissionDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.EnzymeCommissionDataset.limit', return_value=5)
     def test_go(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = EnzymeCommissionDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.PfamDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.PfamDataset.limit', return_value=5)
     def test_pfam(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = PfamDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.TMAlignDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.TMAlignDataset.limit', return_value=5)
     def test_pfam(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = TMAlignDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.AlphaFoldDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.AlphaFoldDataset.limit', return_value=5)
     def test_pfam(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             organism = 'methanocaldococcus jannaschii'
             ds = AlphaFoldDataset(root=tmp, version='v4', organism=organism, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.SCOPDataset.download_limit', return_value=5)
+    @mock.patch('proteinshake.datasets.SCOPDataset.limit', return_value=5)
     def test_scop(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = SCOPDataset(root=tmp, use_precomputed=False)

@@ -54,7 +54,7 @@ class AlphaFoldDataset(Dataset):
         super().__init__(only_single_chain=True, **kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]
+        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()

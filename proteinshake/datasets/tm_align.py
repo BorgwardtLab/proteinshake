@@ -65,7 +65,7 @@ class TMAlignDataset(Dataset):
                 start, end = m.span()
                 pdbid = l[start-5:end]
                 links.append(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}")
-        links = links[:self.download_limit()] # for testing
+        links = links[:self.limit] # for testing
         for link in tqdm(links):
             download_url(link, f'{self.root}/raw/files', log=False)
 
