@@ -35,7 +35,7 @@ def tmalign_wrapper(pdb1, pdb2):
     return float(TM1), float(TM2), float(RMSD)
 
 
-def cdhit_wrapper(sequences, sim_thresh=0.6):
+def cdhit_wrapper(sequences, sim_thresh=0.6, n_jobs=0):
     """ Cluster sequences using CD-hit
 
     Parameters
@@ -52,6 +52,8 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
     assert shutil.which('cd-hit') is not None,\
     "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
 
+    n_jobs = 0 if n_jobs < 0 else n_jobs
+
     with tempfile.TemporaryDirectory() as tmpdir:
         in_file = osp.join(tmpdir, 'in.fasta')
         out_file = osp.join(tmpdir, 'out.fasta')
@@ -67,7 +69,9 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
                    '-i',
                    in_file,
                    '-o',
-                   out_file
+                   out_file,
+                   '-T',
+                   n_jobs
                   ]
 
             subprocess.run(cmd,

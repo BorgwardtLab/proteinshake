@@ -598,16 +598,15 @@ class Dataset():
             thresholds = [self.distance_threshold_sequence]
         else:
             thresholds = self.distance_threshold_sequence
-        
+
         for d in thresholds:
             sequences = [p['protein']['sequence'] for p in proteins]
-            clusters = cdhit_wrapper(sequences, sim_thresh=1-d)
+            clusters = cdhit_wrapper(sequences, sim_thresh=1-d, n_jobs=self.n_jobs)
             if clusters == -1:
                 print("Seq. clustering failed.")
                 return
             for p, c in zip(proteins, clusters):
                 p['protein'][f'sequence_cluster_{d}'] = c
-            pass
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
