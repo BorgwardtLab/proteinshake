@@ -621,7 +621,7 @@ class Dataset():
             List of proteins to cluster by structure.
         """
         from sklearn.cluster import AgglomerativeClustering
-        dump_name = f'{self.__class__.__name__}_tmalign.json'
+        dump_name = f'{self.__class__.__name__}.tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
         if os.path.exists(dump_path):
             return load(dump_path)
@@ -661,14 +661,12 @@ class Dataset():
                 DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]][0],
                                    dist[pdbids[j]][pdbids[i]][0]
                                   )
-
-
         DM += DM.T
         if isinstance(self.distance_threshold_structure, float):
             thresholds = [self.distance_threshold_structure]
         else:
             thresholds = self.distance_threshold_structure
-        
+
         for d in thresholds:
             clusterer = AgglomerativeClustering(n_clusters=None,
                                                 distance_threshold=d
@@ -676,7 +674,6 @@ class Dataset():
             clusterer.fit(DM)
             for i, p in enumerate(proteins):
                 p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
-            pass
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
