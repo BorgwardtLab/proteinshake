@@ -131,7 +131,6 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 20
         return None
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
