@@ -1,9 +1,12 @@
+import os
 import os.path as osp
 import tempfile
 import shutil
 import subprocess
 
 import pandas as pd
+
+from proteinshake.utils import protein_to_pdb
 
 """ Wrappers for external programs. """
 
@@ -38,6 +41,12 @@ def tmalign_wrapper(pdb1, pdb2):
 def cdhit_wrapper(sequences, sim_thresh=0.6):
     """ Cluster sequences using CD-hit
 
+    Choose of word size:
+    -n 5 for thresholds 0.7 ~ 1.0
+    -n 4 for thresholds 0.6 ~ 0.7
+    -n 3 for thresholds 0.5 ~ 0.6
+    -n 2 for thresholds 0.4 ~ 0.5
+
     Parameters
     -----------
     sequences: list
@@ -48,6 +57,16 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
     representatives: list
         List of sequence indices to preserve as representatives.
     """
+    assert sim_thresh >= 0.4 and sim_thresh <= 1, "Threshold not in [0.4, 1]"
+
+    if sim_thresh >= 0.4 and sim_thresh < 0.5:
+        word_size = 2
+    elif sim_thresh>= 0.5 and sim_thresh < 0.6:
+        word_size = 3
+    elif sim_thresh >= 0.6 and sim_thresh < 0.7:
+        word_size = 4
+    else:
+        word_size = 5
 
     assert shutil.which('cd-hit') is not None,\
     "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
@@ -66,6 +85,8 @@ def cdhit_wrapper(sequences, sim_thresh=0.6):
                    str(sim_thresh),
                    '-i',
                    in_file,
+                   '-n',
+                   str(word_size),
                    '-o',
                    out_file
                   ]

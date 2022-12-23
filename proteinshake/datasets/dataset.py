@@ -4,12 +4,13 @@ Base dataset class for protein 3D structures.
 """
 import os, gzip, inspect, time, itertools, tarfile, io
 from collections import defaultdict
+import multiprocessing as mp
 
 import pandas as pd
 import numpy as np
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
-from joblib import Parallel, delayed
+from joblib import Parallel, delayed, Memory
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
@@ -22,6 +23,9 @@ from proteinshake.utils import (download_url,
                                 tmalign_wrapper,
                                 cdhit_wrapper
                                 )
+
+location = './tm_cache'
+memory = Memory(location, verbose=0)
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
@@ -55,23 +59,23 @@ class Dataset():
     cluster_structure: bool, default False
         Assign a cluster to each protein based on hierarchical clustering of TM-scores
     distance_threshold_sequence: int or list, default 0.3
-        Maximum dissimilarity to allow during clustering of sequences.
+        Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
     distance_threshold_sequence: int or lits, default 0.3
-        Maximum dissimilarity to allow during clustering of sequences.
+        Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
     """
     def __init__(self,
-            root                          = 'data',
-            use_precomputed               = True,
-            release                       = 'latest',
-            only_single_chain             = False,
-            check_sequence                = False,
-            n_jobs                        = 1,
-            minimum_length                = 10,
-            exclude_ids                   = None,
-            cluster_structure             = False,
-            cluster_sequence              = False,
-            distance_threshold_structure  = 0.3,
-            distance_threshold_sequence   = .3
+            root                           = 'data',
+            use_precomputed                = True,
+            release                        = 'latest',
+            only_single_chain              = False,
+            check_sequence                 = False,
+            n_jobs                         = 1,
+            minimum_length                 = 10,
+            exclude_ids                    = None,
+            cluster_structure              = False,
+            cluster_sequence               = False,
+            similarity_threshold_structure = .9,
+            similarity_threshold_sequence  = .9
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -84,8 +88,8 @@ class Dataset():
         self.exclude_ids = [] if exclude_ids is None else exclude_ids
         self.cluster_structure = cluster_structure
         self.cluster_sequence = cluster_sequence
-        self.distance_threshold_sequence = distance_threshold_sequence
-        self.distance_threshold_structure = distance_threshold_structure
+        self.similarity_threshold_sequence = similarity_threshold_sequence
+        self.similarity_threshold_structure = similarity_threshold_structure
 
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
@@ -127,8 +131,8 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
+        return 20
         return None
-
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
         """
@@ -594,19 +598,19 @@ class Dataset():
             List of protein dictionaries to cluster.
 
         """
-        if isinstance(self.distance_threshold_sequence, float):
-            thresholds = [self.distance_threshold_sequence]
+        if isinstance(self.similarity_threshold_sequence, float):
+            thresholds = [self.similarity_threshold_sequence]
         else:
-            thresholds = self.distance_threshold_sequence
-        
-        for d in thresholds:
+            thresholds = self.similarity_threshold_sequence
+
+        for threshold in thresholds:
             sequences = [p['protein']['sequence'] for p in proteins]
-            clusters = cdhit_wrapper(sequences, sim_thresh=1-d)
+            clusters = cdhit_wrapper(sequences, sim_thresh=threshold)
             if clusters == -1:
                 print("Seq. clustering failed.")
                 return
             for p, c in zip(proteins, clusters):
-                p['protein'][f'sequence_cluster_{d}'] = c
+                p['protein'][f'sequence_cluster_{threshold}'] = c
             pass
 
     def compute_clusters_structure(self, proteins, n_jobs=1):
@@ -620,10 +624,11 @@ class Dataset():
         proteins: list
             List of proteins to cluster by structure.
         """
+        print("CLUSTERING")
         from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.__class__.__name__}_tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
-        if os.path.exists(dump_path):
+        if os.path.exists(dump_path) and os.path.exists(os.path.join(self.root, 'tm_done.txt')):
             return load(dump_path)
         elif self.use_precomputed:
             download_url(os.path.join(self.repository_url, dump_name), self.root)
@@ -633,19 +638,22 @@ class Dataset():
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
+
         pdbs = self.get_raw_files()
+        [unzip_file(p, remove=False) for p in pdbs]
+
         pdbids = [os.path.basename(p).split('.')[0] for p in pdbs]
-        [unzip_file(p) for p in pdbs]
         pdbs = [p.rstrip('.gz') for p in pdbs]
         pairs = list(itertools.combinations(range(len(pdbs)), 2))
         todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
 
+        dist = defaultdict(lambda: {})
+
+        tm_cached = memory.cache(tmalign_wrapper)
         output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
+            delayed(tm_cached)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
         )
 
-        dist = defaultdict(lambda: {})
-        rmsd = defaultdict(lambda: {})
         for (pdb1, pdb2), d in zip(todo, output):
             name1 = os.path.basename(pdb1).split('.')[0]
             name2 = os.path.basename(pdb2).split('.')[0]
@@ -656,27 +664,37 @@ class Dataset():
         save(dist, dump_path)
         num_proteins = len(pdbs)
         DM = np.zeros((num_proteins, num_proteins))
+        DM = []
         for i in range(num_proteins):
             for j in range(i+1, num_proteins):
-                DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]][0],
+                # take the largest TMscore (most similar) between both
+                # directions and convert to a distance
+                DM.append( 1 - max(dist[pdbids[i]][pdbids[j]][0],
                                    dist[pdbids[j]][pdbids[i]][0]
-                                  )
+                                  ))
+                # DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]][0],
+                                   # dist[pdbids[j]][pdbids[i]][0]
+                                  # )
 
 
-        DM += DM.T
-        if isinstance(self.distance_threshold_structure, float):
-            thresholds = [self.distance_threshold_structure]
+        DM = np.array(DM).reshape(-1, 1)
+        # DM += DM.T
+        if isinstance(self.similarity_threshold_structure, float):
+            thresholds = [self.similarity_threshold_structure]
         else:
-            thresholds = self.distance_threshold_structure
-        
+            thresholds = self.similarity_threshold_structure
+
         for d in thresholds:
             clusterer = AgglomerativeClustering(n_clusters=None,
-                                                distance_threshold=d
+                                                distance_threshold=1-d
                                                 )
             clusterer.fit(DM)
             for i, p in enumerate(proteins):
                 p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
             pass
+
+        with open(os.path.join(self.root, 'tm_done.txt'),'w') as f:
+            f.write('done.')
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.

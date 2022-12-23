@@ -136,7 +136,7 @@ def zip_file(path):
         with gzip.open(path+'.gz', 'wb') as f_out:
             f_out.writelines(f_in)
 
-def unzip_file(path):
+def unzip_file(path, remove=False):
     """ Unzips a .gz file.
 
     Parameters
@@ -149,7 +149,8 @@ def unzip_file(path):
     with gzip.open(path, 'rb') as f_in:
         with open(path[:-3], 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
-    os.remove(path)
+    if remove:
+        os.remove(path)
 
 
 
