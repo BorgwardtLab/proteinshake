@@ -54,7 +54,6 @@ class ShakeTask:
                  test_ratio=.1,
                 ):
         self.dataset = dataset
-        self.dataset.name  = dataset.name
         self.train_ratio = train_ratio
         self.validation_ratio = val_ratio
         self.test_ratio = test_ratio
