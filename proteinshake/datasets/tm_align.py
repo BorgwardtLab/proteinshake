@@ -49,6 +49,9 @@ class TMAlignDataset(Dataset):
         If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def get_raw_files(self, compressed=False):
         return glob.glob(f'{self.root}/raw/files/*.pdb')
 
