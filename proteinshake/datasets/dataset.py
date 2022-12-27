@@ -80,6 +80,7 @@ class Dataset():
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
+        self.maximum_length = maximum_length
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
@@ -437,9 +438,10 @@ class Dataset():
         paths = self.get_raw_files()
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
+        paths = [path for path,protein in zip(paths,proteins) if protein is not None]
         proteins = [p for p in proteins if p is not None]
         if self.cluster_structure:
-            self.compute_clusters_structure(proteins)
+            self.compute_clusters_structure(paths)
         if self.cluster_sequence:
             self.compute_clusters_sequence(proteins)
         print(f'Filtered {before-len(proteins)} proteins.')
@@ -614,16 +616,16 @@ class Dataset():
                 p['protein'][f'sequence_cluster_{threshold}'] = c
             pass
 
-    def compute_clusters_structure(self, proteins, n_jobs=1):
+    def compute_clusters_structure(self, paths, n_jobs=1):
         """ Launch TMalign on all pairs of proteins in dataset.
         Assign a cluster ID to each protein at protein-level key 'structure_cluster'.
 
-        Saves TMalign output to `self.root/{Dataset.__class__}_tmalign.json.gz`
+        Saves TMalign output to `self.root/{Dataset.__class__}.tmalign.json.gz`
 
         Parameters:
         -----------
-        proteins: list
-            List of proteins to cluster by structure.
+        paths: list
+            List of paths to original pdb files (after filtering).
         """
         from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.__class__.__name__}.tmalign.json'
@@ -639,12 +641,12 @@ class Dataset():
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
 
-        pdbs = self.get_raw_files()
-        pdbs = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in pdbs]
+        #pdbs = self.get_raw_files()
+        paths = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in paths]
 
-        pdbids = [self.get_id_from_filename(p) for p in pdbs]
-        pairs = list(itertools.combinations(range(len(pdbs)), 2))
-        todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
+        pdbids = [self.get_id_from_filename(p) for p in paths]
+        pairs = list(itertools.combinations(range(len(paths)), 2))
+        todo = [(paths[p1], paths[p2]) for p1, p2 in pairs]
 
         dist = defaultdict(lambda: {})
 
