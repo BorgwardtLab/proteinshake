@@ -114,10 +114,10 @@ class Dataset():
             The total number of proteins in the file.
         """
         self.download_precomputed(resolution=resolution)
-        with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+        with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
             total = int(avro_reader(file).metadata['number_of_proteins'])
         def reader():
-            with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+            with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
                 for x in avro_reader(file):
                     yield x
         return reader(), total
@@ -131,7 +131,11 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return None
+        return 10
+
+    @property
+    def name(self):
+        return self.__class__.__name__
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -141,8 +145,8 @@ class Dataset():
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
-            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
-            and (self.__class__.__name__ != 'Atom3DDataset' or k != 'atom_dataset')
+            and (self.name != 'AlphaFoldDataset' or k != 'organism')
+            and (self.name != 'Atom3DDataset' or k != 'atom_dataset')
         }
         if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
@@ -227,15 +231,15 @@ class Dataset():
     def download_precomputed(self, resolution='residue'):
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
-        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.__class__.__name__}.{resolution}.avro.gz', f'{self.root}')
+        if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
+            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
             print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro.gz')
+            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
         """
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
+        if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
 
         # parse and filter
@@ -250,8 +254,8 @@ class Dataset():
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
-        write_avro(residue_proteins, f'{self.root}/{self.__class__.__name__}.residue.avro')
-        write_avro(atom_proteins, f'{self.root}/{self.__class__.__name__}.atom.avro')
+        write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
+        write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
 
     def parse_pdb(self, path):
         """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
@@ -297,7 +301,7 @@ class Dataset():
             protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
             protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
         # add pLDDT from AlphaFold
-        if self.__class__.__name__ == 'AlphaFoldDataset':
+        if self.name == 'AlphaFoldDataset':
             protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
             protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
         # add attributes
@@ -321,10 +325,10 @@ class Dataset():
             The total number of proteins in the file.
         """
         self.download_precomputed(resolution=resolution)
-        with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+        with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
             total = int(avro_reader(file).metadata['number_of_proteins'])
         def reader():
-            with open(f'{self.root}/{self.__class__.__name__}.{resolution}.avro', 'rb') as file:
+            with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
                 for x in avro_reader(file):
                     yield x
         return reader(), total
@@ -337,8 +341,8 @@ class Dataset():
             k: v.default
             for k, v in signature.parameters.items()
             if v.default is not inspect.Parameter.empty
-            and (self.__class__.__name__ != 'AlphaFoldDataset' or k != 'organism')
-            and (self.__class__.__name__ != 'Atom3DDataset' or k != 'atom_dataset')
+            and (self.name != 'AlphaFoldDataset' or k != 'organism')
+            and (self.name != 'Atom3DDataset' or k != 'atom_dataset')
         }
         if self.__class__.__bases__[0].__name__ != 'Dataset':
             signature = inspect.signature(self.__class__.__bases__[0].__init__)
@@ -423,15 +427,15 @@ class Dataset():
     def download_precomputed(self, resolution='residue'):
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
-        if not os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.__class__.__name__}.{resolution}.avro.gz', f'{self.root}')
+        if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
+            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
             print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}.{resolution}.avro.gz')
+            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
         """
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.residue.avro'):
+        if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
 
         # parse and filter
@@ -447,8 +451,8 @@ class Dataset():
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
-        write_avro(residue_proteins, f'{self.root}/{self.__class__.__name__}.residue.avro')
-        write_avro(atom_proteins, f'{self.root}/{self.__class__.__name__}.atom.avro')
+        write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
+        write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
 
     def parse_pdb(self, path):
         """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
@@ -496,7 +500,7 @@ class Dataset():
             protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
             protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
         # add pLDDT from AlphaFold
-        if self.__class__.__name__ == 'AlphaFoldDataset':
+        if self.name == 'AlphaFoldDataset':
             protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
             protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
         # add attributes
@@ -628,7 +632,7 @@ class Dataset():
             List of paths to original pdb files (after filtering).
         """
         from sklearn.cluster import AgglomerativeClustering
-        dump_name = f'{self.__class__.__name__}.tmalign.json'
+        dump_name = f'{self.name}.tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
         if os.path.exists(dump_path) and os.path.exists(os.path.join(self.root, 'tm_done.txt')):
             return load(dump_path)
