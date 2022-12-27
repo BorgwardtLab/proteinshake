@@ -92,7 +92,11 @@ class RCSBDataset(Dataset):
             i += batch_size
         ids = ids[:self.limit] # for testing
 
-        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        n_jobs = min(self.n_jobs, 20) # RCSB has a request limit
+        if n_jobs < 1:
+            n_jobs = 20
+
+        failed = Parallel(n_jobs=n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]
         if len(failed)>0:
             print(f'Failed to download {len(failed)} PDB files.')
@@ -108,5 +112,5 @@ class RCSBDataset(Dataset):
             return True
         except KeyboardInterrupt:
             exit()
-        except:
+        except Exception as e:
             return id
