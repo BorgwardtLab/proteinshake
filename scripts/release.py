@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='Script to generate all datasets fo
 parser.add_argument('--path', type=str, help='Path to store the final dataset objects.', default='./release')
 parser.add_argument('--scratch', type=str, help='Path to scratch (if on cluster).', default=os.path.expandvars(f'$SCRATCH/proteinshake'))
 parser.add_argument('--tag', type=str, help='Release tag', default=datetime.now().strftime('%d%b%Y').upper())
-parser.add_argument('--njobs', type=int, help='Number of jobs.', default=20)
+parser.add_argument('--njobs', type=int, help='Number of jobs.', default=10)
 args = parser.parse_args()
 
 RELEASE = args.tag
@@ -37,6 +37,7 @@ os.makedirs(f'{PATH}', exist_ok=True)
 ###################
 # PDB Datasets
 ###################
+
 for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamDataset, ProteinProteinInterfaceDataset, ProteinLigandInterfaceDataset, TMAlignDataset, SCOPDataset]:
     # name it after class name
     name = Dataset.__name__
@@ -45,17 +46,22 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
         continue
     print()
     print(name)
+    clustering = name != 'RCSBDataset'
     # create dataset
-    ds = Dataset(root=f'{SCRATCH}/{name}', use_precomputed=False, n_jobs=n_jobs)
+    ds = Dataset(root=f'{SCRATCH}/{name}', use_precomputed=False, n_jobs=n_jobs, cluster_structure=clustering, cluster_sequence=clustering, similarity_threshold_structure=[0.5, 0.6, 0.7, 0.8, 0.9], similarity_threshold_sequence=[0.5, 0.6, 0.7, 0.8, 0.9])
     print('Compressing...')
     zip_file(f'{SCRATCH}/{name}/{name}.residue.avro')
     zip_file(f'{SCRATCH}/{name}/{name}.atom.avro')
+    if clustering:
+        zip_file(f'{SCRATCH}/{name}/{name}_tmalign.json')
     # delete to free memory
     del ds
     # copy from scratch to target
     print('Copying...')
     shutil.copyfile(f'{SCRATCH}/{name}/{name}.residue.avro.gz', f'{PATH}/{name}.residue.avro.gz')
     shutil.copyfile(f'{SCRATCH}/{name}/{name}.atom.avro.gz', f'{PATH}/{name}.atom.avro.gz')
+    if clustering:
+        shutil.copyfile(f'{SCRATCH}/{name}/{name}_tmalign.json.gz', f'{PATH}/{name}.tmalign.json.gz')
     #if SCRATCH != PATH and not os.path.exists(f'{PATH}/{name}.json.gz'):
     #    print('Copying...')
     #    shutil.copyfile(f'{SCRATCH}/{name}/{name}.json.gz', f'{PATH}/{name}.json.gz')
@@ -67,7 +73,7 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
     # cleanup
     print('Cleaning up...')
     shutil.rmtree(f'{SCRATCH}/{name}')
-
+exit()
 ###################
 # AlphaFold Datasets
 ###################

@@ -49,7 +49,7 @@ class TMAlignDataset(Dataset):
         If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
     """
 
-    def get_raw_files(self):
+    def get_raw_files(self, compressed=False):
         return glob.glob(f'{self.root}/raw/files/*.pdb')
 
     def get_id_from_filename(self, filename):
