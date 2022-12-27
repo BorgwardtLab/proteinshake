@@ -4,14 +4,14 @@ import tempfile
 import shutil
 import subprocess
 import pandas as pd
-from joblib import Memory
+#from joblib import Memory
 
 from proteinshake.utils import protein_to_pdb
 
 """ Wrappers for external programs. """
 
-memory = Memory('./.tm_cache', verbose=0)
-@memory.cache
+#memory = Memory('./.tm_cache', verbose=0)
+#@memory.cache
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
     Parameters
