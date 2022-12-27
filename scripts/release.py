@@ -53,7 +53,7 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
     zip_file(f'{SCRATCH}/{name}/{name}.residue.avro')
     zip_file(f'{SCRATCH}/{name}/{name}.atom.avro')
     if clustering:
-        zip_file(f'{SCRATCH}/{name}/{name}_tmalign.json')
+        zip_file(f'{SCRATCH}/{name}/{name}.tmalign.json')
     # delete to free memory
     del ds
     # copy from scratch to target
@@ -61,15 +61,10 @@ for Dataset in [RCSBDataset, GeneOntologyDataset, EnzymeCommissionDataset, PfamD
     shutil.copyfile(f'{SCRATCH}/{name}/{name}.residue.avro.gz', f'{PATH}/{name}.residue.avro.gz')
     shutil.copyfile(f'{SCRATCH}/{name}/{name}.atom.avro.gz', f'{PATH}/{name}.atom.avro.gz')
     if clustering:
-        shutil.copyfile(f'{SCRATCH}/{name}/{name}_tmalign.json.gz', f'{PATH}/{name}.tmalign.json.gz')
+        shutil.copyfile(f'{SCRATCH}/{name}/{name}.tmalign.json.gz', f'{PATH}/{name}.tmalign.json.gz')
     #if SCRATCH != PATH and not os.path.exists(f'{PATH}/{name}.json.gz'):
     #    print('Copying...')
     #    shutil.copyfile(f'{SCRATCH}/{name}/{name}.json.gz', f'{PATH}/{name}.json.gz')
-    if name == 'TMAlignDataset':
-        # copy the extra file (pairwise distances) from the TM dataset
-        print('Copying TM scores...')
-        zip_file(f'{SCRATCH}/TMAlignDataset/tmalign.json')
-        shutil.copyfile(f'{SCRATCH}/TMAlignDataset/tmalign.json.gz', f'{PATH}/tmalign.json.gz')
     # cleanup
     print('Cleaning up...')
     shutil.rmtree(f'{SCRATCH}/{name}')

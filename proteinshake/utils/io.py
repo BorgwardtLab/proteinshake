@@ -151,6 +151,7 @@ def unzip_file(path, remove=True):
             shutil.copyfileobj(f_in, f_out)
     if remove:
         os.remove(path)
+    return path[:-3]
 
 
 

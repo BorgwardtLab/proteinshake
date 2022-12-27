@@ -129,7 +129,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return None
+        return 10
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -637,10 +637,9 @@ class Dataset():
 
 
         pdbs = self.get_raw_files()
-        [unzip_file(p, remove=False) for p in pdbs]
+        pdbs = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in pdbs]
 
-        pdbids = [os.path.basename(p).split('.')[0] for p in pdbs]
-        pdbs = [p.rstrip('.gz') for p in pdbs]
+        pdbids = [self.get_id_from_filename(p) for p in pdbs]
         pairs = list(itertools.combinations(range(len(pdbs)), 2))
         todo = [(pdbs[p1], pdbs[p2]) for p1, p2 in pairs]
 
@@ -651,8 +650,8 @@ class Dataset():
         )
 
         for (pdb1, pdb2), d in zip(todo, output):
-            name1 = os.path.basename(pdb1).split('.')[0]
-            name2 = os.path.basename(pdb2).split('.')[0]
+            name1 = self.get_id_from_filename(pdb1)
+            name2 = self.get_id_from_filename(pdb2)
             # each value is a tuple (tm-core, RMSD)
             dist[name1][name2] = (d[0], d[2])
             dist[name2][name1] = (d[0], d[2])
@@ -665,25 +664,21 @@ class Dataset():
             for j in range(i+1, num_proteins):
                 # take the largest TMscore (most similar) between both
                 # directions and convert to a distance
-                DM.append( 1 - max(dist[pdbids[i]][pdbids[j]][0],
-                                   dist[pdbids[j]][pdbids[i]][0]
-                                  ))
-                # DM[i][j] = 1 - max(dist[pdbids[i]][pdbids[j]][0],
-                                   # dist[pdbids[j]][pdbids[i]][0]
-                                  # )
-
-
+                DM.append(
+                    1 - max(
+                        dist[pdbids[i]][pdbids[j]][0],
+                        dist[pdbids[j]][pdbids[i]][0]
+                    )
+                )
         DM = np.array(DM).reshape(-1, 1)
-        # DM += DM.T
+
         if isinstance(self.similarity_threshold_structure, float):
             thresholds = [self.similarity_threshold_structure]
         else:
             thresholds = self.similarity_threshold_structure
 
         for d in thresholds:
-            clusterer = AgglomerativeClustering(n_clusters=None,
-                                                distance_threshold=1-d
-                                                )
+            clusterer = AgglomerativeClustering(n_clusters=None, distance_threshold=(1-d))
             clusterer.fit(DM)
             for i, p in enumerate(proteins):
                 p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
