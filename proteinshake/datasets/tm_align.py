@@ -53,7 +53,7 @@ class TMAlignDataset(Dataset):
         super().__init__(**kwargs)
         self.tm_score, self.rmsd = self.compute_distances()
 
-    def get_raw_files(self):
+    def get_raw_files(self, compressed=False):
         return glob.glob(f'{self.root}/raw/files/*.pdb')
 
     def get_id_from_filename(self, filename):
