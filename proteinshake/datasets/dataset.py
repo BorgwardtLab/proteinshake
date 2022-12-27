@@ -68,6 +68,7 @@ class Dataset():
             check_sequence                 = False,
             n_jobs                         = 1,
             minimum_length                 = 10,
+            maximum_length                 = 2048,
             exclude_ids                    = None,
             cluster_structure              = False,
             cluster_sequence               = False,
@@ -129,7 +130,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 10
+        return None
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -557,6 +558,8 @@ class Dataset():
             Whether or not the DataFrame is valid.
         """
         if len(df['residue_number'].unique()) < self.minimum_length:
+            return False
+        if len(df['residue_number'].unique()) > self.maximum_length:
             return False
         # check if single chain protein
         if self.only_single_chain and len(df['chain_id'].unique()) > 1:
