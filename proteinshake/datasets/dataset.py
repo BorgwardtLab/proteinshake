@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
-from joblib import Parallel, delayed, Memory
+from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
@@ -23,9 +23,6 @@ from proteinshake.utils import (download_url,
                                 tmalign_wrapper,
                                 cdhit_wrapper
                                 )
-
-location = './tm_cache'
-memory = Memory(location, verbose=0)
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
@@ -131,7 +128,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return None
+        return 10
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
         """
@@ -606,7 +603,7 @@ class Dataset():
             sequences = [p['protein']['sequence'] for p in proteins]
             clusters = cdhit_wrapper(sequences, sim_thresh=threshold)
             if clusters == -1:
-                print("Seq. clustering failed.")
+                print("Sequence clustering failed.")
                 return
             for p, c in zip(proteins, clusters):
                 p['protein'][f'sequence_cluster_{threshold}'] = c
@@ -623,7 +620,6 @@ class Dataset():
         proteins: list
             List of proteins to cluster by structure.
         """
-        print("CLUSTERING")
         from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.__class__.__name__}_tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
@@ -648,9 +644,8 @@ class Dataset():
 
         dist = defaultdict(lambda: {})
 
-        tm_cached = memory.cache(tmalign_wrapper)
         output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tm_cached)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
+            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
         )
 
         for (pdb1, pdb2), d in zip(todo, output):
