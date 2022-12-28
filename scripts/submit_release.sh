@@ -1,5 +1,5 @@
 TAG="28DEC2022"
-CPUS=500
+CPUS=300
 MEM=$((100*1024/$CPUS)) # 100GB
 LOGDIR="./release/$TAG/logs"
 
