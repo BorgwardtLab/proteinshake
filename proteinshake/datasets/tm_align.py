@@ -52,7 +52,7 @@ class TMAlignDataset(Dataset):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def get_raw_files(self, compressed=False):
+    def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*.pdb')
 
     def get_id_from_filename(self, filename):

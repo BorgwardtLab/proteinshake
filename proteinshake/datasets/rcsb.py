@@ -30,11 +30,8 @@ class RCSBDataset(Dataset):
         self.query = query
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
-    def get_raw_files(self, compressed=True):
-        if compressed:
-            return glob.glob(f'{self.root}/raw/files/*.pdb.gz')
-        else:
-            return glob.glob(f'{self.root}/raw/files/*.pdb')
+    def get_raw_files(self):
+        return glob.glob(f'{self.root}/raw/files/*.pdb.gz')
 
     def get_id_from_filename(self, filename):
         return filename[:4]

@@ -28,7 +28,7 @@ class ProteinProteinInterfaceDataset(Dataset):
         self.cutoff = cutoff
         super().__init__(**kwargs)
 
-    def get_raw_files(self, compressed=False):
+    def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
