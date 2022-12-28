@@ -41,7 +41,7 @@ def tmalign_wrapper(pdb1, pdb2):
     return float(TM1), float(TM2), float(RMSD)
 
 
-def cdhit_wrapper(sequences, sim_thresh=0.6, n_jobs=0):
+def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
     """ Cluster sequences using CD-hit
 
     Choose of word size:
@@ -81,8 +81,8 @@ def cdhit_wrapper(sequences, sim_thresh=0.6, n_jobs=0):
         in_file = osp.join(tmpdir, 'in.fasta')
         out_file = osp.join(tmpdir, 'out.fasta')
         with open(in_file, "w") as inp:
-            for i, s in enumerate(sequences):
-                inp.write(f"> {i} \n")
+            for id, s in zip(ids,sequences):
+                inp.write(f">{id}\n")
                 inp.write(s + "\n")
         try:
             cmd = ['cd-hit',
@@ -102,16 +102,20 @@ def cdhit_wrapper(sequences, sim_thresh=0.6, n_jobs=0):
             print(traceback.format_exc())
             return -1
         else:
-            clusters = [0] * len(sequences)
+            # parse cluster assignments
+            clusters = {}
+            representatives = []
             with open(out_file + ".clstr", "r") as out:
-                inds = []
                 for line in out:
                     if line.startswith(">"):
                         clust_id = int(line.split()[1])
                         continue
-                    ind = int(line.split(">")[1].split('.')[0])
-                    clusters[ind] = clust_id
-            return clusters
+                    pdb_id = line.split(">")[1].split('.')[0]
+                    clusters[pdb_id] = clust_id
+                    if line.endswith('*'):
+                        representatives.append(pdb_id)
+            clusters = [clusters[id] for id in ids]
+            return clusters, representatives
 
 def dms_wrapper(protein, d=0.2):
     """ Call DMS to compute a surface for the PDB.

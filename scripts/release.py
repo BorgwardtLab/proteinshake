@@ -2,6 +2,11 @@ import os, shutil, argparse
 from datetime import datetime
 from proteinshake.utils import zip_file
 import importlib
+from tqdm import tqdm
+from functools import partialmethod
+
+# disable tqdm
+tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
 
 datasets = importlib.import_module('proteinshake.datasets')
 
@@ -55,6 +60,7 @@ print('Compressing...')
 zip_file(f'{SCRATCH}/{DATASET}/{DATASET}.residue.avro')
 zip_file(f'{SCRATCH}/{DATASET}/{DATASET}.atom.avro')
 if clustering:
+    zip_file(f'{SCRATCH}/{DATASET}/{DATASET}.cdhit.json')
     zip_file(f'{SCRATCH}/{DATASET}/{DATASET}.tmalign.json')
 
 # copy from scratch to target
@@ -62,6 +68,7 @@ print('Copying...')
 shutil.copyfile(f'{SCRATCH}/{DATASET}/{DATASET}.residue.avro.gz', f'{PATH}/{DATASET}.residue.avro.gz')
 shutil.copyfile(f'{SCRATCH}/{DATASET}/{DATASET}.atom.avro.gz', f'{PATH}/{DATASET}.atom.avro.gz')
 if clustering:
+    shutil.copyfile(f'{SCRATCH}/{DATASET}/{DATASET}.cdhit.json.gz', f'{PATH}/{DATASET}.cdhit.json.gz')
     shutil.copyfile(f'{SCRATCH}/{DATASET}/{DATASET}.tmalign.json.gz', f'{PATH}/{DATASET}.tmalign.json.gz')
 
 # cleaning

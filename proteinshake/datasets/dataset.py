@@ -611,14 +611,18 @@ class Dataset():
         else:
             thresholds = self.similarity_threshold_sequence
 
+        representatives = {}
         for threshold in thresholds:
             sequences = [p['protein']['sequence'] for p in proteins]
-            clusters = cdhit_wrapper(sequences, sim_thresh=threshold)
+            ids = [p['protein']['ID'] for p in proteins]
+            clusters, reps = cdhit_wrapper(ids, sequences, sim_thresh=threshold, n_jobs=self.n_jobs)
+            representatives[threshold] = reps
             if clusters == -1:
                 print("Sequence clustering failed.")
                 return
             for p, c in zip(proteins, clusters):
                 p['protein'][f'sequence_cluster_{threshold}'] = c
+        save(representatives, f'{self.root}/{self.name}.cdhit.json')
 
     def compute_clusters_structure(self, proteins, paths):
         """ Launch TMalign on all pairs of proteins in dataset.
