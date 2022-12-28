@@ -39,12 +39,13 @@ if DATASET == 'AlphaFoldDataset':
     kwargs['organism'] = ORGANISM
     DATASET = f'{DATASET}_{ORGANISM}'
 kwargs = {
-    root                            : f'{SCRATCH}/{DATASET}',
-    use_precomputed                 : False,
-    n_jobs                          : n_jobs,
-    cluster_structure               : clustering,
-    cluster_sequence                : clustering,
-    similarity_threshold_structure  : [0.5, 0.6, 0.7, 0.8, 0.9], similarity_threshold_sequence   : [0.5, 0.6, 0.7, 0.8, 0.9],
+    'root'                            : f'{SCRATCH}/{DATASET}',
+    'use_precomputed'                 : False,
+    'n_jobs'                          : n_jobs,
+    'cluster_structure'               : clustering,
+    'cluster_sequence'                : clustering,
+    'similarity_threshold_structure'  : [0.5, 0.6, 0.7, 0.8, 0.9],
+    'similarity_threshold_sequence'   : [0.5, 0.6, 0.7, 0.8, 0.9],
     **kwargs
 }
 ds = Dataset(**kwargs)

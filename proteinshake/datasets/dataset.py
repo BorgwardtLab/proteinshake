@@ -444,10 +444,10 @@ class Dataset():
         before = len(proteins)
         paths = [path for path,protein in zip(paths,proteins) if protein is not None]
         proteins = [p for p in proteins if p is not None]
-        if self.cluster_structure:
-            self.compute_clusters_structure(paths)
         if self.cluster_sequence:
             self.compute_clusters_sequence(proteins)
+        if self.cluster_structure:
+            self.compute_clusters_structure(proteins, paths)
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
@@ -596,7 +596,7 @@ class Dataset():
                }
         return data
 
-    def compute_clusters_sequence(self, proteins, n_jobs=1):
+    def compute_clusters_sequence(self, proteins):
         """ Use CDHit to cluster sequences. Assigns the field 'sequence_cluster' to an integer cluster ID for each protein.
 
         Parameters:
@@ -605,6 +605,7 @@ class Dataset():
             List of protein dictionaries to cluster.
 
         """
+        print('Sequence clustering...')
         if isinstance(self.similarity_threshold_sequence, float):
             thresholds = [self.similarity_threshold_sequence]
         else:
@@ -618,9 +619,8 @@ class Dataset():
                 return
             for p, c in zip(proteins, clusters):
                 p['protein'][f'sequence_cluster_{threshold}'] = c
-            pass
 
-    def compute_clusters_structure(self, paths, n_jobs=1):
+    def compute_clusters_structure(self, proteins, paths):
         """ Launch TMalign on all pairs of proteins in dataset.
         Assign a cluster ID to each protein at protein-level key 'structure_cluster'.
 
@@ -634,19 +634,11 @@ class Dataset():
         from sklearn.cluster import AgglomerativeClustering
         dump_name = f'{self.name}.tmalign.json'
         dump_path = os.path.join(self.root, dump_name)
-        if os.path.exists(dump_path) and os.path.exists(os.path.join(self.root, 'tm_done.txt')):
-            return load(dump_path)
-        elif self.use_precomputed:
-            download_url(os.path.join(self.repository_url, dump_name), self.root)
-            print('Unzipping...')
-            unzip_file(os.path.join(self.root, dump_name + ".gz"))
-            return load(dump_path)
+
         if self.n_jobs == 1:
             print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
 
-
-        #pdbs = self.get_raw_files()
-        paths = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in paths]
+        paths = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in tqdm(paths, desc='Unzipping')]
 
         pdbids = [self.get_id_from_filename(p) for p in paths]
         pairs = list(itertools.combinations(range(len(paths)), 2))
@@ -655,7 +647,7 @@ class Dataset():
         dist = defaultdict(lambda: {})
 
         output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Computing TM Scores')
+            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Structure clustering')
         )
 
         for (pdb1, pdb2), d in zip(todo, output):
@@ -666,7 +658,7 @@ class Dataset():
             dist[name2][name1] = (d[0], d[2])
 
         save(dist, dump_path)
-        num_proteins = len(pdbs)
+        num_proteins = len(paths)
         DM = np.zeros((num_proteins, num_proteins))
         DM = []
         for i in range(num_proteins):
@@ -691,9 +683,6 @@ class Dataset():
             clusterer.fit(DM)
             for i, p in enumerate(proteins):
                 p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
-
-        with open(os.path.join(self.root, 'tm_done.txt'),'w') as f:
-            f.write('done.')
 
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.

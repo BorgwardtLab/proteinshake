@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
-MAX_REQUESTS = 5
+MAX_REQUESTS = 20
 
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
@@ -86,7 +86,7 @@ class RCSBDataset(Dataset):
             if total is None:
                 total = response_dict['group_by_count']
             i += batch_size
-            
+
         ids = list(set(ids)) # filter identical ids
         ids = ids[:self.limit] # for testing
 

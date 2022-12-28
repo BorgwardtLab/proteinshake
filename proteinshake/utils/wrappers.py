@@ -4,6 +4,7 @@ import tempfile
 import shutil
 import subprocess
 import pandas as pd
+import traceback
 #from joblib import Memory
 
 from proteinshake.utils import protein_to_pdb
@@ -76,33 +77,29 @@ def cdhit_wrapper(sequences, sim_thresh=0.6, n_jobs=0):
     n_jobs = 0 if n_jobs < 0 else n_jobs
 
     with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = './tmp'
         in_file = osp.join(tmpdir, 'in.fasta')
         out_file = osp.join(tmpdir, 'out.fasta')
         with open(in_file, "w") as inp:
             for i, s in enumerate(sequences):
                 inp.write(f"> {i} \n")
                 inp.write(s + "\n")
-
         try:
             cmd = ['cd-hit',
-                   '-c',
-                   str(sim_thresh),
-                   '-i',
-                   in_file,
-                   '-n',
-                   str(word_size),
-                   '-o',
-                   out_file,
-                   '-T',
-                   n_jobs
+                   '-c', str(sim_thresh),
+                   '-i', in_file,
+                   '-n', str(word_size),
+                   '-o', out_file,
+                   '-T', str(n_jobs),
+                   '-M', "0" # unlimited memory
                   ]
 
             subprocess.run(cmd,
-                           stdout=subprocess.DEVNULL,
+                           stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT
                           )
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return -1
         else:
             clusters = [0] * len(sequences)
