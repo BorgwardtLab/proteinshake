@@ -64,7 +64,7 @@ def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
 
     if sim_thresh >= 0.4 and sim_thresh < 0.5:
         word_size = 2
-    elif sim_thresh>= 0.5 and sim_thresh < 0.6:
+    elif sim_thresh >= 0.5 and sim_thresh < 0.6:
         word_size = 3
     elif sim_thresh >= 0.6 and sim_thresh < 0.7:
         word_size = 4
@@ -77,7 +77,6 @@ def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
     n_jobs = 0 if n_jobs < 0 else n_jobs
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        tmpdir = './tmp'
         in_file = osp.join(tmpdir, 'in.fasta')
         out_file = osp.join(tmpdir, 'out.fasta')
         with open(in_file, "w") as inp:
@@ -114,7 +113,7 @@ def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
                     clusters[pdb_id] = clust_id
                     if line.endswith('*'):
                         representatives.append(pdb_id)
-            clusters = [clusters[id] for id in ids]
+            clusters = [clusters[id] if id in clusters else -1 for id in ids]
             return clusters, representatives
 
 def dms_wrapper(protein, d=0.2):

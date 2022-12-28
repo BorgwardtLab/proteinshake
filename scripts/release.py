@@ -5,8 +5,8 @@ import importlib
 from tqdm import tqdm
 from functools import partialmethod
 
-# disable tqdm
-tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
+# slow down tqdm
+tqdm.__init__ = partialmethod(tqdm.__init__, mininterval=60*60) # once per hour
 
 datasets = importlib.import_module('proteinshake.datasets')
 
@@ -53,6 +53,9 @@ kwargs = {
     'similarity_threshold_sequence'   : [0.5, 0.6, 0.7, 0.8, 0.9],
     **kwargs
 }
+# clean up data from old runs
+if os.path.exists(f'{SCRATCH}/{DATASET}'):
+    shutil.rmtree(f'{SCRATCH}/{DATASET}')
 ds = Dataset(**kwargs)
 
 # zipping

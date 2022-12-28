@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
-MAX_REQUESTS = 20
+MAX_REQUESTS = 5
 
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
