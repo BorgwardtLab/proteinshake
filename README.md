@@ -1,10 +1,7 @@
 
 <p align="center">
-<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/images/proteinshake_banner.png" width="70%">
+<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/docs/images/logo_subtitle.svg" width="70%">
 </p>
-
-# ML-ready protein 3D structure datasets
-
 
 [pypi-url]: https://pypi.org/project/proteinshake
 ![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
@@ -23,9 +20,16 @@
 proteinshake is a collection of protein structure datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
 After installing, datasets can be passed directly to ML loaders for model training.
 
+## Installation
+
+
+```
+$ pip install proteinshake
+```
+
 ## Demo
 
-How to load an AlphaFold dataset as of pytorch-geometric graphs. 
+How to load an AlphaFold dataset as of pytorch-geometric graphs.
 
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
@@ -40,54 +44,6 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGKGKTTAAFGTATRAVGHGKKVGVVQFIKGTWPNGERNLLEPHGVEFQVMATGFTWDTQNRESDTAACREVWQHAKRMLADSSLDMVLLDELTYMVAYDYLPLEEVVQALNERPHQQTVIITGRGCHRDILELADTVSELRPVKHAFDAGVKAQIGIDY'
 ```
 
-
-## PDB Datasets
-| name                                           |   num_proteins |   avg size (# residues) | property                                | values      | type                      |
-|:-----------------------------------------------|---------------:|------------------------:|:----------------------------------------|:------------|:--------------------------|
-| RCSBDataset                                    |          21989 |                 56.8898 | -                                     | -         | -                       |
-| PfamDataset                                    |          18696 |                 59.4297 | Protein Family (Pfam)                   | 5215 (root) | Categorical, Hierarchical |
-| GODataset                                      |          19267 |                 58.8485 | Gene Ontology (GO)                      | 101 (root)  | Categorical, Hierarchical |
-| ECDataset                                      |           8150 |                 74.9618 | Enzyme Classification (`EC`)            | 2173        | Categorical               |
-| PDBBindRefined                                 |           4642 |                108.806  | Small Mol. Binding Site (residue-level) | 2           | Binary                    |
-| TMScoreBenchmark                               |            200 |                 49.458  | TM Score                                | [0-1]       | Real-valued, Pairwise     |
-
-## AlphaFold Datasets
-| name                                           |   num_proteins |   avg size (# residues) | property                                | values      | type                      |
-|:-----------------------------------------------|---------------:|------------------------:|:----------------------------------------|:------------|:--------------------------|
-| SwissProt          |          512.231 |                 79.334 | -                                     | -         | -                       |
-| arabidopsis_thaliana          |          27434 |                 66.1312 | -                                     | -         | -                       |
-| caenorhabditis_elegans        |          19694 |                 65.0678 | -                                     | -         | -                       |
-| candida_albicans              |           5974 |                 62.782  | -                                     | -         | -                       |
-| danio_rerio                   |          24664 |                 75.2797 | -                                     | -         | -                       |
-| dictyostelium_discoideum      |          12622 |                 85.9275 | -                                     | -         | -                       |
-| drosophila_melanogaster       |          13458 |                 81.2947 | -                                     | -         | -                       |
-| escherichia_coli              |           4363 |                 51.5408 | -                                     | -         | -                       |
-| glycine_max                   |          55799 |                 58.0664 | -                                     | -         | -                       |
-| homo_sapiens                  |          23391 |                105.457  | -                                     | -         | -                       |
-| methanocaldococcus_jannaschii |           1773 |                 46.7467 | -                                     | -         | -                       |
-| mus_musculus                  |          21615 |                 83.0434 | -                                     | -         | -                       |
-| oryza_sativa                  |          43649 |                 44.1931 | -                                     | -         | -                       |
-| rattus_norvegicus             |          21272 |                 78.1547 | -                                     | -         | -                       |
-| saccharomyces_cerevisiae      |           6040 |                 80.0745 | -                                     | -         | -                       |
-| schizosaccharomyces_pombe     |           5128 |                 76.2427 | -                                     | -         | -                       |
-| zea_mays                      |          39299 |                 46.1618 | -                                     | -         | -                       |
-
-
-
-## Installation
-
-
-```
-$ pip install proteinshake
-```
-
-### From source
-
-```
-$ git clone https://github.com/BorgwardtLab/proteinshake
-$ cd proteinshake
-$ pip install .
-```
 
 ## Usage
 
