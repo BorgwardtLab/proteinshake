@@ -103,3 +103,5 @@ We obtained and modified data from the following sources:
 The AlphaFold protein structures were downloaded from the [AlphaFold Structure Database](https://alphafold.ebi.ac.uk/), licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 
 The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+
+Protein and Ligand binding annotations were obtained from [PDBBind](http://www.pdbbind.org.cn/).
