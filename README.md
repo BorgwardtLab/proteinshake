@@ -11,7 +11,6 @@
 [![Documentation Status](https://readthedocs.org/projects/proteinshake/badge/?version=latest)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/proteinshake)](https://pypi.org/project/proteinshake/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/proteinshake)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
 
 * Fetch clean protein datasets in one line
