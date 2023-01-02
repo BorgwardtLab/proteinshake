@@ -104,4 +104,4 @@ The AlphaFold protein structures were downloaded from the [AlphaFold Structure D
 
 The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
-Protein and Ligand binding annotations were obtained from [PDBBind](http://www.pdbbind.org.cn/).
+Protein and Ligand binding structures and annotations were obtained from [PDBBind](http://www.pdbbind.org.cn/).
