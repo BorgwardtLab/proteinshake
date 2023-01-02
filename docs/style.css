@@ -91,7 +91,7 @@ div.block {
 }
 div.install {
     background-color: var(--lightgrey);
-    font-family: Monaco;
+    font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
     font-size: 18px;
     width:400px;
     height:50px;
@@ -119,4 +119,38 @@ img.feature-logo {
 img.logo {
     width:100%;
     max-width:600px;
+}
+div.line {
+    display: inline-block;
+    height: 5px;
+    width: 100px;
+    background-color: var(--lightblue);
+    border-radius: 2px;
+    margin:0px 50px;
+}
+div.table {
+    width:100%;
+    min-width: 500px;
+    max-width: 1000px;
+}
+div.tabs {
+    display: flex;
+    flex-direction: row;
+    width:100%;
+}
+div.tab-item {
+    display: flex;
+    flex: 1;
+    background-color: var(--lightgrey);
+    color: var(--grey);
+    height:45px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+div.tab-item.selected {
+    color: var(--lightblue);
+}
+div.tab-item:hover {
+    background-color: #ddd;
 }

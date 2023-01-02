@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang='en' dir='ltr'>
     <head>
-        <meta charset="utf-8">
+        <meta charset='utf-8'>
         <title>ProteinShake</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel='stylesheet' href='prism.css'>
+        <script src='prism.js'></script>
+        <link rel='stylesheet' href='style.css'>
+        <script src='script.js'></script>
     </head>
     <body>
         <div class='header'>
@@ -26,6 +29,7 @@
                 </div>
             </div>
             <div class='block' style='flex-direction:row;flex-wrap:wrap;justify-content:center;'>
+
                 <!--features: unified databases, various annotations, different representations, popular frameworks, tasks for benchmarking, sensible splits, large dataset sizes, atom and residue resolution, preprocessed and hosted, high performance-->
                 <div class='feature'>
                     <img class='feature-logo' src='images/database.svg'/>
@@ -81,18 +85,25 @@
                         Preprocessed and hosted
                     </div>
                 </div>
-                <div class='feature'>
-                    <img class='feature-logo' src='images/performance.svg'/>
-                    <div class='feature-description'>
-                        Optimized for high performance
+            </div>
+            <div class='block'>
+                <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Quickstart</h1><div class='line'></div></span>
+                <div class='table'>
+                    <div class='tabs' id='representations'>
+                        <div class='tab-item' id='graph' onclick='representation="graph";quickstart();'>Graphs</div>
+                        <div class='tab-item' id='voxel' onclick='representation="voxel";quickstart();'>Voxels</div>
+                        <div class='tab-item' id='point' onclick='representation="point";quickstart();'>Point Clouds</div>
                     </div>
+                    <div class='tabs' id='frameworks'>
+                        <div class='tab-item' id='torch' onclick='framework="torch";quickstart();'>PyTorch</div>
+                        <div class='tab-item' id='tf' onclick='framework="tf";quickstart();'>Tensorflow</div>
+                        <div class='tab-item' id='np' onclick='framework="np";quickstart();'>Numpy/JAX</div>
+                    </div>
+                    <pre><code class='language-python' id='code'></code></pre>
                 </div>
             </div>
             <div class='block'>
-                quickstart
-            </div>
-            <div class='block'>
-                leaderboard
+                <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Leaderboard</h1><div class='line'></div></span>
             </div>
             <div class='block'>
                 <h3>Beat the baselines?</h3>
