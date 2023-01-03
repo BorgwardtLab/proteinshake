@@ -29,8 +29,6 @@
                 </div>
             </div>
             <div class='block' style='flex-direction:row;flex-wrap:wrap;justify-content:center;'>
-
-                <!--features: unified databases, various annotations, different representations, popular frameworks, tasks for benchmarking, sensible splits, large dataset sizes, atom and residue resolution, preprocessed and hosted, high performance-->
                 <div class='feature'>
                     <img class='feature-logo' src='images/database.svg'/>
                     <div class='feature-description'>
@@ -98,6 +96,9 @@
                         <div class='tab-item' id='torch' onclick='framework="torch";quickstart();'>PyTorch</div>
                         <div class='tab-item' id='tf' onclick='framework="tf";quickstart();'>Tensorflow</div>
                         <div class='tab-item' id='np' onclick='framework="np";quickstart();'>Numpy/JAX</div>
+                        <div class='tab-item' id='pyg' onclick='framework="pyg";quickstart();' style='display:none;'>PyTorch Geometric</div>
+                        <div class='tab-item' id='dgl' onclick='framework="dgl";quickstart();' style='display:none;'>DGL</div>
+                        <div class='tab-item' id='nx' onclick='framework="nx";quickstart();' style='display:none;'>NetworkX</div>
                     </div>
                     <pre><code class='language-python' id='code'></code></pre>
                 </div>
