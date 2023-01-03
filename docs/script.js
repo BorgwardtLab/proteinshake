@@ -18,7 +18,7 @@ const lines = {
     comment_2: {
         pyg: '# Load into PyTorch-Geometric data structures',
         dgl: '# Load into DGL data structures',
-        nx: '# Load into Networkx data structures',
+        nx: '# Load into NetworkX data structures',
         torch: '# Load into PyTorch data structures',
         tf: '# Load into Tensorflow data structures',
         np: '# Load into Numpy data structures',

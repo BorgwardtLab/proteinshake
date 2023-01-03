@@ -154,3 +154,9 @@ div.tab-item.selected {
 div.tab-item:hover {
     background-color: #ddd;
 }
+a.anchor {
+    display: block;
+    position: relative;
+    top: -40px;
+    visibility: hidden;
+}
