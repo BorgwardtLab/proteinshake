@@ -548,6 +548,7 @@ class Dataset():
             'y_coord': 'y',
             'z_coord': 'z',
         })
+        df = df.sort_values(by='chain_id')
         return df
 
     def validate(self, df):

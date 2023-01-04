@@ -176,3 +176,39 @@ def _parse_dms(path):
                      )
     df = df.dropna(axis=0)
     return df
+
+def makeblastdb_wrapper(sequences, db_path, db_type='prot'):
+    assert shutil.which('makeblastdb') is not None,\
+           "No makeblastdb installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
+    with open(db_path, "w") as db:
+        for i, seq in enumerate(sequences):
+            db.write(f"> {i} \n{seq}")
+    cmd = ['makeblastdb',
+           '-dbtype',
+           db_type,
+           '-in',
+           db_path
+           ]
+    subprocess.run(cmd)
+
+def blastp_wrapper(query, db_path):
+    assert shutil.which('blastp') is not None,\
+           "No blastp installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
+    #  blastp -query inp.fasta -db ~/Temp/b.fasta -out res.out
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with open(osp.join(tmpdir, "query.fasta"), "w") as q:
+            for seq in query:
+                q.write(f"> query_{i}\n{seq}")
+            cmd = ['blastp',
+                   '-query',
+                   osp.join(tmpdir, "query.fasta"),
+                   '-db',
+                   db_path,
+                   '-out',
+                   osp.join(tmpdir, "out.blastp")
+                   ]
+            subprocess.run(cmd)
+
+    pass
+
+
