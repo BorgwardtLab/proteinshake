@@ -64,12 +64,12 @@ class GraphDataset():
 
     """
 
-    def __init__(self, proteins, size, path, resolution='residue', eps=None, k=None, weighted_edges=False):
+    def __init__(self, proteins, size, root, name, resolution='residue', eps=None, k=None, weighted_edges=False):
         assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
         construction = 'knn' if not k is None else 'eps'
         param = k if construction == 'knn' else eps
         weighted = '_weighted' if weighted_edges else ''
-        self.path = f'{path}/processed/graph/{resolution}_{construction}_{param}{weighted}'
+        self.path = f'{root}/processed/graph/{name}_{resolution}_{construction}_{param}{weighted}'
         self.graphs = (Graph(protein, construction, k, eps, weighted_edges) for protein in proteins)
         self.size = size
         os.makedirs(os.path.dirname(self.path), exist_ok=True)

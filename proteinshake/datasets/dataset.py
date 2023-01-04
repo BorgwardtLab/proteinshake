@@ -702,6 +702,7 @@ class Dataset():
         return GraphDataset((transform(p) for p in proteins),
                             size,
                             self.root,
+                            self.name,
                             resolution,
                             *args,
                             **kwargs)
@@ -719,6 +720,7 @@ class Dataset():
         return PointDataset((transform(p) for p in proteins),
                             size,
                             self.root,
+                            self.name,
                             resolution,
                             *args,
                             **kwargs)
@@ -736,6 +738,7 @@ class Dataset():
         return VoxelDataset((transform(p) for p in proteins),
                             size,
                             self.root,
+                            self.name,
                             resolution,
                             *args,
                             **kwargs)
