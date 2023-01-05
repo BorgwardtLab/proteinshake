@@ -89,5 +89,12 @@ print(metrics)`;
     Prism.highlightAll();
 }
 
+function leaderboard() {
+    fetch('../leaderboard/gene_ontology.json')
+        .then((response) => response.json())
+        .then((json) => console.log(json));
+}
+
 
 window.addEventListener('load', quickstart);
+window.addEventListener('load', leaderboard);

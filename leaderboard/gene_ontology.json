@@ -1,0 +1,10 @@
+[
+    {
+        "name":"ProteinShake Baseline",
+        "author": "Kucera et al. 2023",
+        "paper_link": "",
+        "code_link": "",
+        "Fmax": 0.7,
+        "Smin": 0.1
+    }
+]
