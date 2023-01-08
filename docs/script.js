@@ -94,7 +94,7 @@ var task = 'gene_ontology';
 function leaderboard() {
     hideDropdown();
     var board = document.getElementById('leaderboard_table');
-    fetch('http://localhost:8000/leaderboard/'+task+'.json')
+    fetch('../leaderboard/'+task+'.json')
         .then((response) => response.json())
         .then((json) => {
             board.innerHTML = '';
