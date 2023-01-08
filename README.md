@@ -1,58 +1,49 @@
 
-<p align="center">
-<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/docs/images/logo_subtitle.svg" width="70%">
-</p>
+<div style="display:flex;justify-content:center;width:100%;">
+<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/docs/images/logo_subtitle.svg" style="max-width:800px;width:100%;">
+</div>
 
-[pypi-url]: https://pypi.org/project/proteinshake
-![test workflow](https://github.com/BorgwardtLab/proteinshake/actions/workflows/build.yml/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/proteinshake/badge/?version=latest)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
-[![PyPI](https://img.shields.io/pypi/v/proteinshake)](https://pypi.org/project/proteinshake/)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/proteinshake)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/LICENSE)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=BorgwardtLab.proteinshake)
+<div style="display:flex;width:100%;align-items:center;justify-content:center;gap:20px;">
+[![pypi](https://img.shields.io/pypi/v/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
+![build](https://img.shields.io/github/actions/workflow/status/borgwardtlab/proteinshake/build.yml?color=%2303A9F4&style=for-the-badge)
+[![docs](https://img.shields.io/readthedocs/proteinshake?color=%2303A9F4&style=for-the-badge)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
+[![downloads](https://img.shields.io/pypi/dm/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
+[![visitors]()]()
+</div>
 
-* Fetch clean protein datasets in one line
-* Convert proteins to graphs, point clouds, voxels, and surfaces (coming soon).
-* Work in your favorite deep learning framework (pytorch, tensorflow, pytorch-geometric, dgl, networkx)
-
-
-
-proteinshake is a collection of protein structure datasets built from [PDB](https://www.rcsb.org/) and [AlphaFold](https://alphafold.ebi.ac.uk/).
-After installing, datasets can be passed directly to ML loaders for model training.
-
-## Installation
-
+ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
 ```
 $ pip install proteinshake
 ```
 
-## Demo
-
-How to load an AlphaFold dataset as of pytorch-geometric graphs.
 
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
 
->>> data = AlphaFoldDataset(root='.', organism='escherichia_coli').to_graph(k=5).pyg()
->>> protein_tensor, protein_data = data[0]
->>> protein_tensor
+>>> data = AlphaFoldDataset(organism='escherichia_coli').to_graph(k=5).pyg()
+>>> graph, protein_dict = data[0]
+>>> graph
 Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
->>> protein_data['protein']['ID']
+>>> protein_dict['protein']['ID']
 'P0A9H5'
->>> protein_data['protein']['sequence']
-'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGKGKTTAAFGTATRAVGHGKKVGVVQFIKGTWPNGERNLLEPHGVEFQVMATGFTWDTQNRESDTAACREVWQHAKRMLADSSLDMVLLDELTYMVAYDYLPLEEVVQALNERPHQQTVIITGRGCHRDILELADTVSELRPVKHAFDAGVKAQIGIDY'
+>>> protein_dict['protein']['sequence']
+'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
 
 
-## Usage
-
-See the [quickstart](https://proteinshake.readthedocs.io/en/latest/notes/quickstart.html) guide on our [documentation](https://proteinshake.readthedocs.io/en/latest/index.html) site to get started.
+<div style="display:flex;width:100%;align-items:center;justify-content:center;gap:20px;">
+    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
+    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
+    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
+    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
+    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
+</div>
 
 ## Legal Note
 
 <!---
-We make our code available under the [MIT License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+We make our code available under the [BSD-3 License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 -->
 
 We obtained and modified data from the following sources:
