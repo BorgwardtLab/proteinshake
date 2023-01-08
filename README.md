@@ -2,6 +2,9 @@
 <p align="center">
 <img src="docs/images/logo_subtitle.png#gh-light-mode-only" width="60%">
 </p>
+<p align="center">
+<img src="docs/images/logo_subtitle_dark.png#gh-dark-mode-only" width="60%">
+</p>
 
 <div align="center">
 
