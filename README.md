@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="docs/images/logo_subtitle.png" width="60%">
+<img src="docs/images/logo_subtitle.png#gh-light-mode-only" width="60%">
 </p>
 
 <div align="center">
