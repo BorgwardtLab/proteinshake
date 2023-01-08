@@ -1,6 +1,6 @@
 
 <div style="display:flex;justify-content:center;width:100%;">
-<img src="https://github.com/BorgwardtLab/proteinshake/raw/main/docs/images/logo_subtitle.svg" style="max-width:800px;width:100%;">
+<img src="docs/images/logo_subtitle.png" style="max-width:800px;width:100%;">
 </div>
 
 <div style="display:flex;width:100%;align-items:center;justify-content:center;gap:20px;">
@@ -14,7 +14,7 @@
 ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
 ```
-$ pip install proteinshake
+pip install proteinshake
 ```
 
 
