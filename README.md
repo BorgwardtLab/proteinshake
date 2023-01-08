@@ -10,15 +10,13 @@
 
 ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
-
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
-
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
-
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
-
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
+<p align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="">Quickstart</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="">Leaderboard</a>
+</p>
 
 Installation:
 ```
@@ -38,6 +36,7 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 >>> protein_dict['protein']['sequence']
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
+
 
 ## Legal Note
 
