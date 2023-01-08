@@ -3,10 +3,14 @@
 <img src="docs/images/logo_subtitle.png" width="60%">
 </p>
 
+<p align="center">
+
 ![build](https://img.shields.io/github/actions/workflow/status/borgwardtlab/proteinshake/build.yml?color=%2303A9F4&style=for-the-badge)
 [![pypi](https://img.shields.io/pypi/v/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
 [![docs](https://img.shields.io/readthedocs/proteinshake?color=%2303A9F4&style=for-the-badge)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![downloads](https://img.shields.io/pypi/dm/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
+
+</p>
 
 <p align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="">Quickstart</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
