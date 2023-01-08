@@ -1,6 +1,6 @@
 
 <div style="display:flex;justify-content:center;width:100%;">
-<img src="docs/images/logo_subtitle.png" style="max-width:800px;width:100%;">
+<img src="docs/images/logo_subtitle.png" style="max-width:500px;width:100%;">
 </div>
 
 ![build](https://img.shields.io/github/actions/workflow/status/borgwardtlab/proteinshake/build.yml?color=%2303A9F4&style=for-the-badge)
@@ -30,11 +30,11 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 
 <div style="display:flex;width:100%;align-items:center;justify-content:center;gap:20px;">
-    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
-    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
-    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
-    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
-    <a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
 </div>
 
 ## Legal Note
