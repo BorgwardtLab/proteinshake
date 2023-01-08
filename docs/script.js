@@ -130,6 +130,12 @@ function showDropdown() {
 function hideDropdown() {
     document.getElementById('dropdownContent').style.display = 'none';
 }
+function copyToClipboard() {
+    navigator.clipboard.writeText('pip install proteinshake');
+    var copy = document.getElementById('copy');
+    copy.src = 'images/done.svg';
+    setTimeout(x=>copy.src = 'images/copy.svg', 1000);
+}
 
 
 window.addEventListener('load', quickstart);

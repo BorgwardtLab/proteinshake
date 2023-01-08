@@ -100,6 +100,7 @@ div.install {
     align-items: center;
     border-radius: 5px;
     font-weight: bold;
+    position: relative;
 }
 div.feature {
     border-radius: 5px;
@@ -222,7 +223,7 @@ thead, tbody, tr {
 }
 
 th, td {
-  padding: 10px;
+  padding: 10px 30px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -242,11 +243,20 @@ th:last-child {
 }
 
 td {
-  padding-top: 10px;
-  padding-bottom: 10px;
   color: var(--darkgrey);
 }
 
 tr:nth-child(even) td {
   background: var(--lightgrey);
+}
+img.copycode {
+    display: none;
+    position: absolute;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+div.install:hover img.copycode {
+    display: block;
 }
