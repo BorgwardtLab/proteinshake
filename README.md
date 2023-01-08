@@ -20,9 +20,11 @@
 <a href="">Leaderboard</a>
 </p>
 
-<p align="center">
+<div align="center">
+
 ### ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
-</p>
+
+</div>
 
 ```
 pip install proteinshake
@@ -41,7 +43,8 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
 
-<p align="center">
+<div align="center">
+
 **Legal Note**
 
 *We obtained and modified data from the following sources:*
@@ -49,4 +52,5 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 *The AlphaFold protein structures were downloaded from the [AlphaFold Structure Database](https://alphafold.ebi.ac.uk/), licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
 
 *The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
+
 </p>
