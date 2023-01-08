@@ -89,10 +89,46 @@ print(metrics)`;
     Prism.highlightAll();
 }
 
+
+var task = 'gene_ontology';
 function leaderboard() {
-    fetch('../leaderboard/gene_ontology.json')
+    hideDropdown();
+    var board = document.getElementById('leaderboard_table');
+    fetch('http://localhost:8000/leaderboard/'+task+'.json')
         .then((response) => response.json())
-        .then((json) => console.log(json));
+        .then((json) => {
+            board.innerHTML = '';
+            const columns = Object.keys(json[0]);
+            var template = ' auto'*columns.length;
+            board.style.gridTemplateColumns = new Array(columns.length).fill('auto').join(' ');
+            var thead = document.createElement('thead');
+            board.appendChild(thead);
+            var tr = document.createElement('tr');
+            thead.appendChild(tr);
+            columns.forEach(x => {
+                var th = document.createElement('th');
+                th.innerHTML = x;
+                tr.appendChild(th);
+            });
+            var tbody = document.createElement('tbody');
+            board.appendChild(tbody);
+            json.forEach(row => {
+                var tr = document.createElement('tr');
+                tbody.appendChild(tr);
+                columns.forEach(x => {
+                    var td = document.createElement('td');
+                    td.innerHTML = ['Paper','Code'].includes(x) ? '<a href="'+row[x]+'">Link</a>' : row[x];
+                    tr.appendChild(td);
+                });
+            });
+        });
+}
+
+function showDropdown() {
+    document.getElementById('dropdownContent').style.display = 'block';
+}
+function hideDropdown() {
+    document.getElementById('dropdownContent').style.display = 'none';
 }
 
 

@@ -8,18 +8,17 @@ body {
     align-items: center;
     flex-direction: column;
     --lightgrey: #eee;
-    --grey: #333;
-    --lightblue: #03A9F4;
-    --darkblue: #1769AA;
+    --darkgrey: #333;
+    --blue: #03A9F4;
     --white: #fff;
-    color: var(--grey);
+    color: var(--darkgrey);
     font-family: NTR;
     font-size: 25px;
     line-height:28px;
 }
 a {
     text-decoration: none;
-    color: var(--lightblue);
+    color: var(--blue);
 }
 h1 {
     font-size: 50px;
@@ -45,6 +44,7 @@ div.header {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    z-index:100;
 }
 a.header-item {
     display: flex;
@@ -54,17 +54,17 @@ a.header-item {
     height:30px;
     text-decoration: none;
     font-size: 18px;
-    color: var(--lightblue);
+    color: var(--blue);
     box-sizing: border-box;
     border-bottom: 2px solid transparent;
 }
 a.header-item:hover {
-    border-bottom: 2px solid var(--lightblue);
+    border-bottom: 2px solid var(--blue);
 }
 div.footer {
     width:100%;
     height: 150px;
-    background-color: var(--grey);
+    background-color: var(--darkgrey);
 }
 div.main {
     width:100%;
@@ -79,7 +79,7 @@ div.separator {
     width: 150px;
     height: 5px;
     border-radius: 2px;
-    background-color: var(--lightblue);
+    background-color: var(--blue);
     margin:20px;
 }
 div.block {
@@ -124,7 +124,7 @@ div.line {
     display: inline-block;
     height: 5px;
     width: 100px;
-    background-color: var(--lightblue);
+    background-color: var(--blue);
     border-radius: 2px;
     margin:0px 50px;
 }
@@ -142,14 +142,14 @@ div.tab-item {
     display: flex;
     flex: 1;
     background-color: var(--lightgrey);
-    color: var(--grey);
+    color: var(--darkgrey);
     height:45px;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
 div.tab-item.selected {
-    color: var(--lightblue);
+    color: var(--blue);
 }
 div.tab-item:hover {
     background-color: #ddd;
@@ -167,9 +167,12 @@ div.dropdown {
 div.dropdown-content {
   display: none;
   position: absolute;
-  width:300px;
+  width:304px;
   z-index: 1;
   border-top: 1px solid #aaa;
+  border: 2px solid var(--darkgrey);
+  border-top:none;
+  box-sizing: border-box;
 }
 div.dropdown-item {
     cursor: pointer;
@@ -177,17 +180,19 @@ div.dropdown-item {
     width:300px;
     background-color: var(--lightgrey);
     line-height: 40px;
+    user-select: none;
 }
 div.dropdown-label {
     height:40px;
     line-height: 40px;
-    width:300px;
-    display:flex:
-    align-items: center;
+    width:304px;
+    display:flex;
     justify-content: center;
     cursor: pointer;
     background-color: var(--lightgrey);
-
+    color: var(--darkgrey);
+    border: 2px solid var(--darkgrey);
+    box-sizing: border-box;
 }
 div.dropdown-label:after {
   position: absolute;
@@ -198,11 +203,50 @@ div.dropdown-label:after {
   width: 0;
   height: 0;
   border: 6px solid transparent;
-  border-color: var(--grey) transparent transparent transparent;
+  border-color: var(--darkgrey) transparent transparent transparent;
 }
 div.dropdown-item:hover {
     background-color: #ddd;
 }
-div.dropdown:hover div.dropdown-content {
-  display: block;
+
+table {
+  display: grid;
+  border-collapse: collapse;
+  min-width: 100%;
+  margin-top:20px;
+  border: 2px solid var(--darkgrey);
+}
+
+thead, tbody, tr {
+  display: contents;
+}
+
+th, td {
+  padding: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: var(--darkgrey);
+  text-align: left;
+  color: var(--lightgrey);
+}
+
+th:last-child {
+  border: 0;
+}
+
+td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: var(--darkgrey);
+}
+
+tr:nth-child(even) td {
+  background: var(--lightgrey);
 }

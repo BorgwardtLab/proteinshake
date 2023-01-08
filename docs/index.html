@@ -7,7 +7,6 @@
         <script src='prism.js'></script>
         <link rel='stylesheet' href='style.css'>
         <script src='script.js'></script>
-        <script src='select.js'></script>
     </head>
     <body>
         <div class='header'>
@@ -104,26 +103,26 @@
                     </div>
                     <pre><code class='language-python' id='code'></code></pre>
                 </div>
-                <div class='table' id='leaderboard_table'></div>
             </div>
             <a class='anchor' id='leaderboard'></a>
             <div class='block'>
                 <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Leaderboard</h1><div class='line'></div></span>
                 <div style='display:flex;flex-direction:row;'>
                     <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
-                    <div class="dropdown">
-                        <div class='dropdown-label'>Gene Ontology</div>
-                        <div class='dropdown-content'>
-                            <div class='dropdown-item'>Gene Ontology</div>
-                            <div class='dropdown-item'>Enyme Commission</div>
-                            <div class='dropdown-item'>Binding Site</div>
-                            <div class='dropdown-item'>Ligand Affinity</div>
-                            <div class='dropdown-item'>SCOP</div>
-                            <div class='dropdown-item'>Structure Alignment</div>
+                    <div class="dropdown" onmouseleave="hideDropdown();">
+                        <div class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
+                        <div class='dropdown-content' id='dropdownContent'>
+                            <div class='dropdown-item' onclick='task="gene_ontology";leaderboard();'>Gene Ontology</div>
+                            <div class='dropdown-item' onclick='task="enzyme_commission";leaderboard();'>Enyme Commission</div>
+                            <div class='dropdown-item' onclick='task="binding_site";leaderboard();'>Binding Site</div>
+                            <div class='dropdown-item' onclick='task="ligand_affinity";leaderboard();'>Ligand Affinity</div>
+                            <div class='dropdown-item' onclick='task="scop";leaderboard();'>SCOP</div>
+                            <div class='dropdown-item' onclick='task="structure_alignment";leaderboard();'>Structure Alignment</div>
                         </div>
                     </div>
-                    <div style='width:80px;'></div>
+                    <div style='width:80px;padding-left:20px;'></div>
                 </div>
+                <table id='leaderboard_table'></table>
             </div>
             <div class='block'>
                 <h3>Beat the baselines?</h3>

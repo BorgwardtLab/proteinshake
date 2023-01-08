@@ -4,15 +4,17 @@
         "Author": "Someone et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Fmax": 0.7,
-        "Smin": 0.1
+        "Precision": 0.2,
+        "Recall": 0.3,
+        "Accuracy": 0.8
     },
     {
         "Name":"Model 2",
         "Author": "Who et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Fmax": 0.2,
-        "Smin": 0.9
+        "Precision": 0.1,
+        "Recall": 0.3,
+        "Accuracy": 0.6
     }
 ]

@@ -4,15 +4,15 @@
         "Author": "Someone et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Fmax": 0.7,
-        "Smin": 0.1
+        "MSE": 0.2,
+        "R2": 0.8
     },
     {
         "Name":"Model 2",
         "Author": "Who et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Fmax": 0.2,
-        "Smin": 0.9
+        "MSE": 0.1,
+        "R2": 0.5
     }
 ]
