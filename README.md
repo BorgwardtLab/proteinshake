@@ -13,11 +13,12 @@
 </div>
 
 <p align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="">Quickstart</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://borgwardtlab.github.io/proteinshake/#quickstart">Quickstart</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://borgwardtlab.github.io/proteinshake">Website</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="">Leaderboard</a>
+<a href="https://proteinshake.readthedocs.io/en/latest/notes/contributing.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>
 </p>
 
 <div align="center">
@@ -32,7 +33,6 @@ pip install proteinshake
 
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
-
 >>> data = AlphaFoldDataset(organism='escherichia_coli').to_graph(k=5).pyg()
 >>> graph, protein_dict = data[0]
 >>> graph
