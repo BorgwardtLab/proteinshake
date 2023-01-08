@@ -1,8 +1,6 @@
 
 <p align="center">
-
-<img src="docs/images/logo_subtitle.png" width="100%" max-width="700px">
-
+<img src="docs/images/logo_subtitle.png" width="60%">
 </p>
 
 ![build](https://img.shields.io/github/actions/workflow/status/borgwardtlab/proteinshake/build.yml?color=%2303A9F4&style=for-the-badge)
@@ -18,16 +16,16 @@
 <a href="">Leaderboard</a>
 </p>
 
-ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
+### ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
 
 
-### Installation
+Installation:
 ```
 pip install proteinshake
 ```
 
-### Demo
+Demo:
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
 
@@ -42,7 +40,7 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 ```
 
 
-### Legal Note
+Legal Note:
 
 <!---
 We make our code available under the [BSD-3 License](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE). The datasets are distributed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
