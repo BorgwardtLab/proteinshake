@@ -45,6 +45,8 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 <div align="center">
 
+---
+
 **Legal Note**
 
 *We obtained and modified data from the following sources:*
