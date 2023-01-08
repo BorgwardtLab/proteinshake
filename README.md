@@ -3,20 +3,29 @@
 <img src="docs/images/logo_subtitle.png" width="100%" max-width="700px">
 </p>
 
-<p align="center">
 ![build](https://img.shields.io/github/actions/workflow/status/borgwardtlab/proteinshake/build.yml?color=%2303A9F4&style=for-the-badge)
 [![pypi](https://img.shields.io/pypi/v/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
 [![docs](https://img.shields.io/readthedocs/proteinshake?color=%2303A9F4&style=for-the-badge)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![downloads](https://img.shields.io/pypi/dm/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
-</p>
 
 ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
+
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
+
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
+
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
+
+<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
+
+Installation:
 ```
 pip install proteinshake
 ```
 
-
+Demo:
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
 
@@ -29,15 +38,6 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 >>> protein_dict['protein']['sequence']
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
-
-
-<p style="display:flex;width:100%;align-items:center;justify-content:center;gap:20px;">
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Quickstart</a>
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Documentation</a>
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Paper</a>
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Contribute</a>
-<a href="" style="width:200px;height:40px;background-color:#03A9F4;color:#2d2d2d;text-align:center;">Leaderboard</a>
-</p>
 
 ## Legal Note
 
