@@ -94,7 +94,7 @@ var task = 'gene_ontology';
 function leaderboard() {
     hideDropdown();
     var board = document.getElementById('leaderboard_table');
-    fetch('../leaderboard/'+task+'.json')
+    fetch('https://github.com/BorgwardtLab/proteinshake/blob/website/leaderboard/'+task+'.json')
         .then((response) => response.json())
         .then((json) => {
             board.innerHTML = '';
