@@ -4,17 +4,25 @@ import tempfile
 
 import pandas as pd
 
-from proteinshake.datasets import PDBBindRefined, TMScoreBenchmark, GODataset, ECDataset, PfamDataset, RCSBDataset, AlphaFoldDataset
+from proteinshake.datasets import (
+    PDBBindRefined,
+    TMScoreBenchmark,
+    GODataset,
+    ECDataset,
+    PfamDataset,
+    RCSBDataset,
+    AlphaFoldDataset,
+)
 from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 datasets = [
-            RCSBDataset,
-            PfamDataset,
-            GODataset,
-            ECDataset,
-            PDBBindRefined,
-            TMScoreBenchmark,
-            ]
+    RCSBDataset,
+    PfamDataset,
+    GODataset,
+    ECDataset,
+    PDBBindRefined,
+    TMScoreBenchmark,
+]
 
 rows = []
 for i, dataset in enumerate(datasets):
@@ -29,12 +37,12 @@ for org in AF_DATASET_NAMES.keys():
     with tempfile.TemporaryDirectory() as tmp:
         af_all = AlphaFoldDataset(root=tmp, organism=org)
         desc = af_all.describe()
-        desc['name'] += f'_{org}'
+        desc["name"] += f"_{org}"
         print(desc)
         rows.append(desc)
     df = pd.DataFrame(rows)
     md = df.to_markdown(index=False)
-    tx = df.to_latex(index=False, na_rep='-')
+    tx = df.to_latex(index=False, na_rep="-")
     print(md)
     print()
     print(tx)

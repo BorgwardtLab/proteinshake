@@ -7,25 +7,26 @@ from .wrappers import tmalign_wrapper
 from .wrappers import cdhit_wrapper
 from .wrappers import dms_wrapper
 
-__all__ = ['onehot',
-           'tokenize',
-           'positional_encoding',
-           'compose_embeddings',
-           'get_interfaces',
-           'checkpoint',
-           'save',
-           'load',
-           'download_url',
-           'extract_tar',
-           'zip_file',
-           'unzip_file',
-           'ProgressParallel',
-           'write_avro',
-           'Compose',
-           'protein_to_pdb',
-           'tmalign_wrapper',
-           'cdhit_wrapper',
-           'dms_wrapper'
-           ]
+__all__ = [
+    "onehot",
+    "tokenize",
+    "positional_encoding",
+    "compose_embeddings",
+    "get_interfaces",
+    "checkpoint",
+    "save",
+    "load",
+    "download_url",
+    "extract_tar",
+    "zip_file",
+    "unzip_file",
+    "ProgressParallel",
+    "write_avro",
+    "Compose",
+    "protein_to_pdb",
+    "tmalign_wrapper",
+    "cdhit_wrapper",
+    "dms_wrapper",
+]
 
 classes = __all__

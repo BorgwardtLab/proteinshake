@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 TMalign needs to be in your $PATH. Follow the instructions at https://zhanggroup.org/TM-align/readme.c++.txt
-'''
+"""
 import glob
 import requests
 import os
@@ -14,13 +14,14 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import (extract_tar,
-                                download_url,
-                                save,
-                                load,
-                                unzip_file,
-                                tmalign_wrapper
-                                )
+from proteinshake.utils import (
+    extract_tar,
+    download_url,
+    save,
+    load,
+    unzip_file,
+    tmalign_wrapper,
+)
 
 
 class TMAlignDataset(Dataset):
@@ -53,28 +54,32 @@ class TMAlignDataset(Dataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
+        return glob.glob(f"{self.root}/raw/files/*.pdb")
 
     def get_id_from_filename(self, filename):
         return filename[:-4]
 
     def download(self):
-        lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
+        lines = requests.get(
+            "https://zhanggroup.org/TM-align/benchmark/"
+        ).text.split("\n")
         links = []
-        print('Downloading TMScore Benchmark PDBs...')
+        print("Downloading TMScore Benchmark PDBs...")
         for l in lines:
             m = re.search(".pdb", l)
             if m:
                 start, end = m.span()
-                pdbid = l[start-5:end]
-                links.append(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}")
-        links = links[:self.limit] # for testing
+                pdbid = l[start - 5 : end]
+                links.append(
+                    f"https://zhanggroup.org/TM-align/benchmark/{pdbid}"
+                )
+        links = links[: self.limit]  # for testing
         for link in tqdm(links):
-            download_url(link, f'{self.root}/raw/files', log=False)
+            download_url(link, f"{self.root}/raw/files", log=False)
 
     def describe(self):
         desc = super().describe()
-        desc['property'] = 'TM Score'
-        desc['values'] = "[0-1]"
-        desc['type'] = "Real-valued, Pairwise"
+        desc["property"] = "TM Score"
+        desc["values"] = "[0-1]"
+        desc["type"] = "Real-valued, Pairwise"
         return desc

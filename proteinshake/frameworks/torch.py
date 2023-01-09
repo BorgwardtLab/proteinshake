@@ -4,7 +4,6 @@ from proteinshake.frameworks.dataset import FrameworkDataset
 
 
 class TorchVoxelDataset(FrameworkDataset, TorchDataset):
-
     def convert_to_framework(self, data_item):
         return torch.tensor(data_item.data).float().to_sparse()
 
@@ -13,6 +12,5 @@ class TorchVoxelDataset(FrameworkDataset, TorchDataset):
 
 
 class TorchPointDataset(FrameworkDataset, TorchDataset):
-
     def convert_to_framework(self, data_item):
         return torch.tensor(data_item.data).float()

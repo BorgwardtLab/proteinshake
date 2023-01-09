@@ -1,17 +1,18 @@
-'''
+"""
 Tests prediction task classes.
-'''
+"""
 
 import unittest, tempfile
-from proteinshake.tasks import (EnzymeCommissionTask,
-                                BindingSitePredictionTask,
-                                LigandAffinityTask,
-                                SCOPTask,
-                                RetrieveTask
-                                )
+from proteinshake.tasks import (
+    EnzymeCommissionTask,
+    BindingSitePredictionTask,
+    LigandAffinityTask,
+    SCOPTask,
+    RetrieveTask,
+)
+
 
 class TestTasks(unittest.TestCase):
-
     def task_check(self, task):
         self.assertIsNotNone(task.train_ind)
 
@@ -41,5 +42,5 @@ class TestTasks(unittest.TestCase):
             self.task_check(task)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

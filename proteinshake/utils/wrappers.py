@@ -5,14 +5,15 @@ import shutil
 import subprocess
 import pandas as pd
 import traceback
-#from joblib import Memory
+
+# from joblib import Memory
 
 from proteinshake.utils import protein_to_pdb
 
 """ Wrappers for external programs. """
 
-#memory = Memory('./.tm_cache', verbose=0)
-#@memory.cache
+# memory = Memory('./.tm_cache', verbose=0)
+# @memory.cache
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
     Parameters
@@ -30,19 +31,34 @@ def tmalign_wrapper(pdb1, pdb2):
     float
         RMSD between structures
     """
-    assert shutil.which('TMalign') is not None,\
-           "No TMalign installation found. Go here to install : https://zhanggroup.org/TM-align/TMalign.cpp"
+    assert (
+        shutil.which("TMalign") is not None
+    ), "No TMalign installation found. Go here to install : https://zhanggroup.org/TM-align/TMalign.cpp"
     try:
-        out = subprocess.run(['TMalign','-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
-        path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
+        out = subprocess.run(
+            ["TMalign", "-outfmt", "2", pdb1, pdb2], stdout=subprocess.PIPE
+        ).stdout.decode()
+        (
+            path1,
+            path2,
+            TM1,
+            TM2,
+            RMSD,
+            ID1,
+            ID2,
+            IDali,
+            L1,
+            L2,
+            Lali,
+        ) = out.split("\n")[1].split("\t")
     except Exception as e:
         print(e)
-        return -1.
+        return -1.0
     return float(TM1), float(TM2), float(RMSD)
 
 
 def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
-    """ Cluster sequences using CD-hit
+    """Cluster sequences using CD-hit
 
     Choose of word size:
     -n 5 for thresholds 0.7 ~ 1.0
@@ -71,32 +87,39 @@ def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
     else:
         word_size = 5
 
-    assert shutil.which('cd-hit') is not None,\
-    "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
+    assert (
+        shutil.which("cd-hit") is not None
+    ), "CD-HIT installation not found. Go here https://github.com/weizhongli/cdhit to install"
 
     n_jobs = 0 if n_jobs < 0 else n_jobs
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        in_file = osp.join(tmpdir, 'in.fasta')
-        out_file = osp.join(tmpdir, 'out.fasta')
+        in_file = osp.join(tmpdir, "in.fasta")
+        out_file = osp.join(tmpdir, "out.fasta")
         with open(in_file, "w") as inp:
-            for id, s in zip(ids,sequences):
+            for id, s in zip(ids, sequences):
                 inp.write(f">{id}\n")
                 inp.write(s + "\n")
         try:
-            cmd = ['cd-hit',
-                   '-c', str(sim_thresh),
-                   '-i', in_file,
-                   '-n', str(word_size),
-                   '-o', out_file,
-                   '-T', str(n_jobs),
-                   '-M', "0" # unlimited memory
-                  ]
+            cmd = [
+                "cd-hit",
+                "-c",
+                str(sim_thresh),
+                "-i",
+                in_file,
+                "-n",
+                str(word_size),
+                "-o",
+                out_file,
+                "-T",
+                str(n_jobs),
+                "-M",
+                "0",  # unlimited memory
+            ]
 
-            subprocess.run(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT
-                          )
+            subprocess.run(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            )
         except Exception as e:
             print(traceback.format_exc())
             return -1
@@ -109,15 +132,16 @@ def cdhit_wrapper(ids, sequences, sim_thresh=0.6, n_jobs=1):
                     if line.startswith(">"):
                         clust_id = int(line.split()[1])
                         continue
-                    pdb_id = line.split(">")[1].split('.')[0]
+                    pdb_id = line.split(">")[1].split(".")[0]
                     clusters[pdb_id] = clust_id
-                    if line.endswith('*'):
+                    if line.endswith("*"):
                         representatives.append(pdb_id)
             clusters = [clusters[id] if id in clusters else -1 for id in ids]
             return clusters, representatives
 
+
 def dms_wrapper(protein, d=0.2):
-    """ Call DMS to compute a surface for the PDB.
+    """Call DMS to compute a surface for the PDB.
 
     Usage: dms input_file [-a] [-d density] [-g file] [-i file] [-n] [-w radius] [-v] -o file
     -a	use all atoms, not just amino acids
@@ -135,16 +159,18 @@ def dms_wrapper(protein, d=0.2):
         pdb_path = os.path.join(tf, "in.pdb")
         dest = os.path.join(tf, "out.surf")
         protein_to_pdb(protein, pdb_path)
-        assert shutil.which('dms') is not None, "DMS executable not in PATH go here to install https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/dms1.html#ref."
-        cmd = ['dms', pdb_path, '-n', '-d', str(d), '-o', dest]
-        subprocess.run(cmd,
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.STDOUT
-                       )
+        assert (
+            shutil.which("dms") is not None
+        ), "DMS executable not in PATH go here to install https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/dms1.html#ref."
+        cmd = ["dms", pdb_path, "-n", "-d", str(d), "-o", dest]
+        subprocess.run(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
+        )
         return _parse_dms(dest)
 
+
 def _parse_dms(path):
-    """ Extract surface points and normal vectors for each
+    """Extract surface points and normal vectors for each
     point.
 
     Parameters
@@ -157,58 +183,53 @@ def _parse_dms(path):
     pd.DataFrame
         DataFrame with one row for each surface atom.
     """
-    names = ['residue_name',
-             'residue_index',
-             'atom_name',
-             'x',
-             'y',
-             'z',
-             'point_type',
-             'area',
-             'x_norm',
-             'y_norm',
-             'z_norm'
-             ]
-    df = pd.read_csv(path,
-                     delim_whitespace=True,
-                     header=None,
-                     names=names
-                     )
+    names = [
+        "residue_name",
+        "residue_index",
+        "atom_name",
+        "x",
+        "y",
+        "z",
+        "point_type",
+        "area",
+        "x_norm",
+        "y_norm",
+        "z_norm",
+    ]
+    df = pd.read_csv(path, delim_whitespace=True, header=None, names=names)
     df = df.dropna(axis=0)
     return df
 
-def makeblastdb_wrapper(sequences, db_path, db_type='prot'):
-    assert shutil.which('makeblastdb') is not None,\
-           "No makeblastdb installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
+
+def makeblastdb_wrapper(sequences, db_path, db_type="prot"):
+    assert (
+        shutil.which("makeblastdb") is not None
+    ), "No makeblastdb installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
     with open(db_path, "w") as db:
         for i, seq in enumerate(sequences):
             db.write(f"> {i} \n{seq}")
-    cmd = ['makeblastdb',
-           '-dbtype',
-           db_type,
-           '-in',
-           db_path
-           ]
+    cmd = ["makeblastdb", "-dbtype", db_type, "-in", db_path]
     subprocess.run(cmd)
 
+
 def blastp_wrapper(query, db_path):
-    assert shutil.which('blastp') is not None,\
-           "No blastp installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
+    assert (
+        shutil.which("blastp") is not None
+    ), "No blastp installation found. Go here to install : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/"
     #  blastp -query inp.fasta -db ~/Temp/b.fasta -out res.out
     with tempfile.TemporaryDirectory() as tmpdir:
         with open(osp.join(tmpdir, "query.fasta"), "w") as q:
             for seq in query:
                 q.write(f"> query_{i}\n{seq}")
-            cmd = ['blastp',
-                   '-query',
-                   osp.join(tmpdir, "query.fasta"),
-                   '-db',
-                   db_path,
-                   '-out',
-                   osp.join(tmpdir, "out.blastp")
-                   ]
+            cmd = [
+                "blastp",
+                "-query",
+                osp.join(tmpdir, "query.fasta"),
+                "-db",
+                db_path,
+                "-out",
+                osp.join(tmpdir, "out.blastp"),
+            ]
             subprocess.run(cmd)
 
     pass
-
-

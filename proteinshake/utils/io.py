@@ -13,14 +13,39 @@ import re
 
 import pandas as pd
 from tqdm import tqdm
-from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
+from fastavro import (
+    writer as avro_writer,
+    reader as avro_reader,
+    parse_schema as parse_avro_schema,
+)
 
-AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
-AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
+AA_THREE_TO_ONE = {
+    "ALA": "A",
+    "CYS": "C",
+    "ASP": "D",
+    "GLU": "E",
+    "PHE": "F",
+    "GLY": "G",
+    "HIS": "H",
+    "ILE": "I",
+    "LYS": "K",
+    "LEU": "L",
+    "MET": "M",
+    "ASN": "N",
+    "PRO": "P",
+    "GLN": "Q",
+    "ARG": "R",
+    "SER": "S",
+    "THR": "T",
+    "VAL": "V",
+    "TRP": "W",
+    "TYR": "Y",
+}
+AA_ONE_TO_THREE = {v: k for k, v in AA_THREE_TO_ONE.items()}
 
 
 def fx2str(fx):
-    """ Converts a function to a string representation.
+    """Converts a function to a string representation.
 
     Parameters
     ----------
@@ -32,10 +57,11 @@ def fx2str(fx):
     str
         The stringified function.
     """
-    return re.sub('(<.*?)\\s.*(>)', r'\1\2', fx.__repr__())
+    return re.sub("(<.*?)\\s.*(>)", r"\1\2", fx.__repr__())
+
 
 def avro_schema_from_protein(protein):
-    """ Guesses the avro schema from a dictionary.
+    """Guesses the avro schema from a dictionary.
 
     Parameters
     ----------
@@ -47,26 +73,49 @@ def avro_schema_from_protein(protein):
     schema
         An avro schema.
     """
-    typedict = {'int':'int', 'float':'float', 'str':'string', 'bool':'boolean'}
-    def field_spec(k,v):
+    typedict = {
+        "int": "int",
+        "float": "float",
+        "str": "string",
+        "bool": "boolean",
+    }
+
+    def field_spec(k, v):
         if type(v) == dict:
-            return {'name':k, 'type':{'name':k, 'type':'record', 'fields': [field_spec(_k,_v) for _k,_v in v.items()]}}
+            return {
+                "name": k,
+                "type": {
+                    "name": k,
+                    "type": "record",
+                    "fields": [field_spec(_k, _v) for _k, _v in v.items()],
+                },
+            }
         elif type(v) == list:
-            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__]}}
+            return {
+                "name": k,
+                "type": {
+                    "type": "array",
+                    "items": typedict[type(v[0]).__name__],
+                },
+            }
         elif type(v).__name__ in typedict:
-            return {'name':k, 'type': typedict[type(v).__name__]}
+            return {"name": k, "type": typedict[type(v).__name__]}
         else:
-            raise TypeError(f"All fields in a protein object need to be either int, float, bool or string, not {type(v).__name__}")
+            raise TypeError(
+                f"All fields in a protein object need to be either int, float, bool or string, not {type(v).__name__}"
+            )
+
     schema = {
-        'name': 'Protein',
-        'namespace': 'Dataset',
-        'type': 'record',
-        'fields': [field_spec(k,v) for k,v in protein.items()],
+        "name": "Protein",
+        "namespace": "Dataset",
+        "type": "record",
+        "fields": [field_spec(k, v) for k, v in protein.items()],
     }
     return parse_avro_schema(schema)
 
+
 def write_avro(proteins, path):
-    """ Writes a list of protein dictionaries to an avro file.
+    """Writes a list of protein dictionaries to an avro file.
 
     Parameters
     ----------
@@ -76,11 +125,17 @@ def write_avro(proteins, path):
         The path to the output file.
     """
     schema = avro_schema_from_protein(proteins[0])
-    with open(path, 'wb') as file:
-        avro_writer(file, schema, proteins, metadata={'number_of_proteins':str(len(proteins))})
+    with open(path, "wb") as file:
+        avro_writer(
+            file,
+            schema,
+            proteins,
+            metadata={"number_of_proteins": str(len(proteins))},
+        )
+
 
 def save(obj, path):
-    """ Saves an object to either pickle, json, or json.gz (determined by the extension in the file name).
+    """Saves an object to either pickle, json, or json.gz (determined by the extension in the file name).
 
     Parameters
     ----------
@@ -89,18 +144,19 @@ def save(obj, path):
     path:
         The path to save the object.
     """
-    if path.endswith('.json.gz'):
-        with gzip.open(path, 'w') as file:
-            file.write(json.dumps(obj).encode('utf-8'))
-    elif path.endswith('.json'):
-        with open(path,'w') as file:
+    if path.endswith(".json.gz"):
+        with gzip.open(path, "w") as file:
+            file.write(json.dumps(obj).encode("utf-8"))
+    elif path.endswith(".json"):
+        with open(path, "w") as file:
             json.dump(obj, file)
     else:
-        with open(path, 'wb') as file:
+        with open(path, "wb") as file:
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
 
+
 def load(path):
-    """ Loads a pickle, json or json.gz file.
+    """Loads a pickle, json or json.gz file.
 
     Parameters
     ----------
@@ -112,19 +168,20 @@ def load(path):
     object
         The loaded object.
     """
-    if path.endswith('.json.gz'):
-        with gzip.open(path, 'r') as file:
-            obj = json.loads(file.read().decode('utf-8'))
-    elif path.endswith('.json'):
-        with open(path,'r') as file:
+    if path.endswith(".json.gz"):
+        with gzip.open(path, "r") as file:
+            obj = json.loads(file.read().decode("utf-8"))
+    elif path.endswith(".json"):
+        with open(path, "r") as file:
             obj = json.load(file)
     else:
-        with open(path, 'rb') as handle:
+        with open(path, "rb") as handle:
             obj = pickle.load(handle)
     return obj
 
+
 def zip_file(path):
-    """ Zips a file.
+    """Zips a file.
 
     Parameters
     ----------
@@ -132,12 +189,13 @@ def zip_file(path):
         The path to the file.
 
     """
-    with open(path, 'rb') as f_in:
-        with gzip.open(path+'.gz', 'wb') as f_out:
+    with open(path, "rb") as f_in:
+        with gzip.open(path + ".gz", "wb") as f_out:
             f_out.writelines(f_in)
 
+
 def unzip_file(path, remove=True):
-    """ Unzips a .gz file.
+    """Unzips a .gz file.
 
     Parameters
     ----------
@@ -145,18 +203,17 @@ def unzip_file(path, remove=True):
         The path to the .gz file.
 
     """
-    assert path.endswith('.gz')
-    with gzip.open(path, 'rb') as f_in:
-        with open(path[:-3], 'wb') as f_out:
+    assert path.endswith(".gz")
+    with gzip.open(path, "rb") as f_in:
+        with open(path[:-3], "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
     if remove:
         os.remove(path)
     return path[:-3]
 
 
-
-def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
-    """ Downloads a file from an url. If `out_path` is a directory, the file will be saved under the url basename.
+def download_url(url, out_path, log=True, chunk_size=10 * 1024 * 1024):
+    """Downloads a file from an url. If `out_path` is a directory, the file will be saved under the url basename.
 
     Parameters
     ----------
@@ -171,15 +228,17 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
 
     """
     file_name = os.path.basename(url)
-    if os.path.isdir(out_path) or out_path.endswith('/'):
-        out_path += '/'+file_name
+    if os.path.isdir(out_path) or out_path.endswith("/"):
+        out_path += "/" + file_name
     r = requests.get(url, stream=True)
     r.raise_for_status()
-    total = int(r.headers.get('content-length', 0))
+    total = int(r.headers.get("content-length", 0))
     if log:
-        print(f'Downloading {file_name}:')
-        bar = tqdm(total=total, unit='iB', unit_scale=True, unit_divisor=chunk_size)
-    with open(out_path, 'wb') as file:
+        print(f"Downloading {file_name}:")
+        bar = tqdm(
+            total=total, unit="iB", unit_scale=True, unit_divisor=chunk_size
+        )
+    with open(out_path, "wb") as file:
         for data in r.iter_content(chunk_size=chunk_size):
             size = file.write(data)
             if log:
@@ -187,8 +246,9 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     if log:
         bar.close()
 
+
 def extract_tar(tar_path, out_path, extract_members=False):
-    """ Extracts a tar file.
+    """Extracts a tar file.
 
     Parameters
     ----------
@@ -200,15 +260,25 @@ def extract_tar(tar_path, out_path, extract_members=False):
         If `True`, the tar file member will be directly extracted to `out_path`, instead of creating a subdirectory.
     """
     if extract_members:
-        with tarfile.open(tar_path,'r') as file:
-            for member in tqdm(file.getmembers(), desc='Extracting', total=len(file.getmembers())):
+        with tarfile.open(tar_path, "r") as file:
+            for member in tqdm(
+                file.getmembers(),
+                desc="Extracting",
+                total=len(file.getmembers()),
+            ):
                 file.extract(member, out_path)
     else:
         with tarfile.open(tar_path) as file:
-            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(file.getmembers())))
+            file.extractall(
+                out_path,
+                members=tqdm(
+                    file, desc="Extracting", total=len(file.getmembers())
+                ),
+            )
+
 
 def checkpoint(path):
-    """ A decorator to checkpoint the result of a class method. It will check if the file specified by `path` exists, in which case the file is loaded and returned instead of running the decorated method. Otherwise the method is run and the result saved at the specified path.
+    """A decorator to checkpoint the result of a class method. It will check if the file specified by `path` exists, in which case the file is loaded and returned instead of running the decorated method. Otherwise the method is run and the result saved at the specified path.
 
     The path looks similar to a format string. The decorator will look in the attributes of the Owner of the decorated method to replace values in the format string. Example:
 
@@ -221,20 +291,27 @@ def checkpoint(path):
     This will replace `{root}` and `{name}` with `self.root` and `self.name` arguments of the class.
 
     """
+
     def decorator(function):
         def wrapper(self, *args, **kwargs):
             if os.path.exists(path.format(**self.__dict__)):
                 return load(path.format(**self.__dict__))
             else:
-                os.makedirs(os.path.dirname(path.format(**self.__dict__)), exist_ok=True)
+                os.makedirs(
+                    os.path.dirname(path.format(**self.__dict__)),
+                    exist_ok=True,
+                )
                 result = function(self, *args, **kwargs)
                 save(result, path.format(**self.__dict__))
                 return result
+
         return wrapper
+
     return decorator
 
+
 def protein_to_pdb(protein, path):
-    """ Write coordinate list from atom dict to a PDB file.
+    """Write coordinate list from atom dict to a PDB file.
 
     Parameters
     ------------
@@ -247,46 +324,50 @@ def protein_to_pdb(protein, path):
     """
     # ATOM      1  N   PRO A   1       8.316  21.206  21.530  1.00 17.44           N
     try:
-        df = pd.DataFrame(protein['atom'])
-        mode = 'atom'
+        df = pd.DataFrame(protein["atom"])
+        mode = "atom"
     except KeyError:
-        df = pd.DataFrame(protein['residue'])
-        mode = 'residue'
+        df = pd.DataFrame(protein["residue"])
+        mode = "residue"
 
-    df['residue_name_full'] = df['residue_type'].apply(lambda x : AA_ONE_TO_THREE[x])
-    if 'chain_id' not in df.columns:
-        df['chain_id'] = 'A'
-    df['occupancy'] = [1.00] * len(df)
-    df['temp'] = [20.00] * len(df)
+    df["residue_name_full"] = df["residue_type"].apply(
+        lambda x: AA_ONE_TO_THREE[x]
+    )
+    if "chain_id" not in df.columns:
+        df["chain_id"] = "A"
+    df["occupancy"] = [1.00] * len(df)
+    df["temp"] = [20.00] * len(df)
 
-    if mode == 'atom':
-        df['element'] = df['atom_type'].apply(lambda x: x[:1])
+    if mode == "atom":
+        df["element"] = df["atom_type"].apply(lambda x: x[:1])
     else:
-        df['element'] = 'C'
-        df['atom_number'] = df['residue_number']
-        df['atom_type'] = 'CA'
+        df["element"] = "C"
+        df["atom_number"] = df["residue_number"]
+        df["atom_type"] = "CA"
 
     lines = []
     for row in df.itertuples():
-        line = "{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   " \
-               "{:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          " \
-               "{:>2s}{:2s}".format(
-                                    'ATOM',
-                                    row.atom_number,
-                                    row.atom_type,
-                                    ' ',
-                                    row.residue_name_full,
-                                    row.chain_id,
-                                    row.residue_number,
-                                    ' ',
-                                    row.x,
-                                    row.y,
-                                    row.z,
-                                    row.occupancy,
-                                    row.temp,
-                                    row.element,
-                                    '  '
-                                 )
+        line = (
+            "{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   "
+            "{:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          "
+            "{:>2s}{:2s}".format(
+                "ATOM",
+                row.atom_number,
+                row.atom_type,
+                " ",
+                row.residue_name_full,
+                row.chain_id,
+                row.residue_number,
+                " ",
+                row.x,
+                row.y,
+                row.z,
+                row.occupancy,
+                row.temp,
+                row.element,
+                "  ",
+            )
+        )
         lines.append(line)
     with open(path, "w") as p:
         p.write("\n".join(lines))

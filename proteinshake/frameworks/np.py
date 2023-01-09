@@ -9,6 +9,7 @@ from scipy import sparse
 from proteinshake.utils import load, save
 from proteinshake.frameworks.dataset import FrameworkDataset
 
+
 class NumpyVoxelDataset(FrameworkDataset):
     def convert_to_framework(self, data_item):
         return sparse.csr_array(data_item.data)

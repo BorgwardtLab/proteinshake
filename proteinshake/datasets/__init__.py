@@ -10,16 +10,16 @@ from .alphafold import AlphaFoldDataset
 from .scop import SCOPDataset
 
 __all__ = [
-    'Dataset',
-    'RCSBDataset',
-    'EnzymeCommissionDataset',
-    'GeneOntologyDataset',
-    'ProteinProteinInterfaceDataset',
-    'ProteinLigandInterfaceDataset',
-    'PfamDataset',
-    'TMAlignDataset',
-    'AlphaFoldDataset',
-    'SCOPDataset'
-    ]
+    "Dataset",
+    "RCSBDataset",
+    "EnzymeCommissionDataset",
+    "GeneOntologyDataset",
+    "ProteinProteinInterfaceDataset",
+    "ProteinLigandInterfaceDataset",
+    "PfamDataset",
+    "TMAlignDataset",
+    "AlphaFoldDataset",
+    "SCOPDataset",
+]
 
 classes = __all__

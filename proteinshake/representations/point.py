@@ -4,8 +4,9 @@ import numpy as np
 
 from proteinshake.utils import tokenize
 
-class Point():
-    """ Point representation of a protein.
+
+class Point:
+    """Point representation of a protein.
 
     Parameters
     ----------
@@ -15,17 +16,27 @@ class Point():
     """
 
     def __init__(self, protein):
-        resolution = 'atom' if 'atom' in protein else 'residue'
+        resolution = "atom" if "atom" in protein else "residue"
         self.protein_dict = protein
         self.resolution = resolution
-        labels = tokenize(protein[resolution][f'{resolution}_type'], resolution=resolution)
-        coords =  np.stack([protein[resolution]['x'], protein[resolution]['y'], protein[resolution]['z']], axis=1)
-        self.data = np.concatenate((coords,np.expand_dims(labels,-1)), axis=-1)
+        labels = tokenize(
+            protein[resolution][f"{resolution}_type"], resolution=resolution
+        )
+        coords = np.stack(
+            [
+                protein[resolution]["x"],
+                protein[resolution]["y"],
+                protein[resolution]["z"],
+            ],
+            axis=1,
+        )
+        self.data = np.concatenate(
+            (coords, np.expand_dims(labels, -1)), axis=-1
+        )
 
 
-
-class PointDataset():
-    """ Point representation of a protein structure dataset.
+class PointDataset:
+    """Point representation of a protein structure dataset.
 
     Parameters
     ----------
@@ -40,19 +51,28 @@ class PointDataset():
 
     """
 
-    def __init__(self, proteins, size, root, name, resolution='residue'):
-        self.path = f'{root}/processed/point/{name}_{resolution}'
+    def __init__(self, proteins, size, root, name, resolution="residue"):
+        self.path = f"{root}/processed/point/{name}_{resolution}"
         self.points = (Point(protein) for protein in proteins)
         self.size = size
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchPointDataset
-        return TorchPointDataset(self.points, self.size, self.path+'.torch', *args, **kwargs)
+
+        return TorchPointDataset(
+            self.points, self.size, self.path + ".torch", *args, **kwargs
+        )
 
     def tf(self, *args, **kwargs):
         from proteinshake.frameworks.tf import TensorflowPointDataset
-        return TensorflowPointDataset(self.points, self.size, self.path+'.tf', *args, **kwargs)
+
+        return TensorflowPointDataset(
+            self.points, self.size, self.path + ".tf", *args, **kwargs
+        )
 
     def np(self, *args, **kwargs):
         from proteinshake.frameworks.np import NumpyPointDataset
-        return NumpyPointDataset(self.points, self.size, self.path+".np", *args, **kwargs)
+
+        return NumpyPointDataset(
+            self.points, self.size, self.path + ".np", *args, **kwargs
+        )

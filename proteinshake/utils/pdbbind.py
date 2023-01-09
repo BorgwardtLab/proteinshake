@@ -1,7 +1,8 @@
 import re
 
+
 def affinity_parse(s):
-    """ Parse the affinity string. e.g. `Kd=30uM`.
+    """Parse the affinity string. e.g. `Kd=30uM`.
     Parameters
     ----------
     s: str
@@ -15,7 +16,7 @@ def affinity_parse(s):
         `measure` is the type experimental measurement (e.g. `Kd, Ki, IC50`)
     """
     operator = "".join(re.findall(r"[=|<|>|~]", s))
-    measures = ['Kd', 'Ki', 'IC50']
+    measures = ["Kd", "Ki", "IC50"]
     for m in measures:
         if s.startswith(m):
             measure = m
@@ -23,11 +24,13 @@ def affinity_parse(s):
     value = float(re.search(r"\d+[.,]?\d*", s).group())
     unit = re.search(r"[m|u|n|f|p]M", s).group()
 
-    return {'operator': operator,
-            'measure': measure,
-            'value': value,
-            'unit': unit
-            }
+    return {
+        "operator": operator,
+        "measure": measure,
+        "value": value,
+        "unit": unit,
+    }
+
 
 def parse_pdbbind_PL_index(index_path):
     """
@@ -46,7 +49,7 @@ def parse_pdbbind_PL_index(index_path):
     4qsv  1.90  2014   2.00  Kd=10mM       // 4qsv.pdf (THM)
     """
     data = {}
-    with open(index_path, 'r') as ind_file:
+    with open(index_path, "r") as ind_file:
         for line in ind_file:
             if line.startswith("#"):
                 continue
@@ -57,13 +60,14 @@ def parse_pdbbind_PL_index(index_path):
             lig_id = post.split("(")[1].rstrip(")")
 
             # remove peptide ligands
-            if lig_id.endswith('-mer'):
+            if lig_id.endswith("-mer"):
                 continue
-            data[pdbid] = {'resolution': float(res),
-                           'date': int(date),
-                           'kd': kd,
-                           'neglog_aff': float(neglog),
-                           'ligand_id': lig_id
-                           }
+            data[pdbid] = {
+                "resolution": float(res),
+                "date": int(date),
+                "kd": kd,
+                "neglog_aff": float(neglog),
+                "ligand_id": lig_id,
+            }
 
     return data

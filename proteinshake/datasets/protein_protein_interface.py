@@ -5,6 +5,7 @@ import glob
 from proteinshake.datasets import Dataset
 from proteinshake.utils import get_interfaces, extract_tar, download_url
 
+
 class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes with annotated interfaces. Residues
     in each protein are marked with a boolean `is_interface` to indicate
@@ -22,36 +23,45 @@ class ProteinProteinInterfaceDataset(Dataset):
         belong to the interface.
     """
 
-
-    def __init__(self, cutoff=6, version='2020', **kwargs):
+    def __init__(self, cutoff=6, version="2020", **kwargs):
         self.version = version
         self.cutoff = cutoff
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
+        return glob.glob(f"{self.root}/raw/files/*.pdb")[: self.limit]
 
     def get_id_from_filename(self, filename):
         return filename[:4]
 
     def download(self):
-        download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        os.rename(f'{self.root}/raw/PP', f'{self.root}/raw/files')
+        download_url(
+            f"https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz",
+            f"{self.root}/raw",
+        )
+        extract_tar(
+            f"{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz",
+            f"{self.root}/raw",
+        )
+        os.rename(f"{self.root}/raw/PP", f"{self.root}/raw/files")
 
     def add_protein_attributes(self, protein):
-        interface_atoms = get_interfaces(protein, self.cutoff, resolution='atom')
-        protein['atom']['is_interface'] = interface_atoms
-        protein['residue']['is_interface'] = [val
-                                              for val, atom_type in \
-                                              zip(interface_atoms, protein['atom']['atom_type']) \
-                                              if atom_type == 'CA'
-                                              ]
+        interface_atoms = get_interfaces(
+            protein, self.cutoff, resolution="atom"
+        )
+        protein["atom"]["is_interface"] = interface_atoms
+        protein["residue"]["is_interface"] = [
+            val
+            for val, atom_type in zip(
+                interface_atoms, protein["atom"]["atom_type"]
+            )
+            if atom_type == "CA"
+        ]
         return protein
 
     def describe(self):
         desc = super().describe()
-        desc['property'] = "Protein-protein interface (residue-level)"
-        desc['values'] = 2
-        desc['type'] = "Binary"
+        desc["property"] = "Protein-protein interface (residue-level)"
+        desc["values"] = 2
+        desc["type"] = "Binary"
         return desc

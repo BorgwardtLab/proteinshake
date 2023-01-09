@@ -1,29 +1,32 @@
-'''
+"""
 Tests downloading the precomputed datasets and loading the data.
-'''
+"""
 
 import unittest, tempfile
-from proteinshake.datasets import (RCSBDataset,
-                                   GeneOntologyDataset,
-                                   EnzymeCommissionDataset,
-                                   PfamDataset,
-                                   ProteinProteinInterfaceDataset,
-                                   ProteinLigandInterfaceDataset,
-                                   TMAlignDataset,
-                                   AlphaFoldDataset,
-                                   SCOPDataset
-                                   )
+from proteinshake.datasets import (
+    RCSBDataset,
+    GeneOntologyDataset,
+    EnzymeCommissionDataset,
+    PfamDataset,
+    ProteinProteinInterfaceDataset,
+    ProteinLigandInterfaceDataset,
+    TMAlignDataset,
+    AlphaFoldDataset,
+    SCOPDataset,
+)
 from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
-class TestDatasets(unittest.TestCase):
 
+class TestDatasets(unittest.TestCase):
     def test_pli(self):
         with tempfile.TemporaryDirectory() as tmp:
             ds = ProteinLigandInterfaceDataset(root=tmp).download_precomputed()
 
     def test_ppi(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ProteinProteinInterfaceDataset(root=tmp).download_precomputed()
+            ds = ProteinProteinInterfaceDataset(
+                root=tmp
+            ).download_precomputed()
 
     def test_tm(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -46,9 +49,12 @@ class TestDatasets(unittest.TestCase):
             ds = RCSBDataset(root=tmp).download_precomputed()
 
     def test_af(self):
-        organism = 'methanocaldococcus jannaschii'
+        organism = "methanocaldococcus jannaschii"
         with tempfile.TemporaryDirectory() as tmp:
-            ds = AlphaFoldDataset(root=tmp, organism=organism).download_precomputed()
+            ds = AlphaFoldDataset(
+                root=tmp, organism=organism
+            ).download_precomputed()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

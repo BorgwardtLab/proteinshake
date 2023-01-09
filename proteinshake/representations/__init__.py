@@ -4,9 +4,9 @@ from .voxel import VoxelDataset
 
 
 __all__ = [
-    'GraphDataset',
-    'PointDataset',
-    'VoxelDataset',
-    ]
+    "GraphDataset",
+    "PointDataset",
+    "VoxelDataset",
+]
 
 classes = __all__
