@@ -32,12 +32,12 @@ We provide a collection of preprocessed and cleaned protein 3D structure dataset
 
 </div>
 
-### Installation:
+**Installation:**
 ```
 pip install proteinshake
 ```
 
-### Example usage:
+**Example usage:**
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
 >>> data = AlphaFoldDataset(organism='escherichia_coli').to_graph(k=5).pyg()
