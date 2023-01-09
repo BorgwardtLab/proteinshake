@@ -32,10 +32,14 @@ We provide a collection of preprocessed and cleaned protein 3D structure dataset
 
 </div>
 
+---
+
 **Installation:**
 ```
 pip install proteinshake
 ```
+
+---
 
 **Example usage:**
 ```python
