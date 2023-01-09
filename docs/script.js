@@ -95,7 +95,7 @@ function leaderboard() {
     hideDropdown();
     document.getElementById('dropdownLabel').innerHTML = task == 'scop' ? 'SCOP' : task.split('_').map(capitalize).join(' ');
     var board = document.getElementById('leaderboard_table');
-    fetch('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/website/leaderboard/'+task+'.json')
+    fetch('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/leaderboard/'+task+'.json')
         .then((response) => response.json())
         .then((json) => {
             board.innerHTML = '';
