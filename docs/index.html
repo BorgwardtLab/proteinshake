@@ -113,7 +113,7 @@
                 <div style='display:flex;flex-direction:row;'>
                     <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
                     <div class="dropdown" onmouseleave="hideDropdown();">
-                        <div class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
+                        <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
                         <div class='dropdown-content' id='dropdownContent'>
                             <div class='dropdown-item' onclick='task="gene_ontology";leaderboard();'>Gene Ontology</div>
                             <div class='dropdown-item' onclick='task="enzyme_commission";leaderboard();'>Enyme Commission</div>

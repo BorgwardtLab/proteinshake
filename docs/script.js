@@ -93,6 +93,7 @@ print(metrics)`;
 var task = 'gene_ontology';
 function leaderboard() {
     hideDropdown();
+    document.getElementById('dropdownLabel').innerHTML = task == 'scop' ? 'SCOP' : task.split('_').map(capitalize).join(' ');
     var board = document.getElementById('leaderboard_table');
     fetch('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/website/leaderboard/'+task+'.json')
         .then((response) => response.json())
@@ -136,6 +137,7 @@ function copyToClipboard() {
     copy.src = 'images/done.svg';
     setTimeout(x=>copy.src = 'images/copy.svg', 1000);
 }
+const capitalize = x => x.charAt(0).toUpperCase() + x.slice(1);
 
 
 window.addEventListener('load', quickstart);
