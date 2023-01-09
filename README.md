@@ -28,12 +28,16 @@
 
 ### ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
 
+We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level.
+
 </div>
 
+### Installation:
 ```
 pip install proteinshake
 ```
 
+### Example usage:
 ```python
 >>> from proteinshake.datasets import AlphaFoldDataset
 >>> data = AlphaFoldDataset(organism='escherichia_coli').to_graph(k=5).pyg()
