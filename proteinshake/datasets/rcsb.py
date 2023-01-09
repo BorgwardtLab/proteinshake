@@ -6,6 +6,8 @@ from joblib import Parallel, delayed
 from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
+MAX_REQUESTS = 5
+
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
 
@@ -19,12 +21,9 @@ class RCSBDataset(Dataset):
     ----------
     query: list
         A list of triplets `(attribute, operator, value)` to be added to the REST API call to RCSB.
-    similarity_cutoff: {100,95,90,70,50,30}
-        The sequence similarity threshold to remove redundant protein structures.
     """
 
-    def __init__(self, query=[], only_single_chain=True, similarity_cutoff=70, **kwargs):
-        self.similarity_cutoff = similarity_cutoff
+    def __init__(self, query=[], only_single_chain=True, **kwargs):
         self.query = query
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
@@ -69,7 +68,7 @@ class RCSBDataset(Dataset):
                 "request_options": {
                     "group_by": {
                         "aggregation_method": "sequence_identity",
-                        "similarity_cutoff": self.similarity_cutoff,
+                        "similarity_cutoff": 100,
                     },
                     "group_by_return_type": "representatives",
                     "paginate": {"start": i, "rows": i+batch_size}
@@ -87,9 +86,15 @@ class RCSBDataset(Dataset):
             if total is None:
                 total = response_dict['group_by_count']
             i += batch_size
-        ids = ids[:self.download_limit()] # for testing
 
-        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        ids = list(set(ids)) # filter identical ids
+        ids = ids[:self.limit] # for testing
+
+        n_jobs = min(self.n_jobs, MAX_REQUESTS) # RCSB has a request limit
+        if n_jobs < 1:
+            n_jobs = MAX_REQUESTS
+
+        failed = Parallel(n_jobs=n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]
         if len(failed)>0:
             print(f'Failed to download {len(failed)} PDB files.')
@@ -105,5 +110,5 @@ class RCSBDataset(Dataset):
             return True
         except KeyboardInterrupt:
             exit()
-        except:
+        except Exception as e:
             return id

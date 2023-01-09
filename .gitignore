@@ -4,11 +4,8 @@ setup.sh
 *TemporaryDirectory*/
 release/
 .DS_Store
-webpack.config.js
-package-lock.json
-package.json
-node_modules/
-dummy.js
+.tm_cache/
+
 
 TMalign
 data/

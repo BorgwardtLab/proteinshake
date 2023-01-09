@@ -26,7 +26,7 @@ class SCOPDataset(RCSBDataset):
         # get the proteins
         if self.n_jobs == 1:
             print('Warning: Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
-        ids = ids[:self.download_limit()] # for testing
+        ids = ids[:self.limit] # for testing
 
         failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]

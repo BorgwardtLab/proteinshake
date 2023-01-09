@@ -36,7 +36,7 @@ class ProteinLigandInterfaceDataset(Dataset):
         super().__init__(**kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.download_limit()]
+        return glob.glob(f'{self.root}/raw/files/*/*_protein.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return filename[:4]

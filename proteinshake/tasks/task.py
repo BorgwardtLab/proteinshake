@@ -54,7 +54,6 @@ class ShakeTask:
                  test_ratio=.1,
                 ):
         self.dataset = dataset
-        self.data_name = dataset.__class__.__name__
         self.train_ratio = train_ratio
         self.validation_ratio = val_ratio
         self.test_ratio = test_ratio
@@ -168,7 +167,7 @@ class ShakeTask:
                 The dictionary storing task attributes. Returns None if no cache exists.
         """
         try:
-            with open(osp.join(self.cache_dir, f"{self.data_name}.json"), "r") as t:
+            with open(osp.join(self.cache_dir, f"{self.dataset.name}.json"), "r") as t:
                 task_dict = json.load(t)
                 return task_dict
         except FileNotFoundError:
@@ -177,7 +176,7 @@ class ShakeTask:
     def cache(self):
         """ Cache the stuff that needs to iterate over the dataset."""
 
-        with open(osp.join(self.cache_dir, f"{self.data_name}.json"), "w") as t:
+        with open(osp.join(self.cache_dir, f"{self.dataset.name}.json"), "w") as t:
             json.dump({'train_ind': self.train_ind,
                        'test_ind': self.test_ind,
                        'val_ind': self.val_ind,

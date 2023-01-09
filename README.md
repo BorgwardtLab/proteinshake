@@ -56,9 +56,9 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
 
-<div align="center">
-
 ---
+
+<div align="center">
 
 **Legal Note**
 
@@ -68,4 +68,6 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 *The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
 
-</p>
+*Protein and Ligand binding structures and annotations were obtained from [PDBBind](http://www.pdbbind.org.cn/).*
+
+</div>

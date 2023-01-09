@@ -32,13 +32,13 @@ AF_DATASET_NAMES = {
 class AlphaFoldDataset(Dataset):
     """ 3D structures predicted from sequence by AlphaFold.
 
-    Requires the `organism` name to be specified. Can be a single organism, or a list of organism names, in which case the data will be concatenated. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
-    Pass the full latin organism name separated by a space. `organism` can also be 'all', in which case the data of all organisms will be concatenated, or 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
+    Requires the `organism` name to be specified. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
+    Pass the full latin organism name separated by a space or underscore. `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
 
     Parameters
     ----------
-    organism: Union[str, list]
-        The organism name or a list of names or 'all' or 'swissprot'.
+    organism: str
+        The organism name or 'swissprot'.
     """
 
     def __init__(self, organism, version='v4', **kwargs):
@@ -53,29 +53,15 @@ class AlphaFoldDataset(Dataset):
         self.version = version
         super().__init__(only_single_chain=True, **kwargs)
 
+    @property
+    def name(self):
+        return f'{self.__class__.__name__}_{self.organism}'
+
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.download_limit()]
+        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
-
-    def download_precomputed(self, resolution='residue'):
-        # overloads the parent method to compile multiple organisms into one
-        if os.path.exists(f'{self.root}/{self.__class__.__name__}.{resolution}.avro'):
-            return
-        def _download(organism):
-            download_url(f'{self.repository_url}/{self.__class__.__name__}_{organism}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro.gz')
-        if type(self.organism) == str:
-            _download(self.organism)
-            os.rename(f'{self.root}/{self.__class__.__name__}_{self.organism}.{resolution}.avro', f'{self.root}/{self.__class__.__name__}.{resolution}.avro')
-        elif type(self.organism) == list:
-            _ = [_download(organism) for organism in self.organism]
-            proteins = [p for organism in self.organism for p in load(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro')]
-            save(proteins, f'{self.root}/{self.__class__.__name__}.{resolution}.avro')
-            _ = [os.remove(f'{self.root}/{self.__class__.__name__}_{organism}.{resolution}.avro') for organism in self.organism]
-
 
     def download(self):
         def _download(organism):
