@@ -1,0 +1,16 @@
+[
+    {
+        "Name":"Model 1",
+        "Author": "Someone et al. 2023",
+        "Paper": "arxiv.com/paper",
+        "Code": "github.com/code",
+        "MSE": 0.2
+    },
+    {
+        "Name":"Model 2",
+        "Author": "Who et al. 2023",
+        "Paper": "arxiv.com/paper",
+        "Code": "github.com/code",
+        "MSE": 0.5
+    }
+]
