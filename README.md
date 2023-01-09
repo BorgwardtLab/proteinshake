@@ -30,6 +30,7 @@
 
 We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level. Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> or the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>.
 
+<br/>
 
 **Installation:**
 ```
