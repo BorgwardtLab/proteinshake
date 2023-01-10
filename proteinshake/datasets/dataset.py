@@ -540,7 +540,6 @@ class Dataset():
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
         df['residue_name'] = df['residue_name'].map(lambda x: AA_THREE_TO_ONE[x] if x in AA_THREE_TO_ONE else None)
         #df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
-        df = df.sort_values('atom_number')
         df = df.rename(columns={
             'atom_name': 'atom_type',
             'residue_name': 'residue_type',
@@ -548,7 +547,7 @@ class Dataset():
             'y_coord': 'y',
             'z_coord': 'z',
         })
-        df = df.sort_values(by=['chain_id', 'residue_number'])
+        df = df.sort_values(by=['chain_id', 'residue_number', 'atom_number'])
         return df
 
     def validate(self, df):
