@@ -30,12 +30,12 @@ jobs:
           pip install coverage
           coverage run --source proteinshake -m pytest
 
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
-          flags: pytest
-          name: proteinshake # optional
-          fail_ci_if_error: true
-          verbose: true 
+      # - name: Upload Coverage
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: coverage.xml
+      #     flags: pytest
+      #     name: proteinshake # optional
+      #     fail_ci_if_error: true
+      #     verbose: true 
