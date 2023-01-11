@@ -12,7 +12,7 @@
 [![pypi](https://img.shields.io/pypi/v/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
 [![docs](https://img.shields.io/readthedocs/proteinshake?color=%2303A9F4&style=for-the-badge)](https://proteinshake.readthedocs.io/en/latest/?badge=latest)
 [![downloads](https://img.shields.io/pypi/dm/proteinshake?color=%2303A9F4&style=for-the-badge)](https://pypi.org/project/proteinshake/)
-
+[![codecov](https://img.shields.io/codecov/c/github/codecov/proteinshake/main?color=%2303A9F4&style=for-the-badge&token=0NL6CQZ6MB)](https://codecov.io/gh/Borgwardtlab/proteinshake)
 </div>
 
 <p align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
