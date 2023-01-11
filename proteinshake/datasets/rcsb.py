@@ -24,7 +24,9 @@ class RCSBDataset(Dataset):
         A list of triplets `(attribute, operator, value)` to be added to the REST API call to RCSB.
     """
 
-    def __init__(self, query=[], only_single_chain=True, max_requests=20, **kwargs):
+    def __init__(
+        self, query=[], only_single_chain=True, max_requests=20, **kwargs
+    ):
         self.query = query
         self.max_requests = max_requests
         super().__init__(only_single_chain=only_single_chain, **kwargs)
