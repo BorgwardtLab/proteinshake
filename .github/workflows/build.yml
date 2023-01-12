@@ -27,4 +27,17 @@ jobs:
       - name: Test with pytest
         run: |
           pip install -r requirements.txt
-          pytest
+          pip install coverage
+          coverage run --source proteinshake -m pytest
+          coverage report -m
+          coverage xml
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: pytest
+          name: proteinshake
+          fail_ci_if_error: true
+          verbose: true 

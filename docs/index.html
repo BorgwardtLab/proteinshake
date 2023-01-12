@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+    <head>
+        <meta charset='utf-8'>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <title>ProteinShake</title>
+        <link rel='stylesheet' href='prism.css'>
+        <script src='prism.js'></script>
+        <link rel='stylesheet' href='style.css'>
+        <script src='script.js'></script>
+    </head>
+    <body>
+        <div class='header'>
+            <a class='header-item' href='#quickstart'>Quickstart</a>
+            <a class='header-item' href='https://proteinshake.readthedocs.io/en/latest/?badge=latest'>Documentation</a>
+            <a class='header-item' href=''>Paper</a>
+            <a class='header-item' href='https://github.com/BorgwardtLab/proteinshake'>GitHub</a>
+            <a class='header-item' href='https://proteinshake.readthedocs.io/en/latest/notes/contributing.html'>Contribute</a>
+            <a class='header-item' href='#leaderboard'>Leaderboard</a>
+        </div>
+        <div class='main'>
+            <img class='logo' src='images/logo.png'/>
+            <div class='block'>
+                <h1>Democratizing protein 3D structure data across machine learning disciplines. Batteries included.</h1>
+                <h2>ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks. You bring the model, we bring the data. Together with annotations, splits and metrics.</h2>
+            </div>
+            <div class='block'>
+                <div class='install'>
+                    pip install proteinshake
+                    <img id='copy' class='copycode' src='images/copy.svg' onclick='copyToClipboard();'></img>
+                </div>
+            </div>
+            <div class='block' style='flex-direction:row;flex-wrap:wrap;justify-content:center;'>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/database.svg'/>
+                    <div class='feature-description'>
+                        Uniting RCSB PDB, AlphaFold DB, and annotated databases
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/tasks.svg'/>
+                    <div class='feature-description'>
+                        Protein- and residue-level labels for classification and regression
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/graph.svg'/>
+                    <div class='feature-description'>
+                        Automatic conversion to graphs, voxels and point clouds
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/frameworks.svg'/>
+                    <div class='feature-description'>
+                        Support for all major frameworks
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/benchmark.svg'/>
+                    <div class='feature-description'>
+                        Task API for benchmarking
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/splits.svg'/>
+                    <div class='feature-description'>
+                        Data splits based on sequence and structure similarity
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/amount.svg'/>
+                    <div class='feature-description'>
+                        More than 500.000 structures
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/resolution.svg'/>
+                    <div class='feature-description'>
+                        Atom- and residue-level resolution
+                    </div>
+                </div>
+                <div class='feature'>
+                    <img class='feature-logo' src='images/hosted.svg'/>
+                    <div class='feature-description'>
+                        Preprocessed and hosted
+                    </div>
+                </div>
+            </div>
+            <a class='anchor' id='quickstart'></a>
+            <div class='block'>
+                <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Quickstart</h1><div class='line'></div></span>
+                <div class='table'>
+                    <div class='tabs' id='representations'>
+                        <div class='tab-item' id='graph' onclick='representation="graph";quickstart();'>Graphs</div>
+                        <div class='tab-item' id='voxel' onclick='representation="voxel";quickstart();'>Voxels</div>
+                        <div class='tab-item' id='point' onclick='representation="point";quickstart();'>Point Clouds</div>
+                    </div>
+                    <div class='tabs' id='frameworks'>
+                        <div class='tab-item' id='torch' onclick='framework="torch";quickstart();'>PyTorch</div>
+                        <div class='tab-item' id='tf' onclick='framework="tf";quickstart();'>Tensorflow</div>
+                        <div class='tab-item' id='np' onclick='framework="np";quickstart();'>Numpy/JAX</div>
+                        <div class='tab-item' id='pyg' onclick='framework="pyg";quickstart();' style='display:none;'>PyTorch Geometric</div>
+                        <div class='tab-item' id='dgl' onclick='framework="dgl";quickstart();' style='display:none;'>DGL</div>
+                        <div class='tab-item' id='nx' onclick='framework="nx";quickstart();' style='display:none;'>NetworkX</div>
+                    </div>
+                    <pre><code class='language-python' id='code'></code></pre>
+                </div>
+            </div>
+            <a class='anchor' id='leaderboard'></a>
+            <div class='block'>
+                <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Leaderboard</h1><div class='line'></div></span>
+                <div style='display:flex;flex-direction:row;'>
+                    <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
+                    <div class="dropdown" onmouseleave="hideDropdown();">
+                        <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
+                        <div class='dropdown-content' id='dropdownContent'>
+                            <div class='dropdown-item' onclick='task="gene_ontology";leaderboard();'>Gene Ontology</div>
+                            <div class='dropdown-item' onclick='task="enzyme_commission";leaderboard();'>Enyme Commission</div>
+                            <div class='dropdown-item' onclick='task="binding_site";leaderboard();'>Binding Site</div>
+                            <div class='dropdown-item' onclick='task="ligand_affinity";leaderboard();'>Ligand Affinity</div>
+                            <div class='dropdown-item' onclick='task="scop";leaderboard();'>SCOP</div>
+                            <div class='dropdown-item' onclick='task="structure_alignment";leaderboard();'>Structure Alignment</div>
+                        </div>
+                    </div>
+                    <div style='width:80px;padding-left:20px;'></div>
+                </div>
+                <table id='leaderboard_table'></table>
+            </div>
+            <div class='block'>
+                <h3>Beat the baselines?</h3>
+                <span>Let people know! Create a pull request with your performance metrics in the GitHub repository, we will review your submission and publish it on the leaderboard. See also the <a href='https://proteinshake.readthedocs.io/en/latest/notes/submission.html'>submission guide</a>.</span>
+            </div>
+            <div class='block'>
+                <h3>I want to contribute!</h3>
+                <span>We are very happy to integrate contributions from the community. Got a new dataset and want to share it? Need a new representation for your project that others could profit from? You are more than welcome to add it to ProteinShake! Just create a pull request. We compiled more information in the <a href='https://proteinshake.readthedocs.io/en/latest/notes/contributing.html'>contribution guide</a> to help you understand the code structure.</span>
+            </div>
+            <div class='block'>
+                <h3>Found a bug or want to suggest a feature?</h3>
+                <span>Please let us know by <a href='https://github.com/BorgwardtLab/proteinshake/issues'>opening an issue</a> on GitHub. We are eager to improve ProteinShake and provide you with a great user experience. Feature requests are also welcome.</span>
+            </div>
+        </div>
+        <div class='footer'></div>
+    </body>
+</html>

@@ -6,8 +6,6 @@ from joblib import Parallel, delayed
 from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
-MAX_REQUESTS = 5
-
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
 
@@ -23,8 +21,9 @@ class RCSBDataset(Dataset):
         A list of triplets `(attribute, operator, value)` to be added to the REST API call to RCSB.
     """
 
-    def __init__(self, query=[], only_single_chain=True, **kwargs):
+    def __init__(self, query=[], only_single_chain=True, max_requests=20, **kwargs):
         self.query = query
+        self.max_requests = max_requests
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
     def get_raw_files(self):
@@ -90,9 +89,9 @@ class RCSBDataset(Dataset):
         ids = list(set(ids)) # filter identical ids
         ids = ids[:self.limit] # for testing
 
-        n_jobs = min(self.n_jobs, MAX_REQUESTS) # RCSB has a request limit
+        n_jobs = min(self.n_jobs, self.max_requests) # RCSB has a request limit
         if n_jobs < 1:
-            n_jobs = MAX_REQUESTS
+            n_jobs = self.max_requests
 
         failed = Parallel(n_jobs=n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
         failed = [f for f in failed if not f is True]

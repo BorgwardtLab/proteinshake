@@ -1,0 +1,18 @@
+[
+    {
+        "Name":"Model 1",
+        "Author": "Someone et al. 2023",
+        "Paper": "arxiv.com/paper",
+        "Code": "github.com/code",
+        "Accuracy": 0.5,
+        "MCC": 0.4
+    },
+    {
+        "Name":"Model 2",
+        "Author": "Who et al. 2023",
+        "Paper": "arxiv.com/paper",
+        "Code": "github.com/code",
+        "Accuracy": 0.8,
+        "MCC": 0.8
+    }
+]

@@ -3,7 +3,9 @@ setup.sh
 .proteinshake
 *TemporaryDirectory*/
 release/
+.DS_Store
 .tm_cache/
+
 
 TMalign
 data/

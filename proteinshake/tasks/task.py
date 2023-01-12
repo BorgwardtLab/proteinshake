@@ -103,6 +103,18 @@ class ShakeTask:
         self.val_ind = val
         self.test_ind = test
 
+    @property
+    def train(self):
+        return self.dataset[self.train_ind]
+
+    @property
+    def test(self):
+        return self.dataset[self.test_ind]
+
+    @property
+    def val(self):
+        return self.dataset[self.val_ind]
+
     def compute_token_map(self):
         """ Computes and sets a dictionary that maps discrete labels to integers for classification tasks."""
         raise NotImplementedError
@@ -182,3 +194,39 @@ class ShakeTask:
                        'val_ind': self.val_ind,
                        'token_map': self.token_map
                        }, t)
+                       
+    def to_graph(self, *args, **kwargs):
+        self.dataset = self.dataset.to_graph(*args, **kwargs)
+        return self
+
+    def to_point(self, *args, **kwargs):
+        self.dataset = self.dataset.to_point(*args, **kwargs)
+        return self
+
+    def to_voxel(self, *args, **kwargs):
+        self.dataset = self.dataset.to_voxel(*args, **kwargs)
+        return self
+
+    def pyg(self, *args, **kwargs):
+        self.dataset = self.dataset.pyg(*args, **kwargs)
+        return self
+
+    def dgl(self, *args, **kwargs):
+        self.dataset = self.dataset.dgl(*args, **kwargs)
+        return self
+
+    def nx(self, *args, **kwargs):
+        self.dataset = self.dataset.nx(*args, **kwargs)
+        return self
+
+    def np(self, *args, **kwargs):
+        self.dataset = self.dataset.np(*args, **kwargs)
+        return self
+
+    def tf(self, *args, **kwargs):
+        self.dataset = self.dataset.tf(*args, **kwargs)
+        return self
+
+    def torch(self, *args, **kwargs):
+        self.dataset = self.dataset.torch(*args, **kwargs)
+        return self
