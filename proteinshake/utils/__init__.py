@@ -25,7 +25,8 @@ __all__ = ['onehot',
            'protein_to_pdb',
            'tmalign_wrapper',
            'cdhit_wrapper',
-           'dms_wrapper'
+           'dms_wrapper',
+           'df_to_pdb'
            ]
 
 classes = __all__

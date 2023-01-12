@@ -455,7 +455,9 @@ class Dataset():
         write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
 
     def parse_pdb(self, path):
-        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
+        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary).
+        Also validates the PDB file and provides the hook for `add_protein_attributes`.
+        Returns `None` if the protein was found to be invalid.
 
         Parameters
         ----------

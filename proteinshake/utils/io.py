@@ -233,6 +233,53 @@ def checkpoint(path):
         return wrapper
     return decorator
 
+def df_to_pdb(df, path):
+    """ Write coordinate list from dataframe to a PDB file.
+
+    Parameters
+    ------------
+    df:
+        protein dataframe
+    path:
+        Path to write PDB file.
+
+
+    """
+    # ATOM      1  N   PRO A   1       8.316  21.206  21.530  1.00 17.44           N
+    df['residue_name_full'] = df['residue_type']
+    if 'chain_id' not in df.columns:
+        df['chain_id'] = 'A'
+    df['occupancy'] = [1.00] * len(df)
+    df['temp'] = [20.00] * len(df)
+
+    df['element'] = df['atom_type'].apply(lambda x: x[:1])
+
+    lines = []
+    for row in df.itertuples():
+        line = "{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   " \
+               "{:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          " \
+               "{:>2s}{:2s}".format(
+                                    'ATOM',
+                                    row.atom_number,
+                                    row.atom_type,
+                                    ' ',
+                                    row.residue_name_full,
+                                    row.chain_id,
+                                    row.residue_number,
+                                    ' ',
+                                    row.x,
+                                    row.y,
+                                    row.z,
+                                    row.occupancy,
+                                    row.temp,
+                                    row.element,
+                                    '  '
+                                 )
+        lines.append(line)
+    with open(path, "w") as p:
+        p.write("\n".join(lines))
+    pass
+
 def protein_to_pdb(protein, path):
     """ Write coordinate list from atom dict to a PDB file.
 
