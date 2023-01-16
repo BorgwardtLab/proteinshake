@@ -51,9 +51,10 @@ class TMAlignDataset(Dataset):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        download_url(f'{self.repository_url}/tmalign.json.gz', f'{self.root}')
-        print('Unzipping...')
-        unzip_file(f'{self.root}/tmalign.json.gz')
+        if not os.path.exists(f'{self.root}/tmalign.json'):
+            download_url(f'{self.repository_url}/tmalign.json.gz', f'{self.root}')
+            print('Unzipping...')
+            unzip_file(f'{self.root}/tmalign.json.gz')
         self.tm_score, self.rmsd = load(f'{self.root}/tmalign.json')
 
     def get_raw_files(self):
