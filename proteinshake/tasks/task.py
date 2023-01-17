@@ -89,6 +89,7 @@ class ShakeTask:
         download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
 
     def compute_splits(self, *args, **kwargs):
+        print('Computing splits...')
         info = {
             'splits': {
                 'random': self.compute_random_split(*args, **kwargs),
