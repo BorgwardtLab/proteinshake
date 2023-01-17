@@ -59,9 +59,12 @@ class ShakeTask:
                 self.proteins = list(proteins)
             def __getitem__(self, idx):
                 try:
-                    return self.proteins[int(idx)]
+                    idx = int(idx)
                 except:
                     return [self.__getitem__(i) for i in idx]
+                if idx >= len(self.proteins):
+                    raise StopIteration
+                return self.proteins[idx]
         self.proteins = Proteins(self.proteins)
         self.name = self.__class__.__name__
 
@@ -78,7 +81,7 @@ class ShakeTask:
         self.train_index = np.array(info['splits'][split]['train'])
         self.val_index = np.array(info['splits'][split]['val'])
         self.test_index = np.array(info['splits'][split]['test'])
-        self.token_map = np.array(info['token_map'])
+        self.token_map = info['token_map']
 
         # compute targets (e.g. for scaling)
         self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
