@@ -8,7 +8,7 @@ class LigandAffinityTask(ShakeTask):
     Small molecule ligand information is stored as ``dataset[i].smiles`` for a SMILES string, or as pre-computed molecular
     fingerprints ``dataset[i].fp_maccs``, ```dataset[i].fp_morgan_r2``.
     """
-    def __init__(self, root, *args, **kwargs):
+    def __init__(self, root='data', *args, **kwargs):
         dataset = ProteinLigandInterfaceDataset(root=root)
         super().__init__(dataset, *args, **kwargs)
 
@@ -24,6 +24,3 @@ class LigandAffinityTask(ShakeTask):
             'mse': metrics.mean_squared_error(pred, true),
             'r2': metrics.r2_score(pred, true)
         }
-
-if __name__ == "__main__":
-    task = LigandAffinityTask(root='bob')

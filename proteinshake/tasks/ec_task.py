@@ -7,19 +7,20 @@ class EnzymeCommissionTask(ShakeTask):
     """ Predict the enzyme commission classification of a protein structure. This is a protein-level multi-class prediction.
 
     """
-    def __init__(self, root, ec_level=0, *args, **kwargs):
+    def __init__(self, root='data', ec_level=0, *args, **kwargs):
         dataset = EnzymeCommissionDataset(root=root)
         self.ec_level = ec_level
 
         super().__init__(dataset, *args, **kwargs)
 
     def compute_token_map(self):
-        labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.proteins}
-        self.token_map = {label: i for i, label in enumerate(sorted(list(labels)))}
+        labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.dataset.proteins()[0]}
+        return {label: i for i, label in enumerate(sorted(list(labels)))}
 
     @property
     def num_classes(self):
         return len(self.token_map)
+
     @property
     def task_type(self):
         return 'classification, multi-class'
@@ -39,6 +40,3 @@ class EnzymeCommissionTask(ShakeTask):
             'accuracy': metrics.accuracy_score(y_true, y_pred),
             #'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro', multi_class='ovo'),
         }
-
-if __name__ == "__main__":
-    task = EnzymeCommissionTask(root='ec')

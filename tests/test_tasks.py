@@ -13,7 +13,8 @@ from proteinshake.tasks import (EnzymeCommissionTask,
 class TestTasks(unittest.TestCase):
 
     def task_check(self, task):
-        self.assertIsNotNone(task.train_ind)
+        self.assertIsNotNone(task.train_index)
+        self.assertIsNotNone(task.train_targets)
 
     def test_ec_task(self):
         with tempfile.TemporaryDirectory() as tmp:
