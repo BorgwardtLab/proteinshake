@@ -134,10 +134,10 @@ def zip_file(path):
         The path to the file.
 
     """
-    path = Path(path)
-    with open(path, 'rb') as f_in:
-        with gzip.open(path+'.gz', 'wb') as f_out:
+    with open(Path(path), 'rb') as f_in:
+        with gzip.open(Path(path+'.gz'), 'wb') as f_out:
             f_out.writelines(f_in)
+    return path+'.gz'
 
 def unzip_file(path, remove=True):
     """ Unzips a .gz file.

@@ -84,9 +84,9 @@ class ShakeTask:
         self.token_map = info['token_map']
 
         # compute targets (e.g. for scaling)
-        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
-        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
-        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index])
+        self.train_targets = [self.target(self.proteins[i]) for i in self.train_index]
+        self.val_targets = [self.target(self.proteins[i]) for i in self.val_index]
+        self.test_targets = [self.target(self.proteins[i]) for i in self.test_index]
 
     def download_precomputed(self):
         download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
