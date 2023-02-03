@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 
 from proteinshake.utils import tmalign_wrapper, cdhit_wrapper, download_url, save, load
 
-class ShakeTask:
+class Task:
     """ Base class for task-related utilities.
     This class wraps a proteinshake dataset and exposes split indices,
     integer-coded labels for classification tasks, and an evaluator function.
@@ -43,16 +43,20 @@ class ShakeTask:
         Directory where we store the result of computing splits and tokenizing.
     use_precomputed: bool, default=True
     """
+
+    DatasetClass = None
+
     def __init__(self,
-                 dataset,
+                 root               = 'data',
                  split              = 'random',
                  random_state       = 42,
                  train_ratio        = 0.80,
                  val_ratio          = 0.10,
                  test_ratio         = 0.10,
-                 use_precomputed    = True
+                 use_precomputed    = True,
+                 **kwargs
                 ):
-        self.dataset = dataset
+        self.dataset = self.DatasetClass(root=root)
         self.proteins, self.size = self.dataset.proteins()
         class Proteins():
             def __init__(self, proteins):

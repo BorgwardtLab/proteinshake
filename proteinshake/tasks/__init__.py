@@ -1,16 +1,16 @@
-from .task import ShakeTask
-from .ec_task import EnzymeCommissionTask
-from .ligand_affinity_task import LigandAffinityTask
-from .binding_site_task import BindingSitePredictionTask
-from .tm_task import RetrieveTask
-from .scop_task import SCOPTask
+from .task import Task
+from .enzyme_class import EnzymeClassTask
+from .ligand_affinity import LigandAffinityTask
+from .binding_site__detection import BindingSiteDetectionTask
+from .structure_similarity import StructureSimilarityTask
+from .structural_class import StructuralClassTask
 
-classes = ['ShakeTask',
-           'EnzymeCommissionTask',
+classes = ['Task',
+           'EnzymeClassTask',
            'LigandAffinityTask',
-           'RetrieveTask',
-           'BindingSitePredictionTask',
-           'SCOPTask'
+           'StructureSimilarityTask',
+           'BindingSiteDetectionTask',
+           'StructuralClassTask'
            ]
 
 __all__ = classes
