@@ -1,14 +1,11 @@
 import os
-import os.path as osp
 import json
-from pathlib import Path
-from joblib import Parallel, delayed
+import itertools
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.cluster import AgglomerativeClustering
 
-from proteinshake.utils import tmalign_wrapper, cdhit_wrapper
+from proteinshake.utils import tmalign_wrapper, cdhit_wrapper, download_url, save, load
 
 class ShakeTask:
     """ Base class for task-related utilities.
@@ -22,12 +19,9 @@ class ShakeTask:
      .. code-block:: python
 
         >>> from proteinshake.tasks import EnzymeCommissionTask
-        >>> task = EnzymeCommissionTask(root='foo')
-        >>> task.train_ind
-        ... [1, 3, 4, 5, 9, ...]
-        >>> out = model(dataloader[task.test_ind])
-        >>> targets = [task.target(i) for i in task.test_ind]
-        >>> task.evaluate(out, targets)
+        >>> task = EnzymeCommissionTask()
+        >>> y_pred = model(task.train)
+        >>> task.evaluate(y_pred)
         ... {'roc_auc_score': 0.7}
 
 
@@ -35,104 +29,110 @@ class ShakeTask:
     ----------
     dataset: pytorch.datasets.Dataset
         Dataset to use for this task.
+    split: str, default='random'
+        How to split the data. Can be 'random', 'sequence', or 'structure'.
     random_state: int, default=42
         Random seed for reproducible splitting.
-    train_ratio: float, default=.75
+    train_ratio: float, default=0.80
         Fraction of dataset to use for training.
-    val_ratio: float, default=.15
+    val_ratio: float, default=0.10
         Fraction of dataset to use for validation.
-    test_ratio: float, default=.10
+    test_ratio: float, default=0.10
         Fraction of dataset to use for testing.
     cace_dir: str, default='.proteinshake'
         Directory where we store the result of computing splits and tokenizing.
+    use_precomputed: bool, default=True
     """
     def __init__(self,
                  dataset,
-                 random_state=42,
-                 train_ratio=0.75,
-                 val_ratio=.15,
-                 test_ratio=.1,
+                 split              = 'random',
+                 random_state       = 42,
+                 train_ratio        = 0.80,
+                 val_ratio          = 0.10,
+                 test_ratio         = 0.10,
+                 use_precomputed    = True
                 ):
         self.dataset = dataset
-        self.train_ratio = train_ratio
-        self.validation_ratio = val_ratio
-        self.test_ratio = test_ratio
-        self.random_state = random_state
-        self.cache_dir = osp.join(self.dataset.root, "tasks")
+        self.proteins, self.size = self.dataset.proteins()
+        class Proteins():
+            def __init__(self, proteins):
+                self.proteins = list(proteins)
+            def __getitem__(self, idx):
+                try:
+                    idx = int(idx)
+                except:
+                    return [self.__getitem__(i) for i in idx]
+                if idx >= len(self.proteins):
+                    raise StopIteration
+                return self.proteins[idx]
+        self.proteins = Proteins(self.proteins)
+        self.name = self.__class__.__name__
 
-        proteins, size = list(self.dataset.proteins())
-        self.proteins = list(proteins)
-        self.size = size
+        # load task info
+        path = f'{self.dataset.root}/{self.name}.json.gz'
+        if not os.path.exists(path):
+            if use_precomputed:
+                self.download_precomputed()
+            else:
+                self.compute_splits(train_ratio, val_ratio, test_ratio, random_state)
+        info = load(path)
 
-        self._process()
+        # load split indices
+        self.train_index = np.array(info['splits'][split]['train'])
+        self.val_index = np.array(info['splits'][split]['val'])
+        self.test_index = np.array(info['splits'][split]['test'])
+        self.token_map = info['token_map']
 
-    def _process(self):
-        """ Skeleton for processing a task. Tries to load results from previous output
-        and then computes splits and label set.
-        """
-        self.create_cache()
-        cache_dict = self.load_cache()
-        if cache_dict is None:
-            print(">>> computing task info.")
-            self.compute_splits()
-            try:
-                self.compute_token_map()
-            except NotImplementedError:
-                print(">>> No tokenizer implemented. Make sure this is a regression task.")
-                self.token_map = None
-                pass
-            self.process()
-            self.cache()
-        else:
-            for k, v in cache_dict.items():
-                setattr(self, k, v)
+        # compute targets (e.g. for scaling)
+        self.train_targets = [self.target(self.proteins[i]) for i in self.train_index]
+        self.val_targets = [self.target(self.proteins[i]) for i in self.val_index]
+        self.test_targets = [self.target(self.proteins[i]) for i in self.test_index]
 
-    def process(self):
-        """ Override for extra processing"""
-        pass
+    def download_precomputed(self):
+        download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
 
-    def compute_splits(self):
-        """ Compute train/val/test splits and sets respective attributes as lists of indices..
-        """
-        print(f">>> computing splits")
+    def compute_splits(self, *args, **kwargs):
+        print('Computing splits...')
+        info = {
+            'splits': {
+                'random': self.compute_random_split(*args, **kwargs),
+                'sequence': self.compute_cluster_split('sequence', *args, **kwargs),
+                #'structure': self.compute_cluster_split('structure', *args, **kwargs)
+            },
+            'token_map': self.compute_token_map()
+        }
+        save(info, f'{self.dataset.root}/{self.name}.json.gz')
+
+    def compute_random_split(self, train_ratio, val_ratio, test_ratio, random_state):
         inds = range(self.size)
-        train, test = train_test_split(inds, test_size=1 - self.train_ratio)
-        val, test = train_test_split(test, test_size=self.test_ratio/(self.test_ratio + self.validation_ratio))
+        train, test = train_test_split(inds, test_size=1-train_ratio, random_state=random_state)
+        val, test = train_test_split(test, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
+        return {'train': train, 'val': val, 'test': test}
 
-        self.train_ind = train
-        self.val_ind = val
-        self.test_ind = test
+    def compute_cluster_split(self, type, train_ratio, val_ratio, test_ratio, random_state):
+        cluster_ids = [p['protein'][f'{type}_cluster_0.7'] for p in self.proteins]
+        num_clusters = max(cluster_ids)
+        test_size = int(num_clusters*test_ratio)
+        val_size = int(num_clusters*val_ratio)
+        unique, counts = np.unique(cluster_ids, return_counts=True)
+        cluster_sizes = dict(zip(unique, counts))
+        seq_threshold = int(np.median(list(cluster_sizes.values())))
+        pool = [cluster for cluster, count in cluster_sizes.items() if count >= seq_threshold]
+        np.random.seed(random_state)
+        np.random.shuffle(pool)
+        test_clusters, val_clusters = pool[:test_size], pool[test_size:test_size+val_size]
+        inds = np.arange(self.size)
+        def sample(c):
+            return np.random.choice(inds[cluster_ids==c], size=seq_threshold, replace=False).tolist()
+        test = list(itertools.chain.from_iterable(sample(c) for c in test_clusters))
+        val = list(itertools.chain.from_iterable(sample(c) for c in val_clusters))
+        train = [c for c in cluster_ids if c not in test and c not in val]
+        return {'train': train, 'val': val, 'test': test}
 
-    @property
-    def train(self):
-        return self.dataset[self.train_ind]
-
-    @property
-    def test(self):
-        return self.dataset[self.test_ind]
-
-    @property
-    def val(self):
-        return self.dataset[self.val_ind]
 
     def compute_token_map(self):
         """ Computes and sets a dictionary that maps discrete labels to integers for classification tasks."""
-        raise NotImplementedError
-
-    def label_process(self, label):
-        """ Returns a cleaned prediction label. """
-        return label
-
-    @property
-    def target(self, protein):
-        """ Return the prediction target for one protein in the dataset.
-
-        Parameters:
-        ------------
-        protein: dict
-            proteinshake protein dictionary
-        """
-        raise NotImplementedError
+        return None
 
     @property
     def task_type(self):
@@ -149,15 +149,24 @@ class ShakeTask:
         """ Size of the output dimension for this task """
         raise NotImplementedError
 
-    def evaluate(self, pred, true):
+    @property
+    def target(self, protein):
+        """ Return the prediction target for one protein in the dataset.
+
+        Parameters:
+        ------------
+        protein: dict
+            proteinshake protein dictionary
+        """
+        raise NotImplementedError
+
+    def evaluate(self, y_pred):
         """ Evaluates prediction quality.
 
         Parameters:
         -----------
-        pred: list
+        y_pred: list
             List of predicted outputs.
-        true: list
-            List of target values (output from the `ShakeTask.target()` method.
 
         Returns:
         --------
@@ -166,35 +175,18 @@ class ShakeTask:
         """
         raise NotImplementedError
 
-    def create_cache(self):
-        """ Creates the task info cache directory """
-        if not os.path.exists(self.cache_dir):
-            os.makedirs(self.cache_dir)
+    @property
+    def train(self):
+        return self.dataset[self.train_ind]
 
-    def load_cache(self):
-        """ Tries to load the cache. Returns None if it does not exist
+    @property
+    def val(self):
+        return self.dataset[self.val_ind]
 
-        Returns:
-            dict:
-                The dictionary storing task attributes. Returns None if no cache exists.
-        """
-        try:
-            with open(osp.join(self.cache_dir, f"{self.dataset.name}.json"), "r") as t:
-                task_dict = json.load(t)
-                return task_dict
-        except FileNotFoundError:
-            return None
+    @property
+    def test(self):
+        return self.dataset[self.test_ind]
 
-    def cache(self):
-        """ Cache the stuff that needs to iterate over the dataset."""
-
-        with open(osp.join(self.cache_dir, f"{self.dataset.name}.json"), "w") as t:
-            json.dump({'train_ind': self.train_ind,
-                       'test_ind': self.test_ind,
-                       'val_ind': self.val_ind,
-                       'token_map': self.token_map
-                       }, t)
-                       
     def to_graph(self, *args, **kwargs):
         self.dataset = self.dataset.to_graph(*args, **kwargs)
         return self
