@@ -10,6 +10,7 @@ import gzip
 import shutil
 import requests
 import re
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
@@ -75,6 +76,7 @@ def write_avro(proteins, path):
     path:
         The path to the output file.
     """
+    path = Path(path)
     schema = avro_schema_from_protein(proteins[0])
     with open(path, 'wb') as file:
         avro_writer(file, schema, proteins, metadata={'number_of_proteins':str(len(proteins))})
@@ -90,13 +92,13 @@ def save(obj, path):
         The path to save the object.
     """
     if path.endswith('.json.gz'):
-        with gzip.open(path, 'w') as file:
+        with gzip.open(Path(path), 'w') as file:
             file.write(json.dumps(obj).encode('utf-8'))
     elif path.endswith('.json'):
-        with open(path,'w') as file:
+        with open(Path(path),'w') as file:
             json.dump(obj, file)
     else:
-        with open(path, 'wb') as file:
+        with open(Path(path), 'wb') as file:
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load(path):
@@ -113,13 +115,13 @@ def load(path):
         The loaded object.
     """
     if path.endswith('.json.gz'):
-        with gzip.open(path, 'r') as file:
+        with gzip.open(Path(path), 'r') as file:
             obj = json.loads(file.read().decode('utf-8'))
     elif path.endswith('.json'):
-        with open(path,'r') as file:
+        with open(Path(path),'r') as file:
             obj = json.load(file)
     else:
-        with open(path, 'rb') as handle:
+        with open(Path(path), 'rb') as handle:
             obj = pickle.load(handle)
     return obj
 
@@ -132,9 +134,10 @@ def zip_file(path):
         The path to the file.
 
     """
-    with open(path, 'rb') as f_in:
-        with gzip.open(path+'.gz', 'wb') as f_out:
+    with open(Path(path), 'rb') as f_in:
+        with gzip.open(Path(path+'.gz'), 'wb') as f_out:
             f_out.writelines(f_in)
+    return path+'.gz'
 
 def unzip_file(path, remove=True):
     """ Unzips a .gz file.
@@ -146,8 +149,8 @@ def unzip_file(path, remove=True):
 
     """
     assert path.endswith('.gz')
-    with gzip.open(path, 'rb') as f_in:
-        with open(path[:-3], 'wb') as f_out:
+    with gzip.open(Path(path), 'rb') as f_in:
+        with open(Path(path[:-3]), 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
     if remove:
         os.remove(path)
@@ -179,6 +182,7 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     if log:
         print(f'Downloading {file_name}:')
         bar = tqdm(total=total, unit='iB', unit_scale=True, unit_divisor=chunk_size)
+    out_path = Path(out_path)
     with open(out_path, 'wb') as file:
         for data in r.iter_content(chunk_size=chunk_size):
             size = file.write(data)
@@ -199,6 +203,7 @@ def extract_tar(tar_path, out_path, extract_members=False):
     extract_members: bool, default False
         If `True`, the tar file member will be directly extracted to `out_path`, instead of creating a subdirectory.
     """
+    out_path = Path(out_path)
     if extract_members:
         with tarfile.open(tar_path,'r') as file:
             for member in tqdm(file.getmembers(), desc='Extracting', total=len(file.getmembers())):
@@ -206,32 +211,6 @@ def extract_tar(tar_path, out_path, extract_members=False):
     else:
         with tarfile.open(tar_path) as file:
             file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(file.getmembers())))
-
-def checkpoint(path):
-    """ A decorator to checkpoint the result of a class method. It will check if the file specified by `path` exists, in which case the file is loaded and returned instead of running the decorated method. Otherwise the method is run and the result saved at the specified path.
-
-    The path looks similar to a format string. The decorator will look in the attributes of the Owner of the decorated method to replace values in the format string. Example:
-
-    .. code-block:: python
-
-        @checkpoint('{root}/raw/{name}.pkl')
-        def some_class_method(self):
-            return {'hello': 'world'}
-
-    This will replace `{root}` and `{name}` with `self.root` and `self.name` arguments of the class.
-
-    """
-    def decorator(function):
-        def wrapper(self, *args, **kwargs):
-            if os.path.exists(path.format(**self.__dict__)):
-                return load(path.format(**self.__dict__))
-            else:
-                os.makedirs(os.path.dirname(path.format(**self.__dict__)), exist_ok=True)
-                result = function(self, *args, **kwargs)
-                save(result, path.format(**self.__dict__))
-                return result
-        return wrapper
-    return decorator
 
 def protein_to_pdb(protein, path):
     """ Write coordinate list from atom dict to a PDB file.
@@ -245,6 +224,7 @@ def protein_to_pdb(protein, path):
 
 
     """
+    path = Path(path)
     # ATOM      1  N   PRO A   1       8.316  21.206  21.530  1.00 17.44           N
     try:
         df = pd.DataFrame(protein['atom'])
@@ -290,4 +270,3 @@ def protein_to_pdb(protein, path):
         lines.append(line)
     with open(path, "w") as p:
         p.write("\n".join(lines))
-    pass

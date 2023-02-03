@@ -1,5 +1,6 @@
-from itertools import combinations
+import itertools
 
+import numpy as np
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
@@ -11,7 +12,7 @@ class RetrieveTask(ShakeTask):
     Ground truth is computed using the TMAlign software. Split indices are stored as tuples which contain two indices in
     the underlying dataset.
     """
-    def __init__(self, root, *args, **kwargs):
+    def __init__(self, root='data', *args, **kwargs):
         dataset = TMAlignDataset(root=root)
         super().__init__(dataset, *args, **kwargs)
 
@@ -19,28 +20,26 @@ class RetrieveTask(ShakeTask):
     def task_type(self):
         return "regression"
 
-    def compute_splits(self):
-        print(f">>> computing splits")
-        _, size = self.dataset.proteins()
-        inds = list(combinations(range(size), 2))
+    def compute_pairs(self, indices):
+        com = list(itertools.combinations(range(len(indices)), 2))
+        return np.array(indices)[com].tolist()
 
-        train, test = train_test_split(inds, test_size=1 - self.train_ratio)
-        val, test = train_test_split(test, test_size=self.test_ratio/(self.test_ratio + self.validation_ratio))
+    def compute_random_split(self, *args, **kwargs):
+        splits = super().compute_random_split(*args, **kwargs)
+        return {k: self.compute_pairs(v) for k,v in splits.items()}
 
-        self.train_ind = train
-        self.val_ind = val
-        self.test_ind = test
+    def compute_cluster_split(self, *args, **kwargs):
+        splits = super().compute_cluster_split(*args, **kwargs)
+        return {k: self.compute_pairs(v) for k,v in splits.items()}
 
-    def target(self, protein1, protein2):
+    def target(self, protein1, protein2=None):
+        try:
+            protein1, protein2 = protein1
+        except:
+            pass
         pdbid_1 = protein1['protein']['ID']
         pdbid_2 = protein2['protein']['ID']
         return self.dataset.tm_score[pdbid_1][pdbid_2]
 
     def evaluate(self, pred, true):
         return {'mse': metrics.mean_squared_error(pred, true)}
-
-if __name__ == "__main__":
-    # from proteinshake.datasets import TMAlignDataset
-    # dataset = TMAlignDataset(root='tm')
-    task = RetrieveTask('boo')
-    print(task.target(task.train_ind[0]))
