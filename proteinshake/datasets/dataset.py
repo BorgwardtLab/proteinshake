@@ -15,14 +15,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
 from proteinshake.transforms import IdentityTransform
-from proteinshake.utils import (download_url,
-                                save,
-                                load,
-                                unzip_file,
-                                write_avro,
-                                tmalign_wrapper,
-                                cdhit_wrapper
-                                )
+from proteinshake.utils import download_url, save, load, unzip_file, write_avro
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
