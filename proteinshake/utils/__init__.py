@@ -3,9 +3,9 @@ from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
 from .transforms import *
-from .wrappers import tmalign_wrapper
-from .wrappers import cdhit_wrapper
-from .wrappers import dms_wrapper
+from .tmalign import tmalign_wrapper
+from .dms import dms_wrapper
+from .lddt import lddt
 
 __all__ = ['onehot',
            'tokenize',
@@ -22,8 +22,8 @@ __all__ = ['onehot',
            'Compose',
            'protein_to_pdb',
            'tmalign_wrapper',
-           'cdhit_wrapper',
-           'dms_wrapper'
+           'dms_wrapper',
+           'lddt'
            ]
 
 classes = __all__
