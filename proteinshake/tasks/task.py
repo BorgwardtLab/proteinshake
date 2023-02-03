@@ -5,7 +5,7 @@ import itertools
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from proteinshake.utils import tmalign_wrapper, cdhit_wrapper, download_url, save, load
+from proteinshake.utils import download_url, save, load
 
 class Task:
     """ Base class for task-related utilities.

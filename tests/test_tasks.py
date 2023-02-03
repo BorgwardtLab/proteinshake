@@ -3,12 +3,7 @@ Tests prediction task classes.
 '''
 
 import unittest, tempfile
-from proteinshake.tasks import (EnzymeCommissionTask,
-                                BindingSitePredictionTask,
-                                LigandAffinityTask,
-                                SCOPTask,
-                                RetrieveTask
-                                )
+from proteinshake.tasks import *
 
 class TestTasks(unittest.TestCase):
 
@@ -18,12 +13,12 @@ class TestTasks(unittest.TestCase):
 
     def test_ec_task(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = EnzymeCommissionTask(root=tmp, use_precomputed=False)
+            task = EnzymeClassTask(root=tmp, use_precomputed=False)
             self.task_check(task)
 
     def test_binding(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = BindingSitePredictionTask(root=tmp, use_precomputed=False)
+            task = BindingSiteDetectionTask(root=tmp, use_precomputed=False)
             self.task_check(task)
 
     def test_affinity(self):
@@ -33,12 +28,12 @@ class TestTasks(unittest.TestCase):
 
     def test_scop(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = SCOPTask(root=tmp, use_precomputed=False)
+            task = StructuralClassTask(root=tmp, use_precomputed=False)
             self.task_check(task)
 
     def test_retrieve(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = RetrieveTask(root=tmp, use_precomputed=False)
+            task = StructureSimilarityTask(root=tmp, use_precomputed=False)
             self.task_check(task)
 
 

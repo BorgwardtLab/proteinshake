@@ -8,7 +8,7 @@ class EnzymeClassTask(Task):
 
     """
 
-    DatasetClass = TMAlignDataset
+    DatasetClass = EnzymeCommissionDataset
     
     def __init__(self, ec_level=0, *args, **kwargs):
         self.ec_level = ec_level

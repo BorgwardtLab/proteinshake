@@ -1,9 +1,11 @@
 import shutil
 import os
 import subprocess
+import tempfile
 from biopandas.pdb import PandasPdb
+from .gdt import gdt
 
-def tmalign_wrapper(pdb1, pdb2, return_superposition=False):
+def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.
     Parameters
     ----------
@@ -24,18 +26,14 @@ def tmalign_wrapper(pdb1, pdb2, return_superposition=False):
     """
     assert shutil.which('TMalign') is not None,\
            "No TMalign installation found. Go here to install : https://zhanggroup.org/TM-align/TMalign.cpp"
-    try:
-        if return_superposition:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                out = subprocess.run(['TMalign','-outfmt','2', pdb1, pdb2, '-o', os.path.join(tmpdir, 'superposition.pdb')], stdout=subprocess.PIPE).stdout.decode()
-                superposition = PandasPdb().read_pdb(os.path.join(tmpdir, 'superposition.pdb')) 
-        else:
-            out = subprocess.run(['TMalign','-outfmt','2', pdb1, pdb2], stdout=subprocess.PIPE).stdout.decode()
-        path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
-    except Exception as e:
-        print(e)
-        return -1.
-    if return_superposition:
-        return float(TM1), float(TM2), float(RMSD), superposition
-    else:
-        return float(TM1), float(TM2), float(RMSD)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out = subprocess.run(['TMalign','-outfmt','2', pdb1, pdb2, '-o', os.path.join(tmpdir, 'superposition.pdb')], stdout=subprocess.PIPE).stdout.decode()
+        superposition = PandasPdb().read_pdb(os.path.join(tmpdir, 'superposition.pdb')) 
+    path1, path2, TM1, TM2, RMSD, ID1, ID2, IDali, L1, L2, Lali = out.split('\n')[1].split('\t')
+    GDT = gdt(superposition)
+    return {
+        'TM1': float(TM1),
+        'TM2': float(TM2),
+        'RMSD': float(RMSD),
+        'GDT': GDT,
+    }

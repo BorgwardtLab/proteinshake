@@ -5,7 +5,7 @@ from .io import *
 from .transforms import *
 from .tmalign import tmalign_wrapper
 from .dms import dms_wrapper
-from .lddt import lddt
+from .gdt import gdt
 
 __all__ = ['onehot',
            'tokenize',
@@ -23,7 +23,7 @@ __all__ = ['onehot',
            'protein_to_pdb',
            'tmalign_wrapper',
            'dms_wrapper',
-           'lddt'
+           'gdt'
            ]
 
 classes = __all__
