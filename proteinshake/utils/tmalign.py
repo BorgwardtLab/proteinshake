@@ -11,6 +11,9 @@ def global_distance_test(superposition):
     df = df[df['atom_name'] == 'CA']
     A = df[df['chain_id'] == 'A']
     B = df[df['chain_id'] == 'B']
+    if len(A) != len(B):
+        print(A)
+        print(B)
     coordsA = np.array(list(zip(A['x_coord'], A['y_coord'], A['z_coord'])))
     coordsB = np.array(list(zip(B['x_coord'], B['y_coord'], B['z_coord'])))
     dist = np.sqrt(((coordsA-coordsB)**2).sum(1))
