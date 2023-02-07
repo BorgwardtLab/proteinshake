@@ -12,7 +12,7 @@ class EnzymeClassTask(Task):
     
     def __init__(self, ec_level=0, *args, **kwargs):
         self.ec_level = ec_level
-        super().__init__(dataset, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def compute_token_map(self):
         labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.dataset.proteins()[0]}
