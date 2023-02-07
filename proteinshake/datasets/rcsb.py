@@ -21,8 +21,9 @@ class RCSBDataset(Dataset):
         A list of triplets `(attribute, operator, value)` to be added to the REST API call to RCSB.
     """
 
-    def __init__(self, query=[], only_single_chain=True, max_requests=20, **kwargs):
+    def __init__(self, query=[], from_list=None, only_single_chain=True, max_requests=20, **kwargs):
         self.query = query
+        self.from_list = from_list
         self.max_requests = max_requests
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
@@ -39,52 +40,55 @@ class RCSBDataset(Dataset):
         i = 0
         batch_size = 5000
         ids = []
-        while total is None or total > i:
-            payload = {
-                "query": {
-                    "type": "group",
-                    'logical_operator': 'and',
-                    'nodes': [
-                        {
-                            "type": "terminal",
-                            "service": "text",
-                            "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
-                        },
-                        {
-                            "type": "terminal",
-                            "service": "text",
-                            "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
-                        },
-                        *[
+        if not self.from_list is None:
+            ids = self.from_list
+        else:
+            while total is None or total > i:
+                payload = {
+                    "query": {
+                        "type": "group",
+                        'logical_operator': 'and',
+                        'nodes': [
                             {
                                 "type": "terminal",
                                 "service": "text",
-                                "parameters": {k:v for k,v in zip(['attribute','operator','value'], q)}
-                            }
-                        for q in self.query],
-                    ],
-                },
-                "request_options": {
-                    "group_by": {
-                        "aggregation_method": "sequence_identity",
-                        "similarity_cutoff": 100,
+                                "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
+                            },
+                            {
+                                "type": "terminal",
+                                "service": "text",
+                                "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
+                            },
+                            *[
+                                {
+                                    "type": "terminal",
+                                    "service": "text",
+                                    "parameters": {k:v for k,v in zip(['attribute','operator','value'], q)}
+                                }
+                            for q in self.query],
+                        ],
                     },
-                    "group_by_return_type": "representatives",
-                    "paginate": {"start": i, "rows": i+batch_size}
-                },
-                "return_type": "polymer_entity"
-            }
-            r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
-            try:
-                response_dict = json.loads(r.text)
-                ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
-            except:
-                print('An error occured when querying RCSB.')
-                print(r.text)
-                exit()
-            if total is None:
-                total = response_dict['group_by_count']
-            i += batch_size
+                    "request_options": {
+                        "group_by": {
+                            "aggregation_method": "sequence_identity",
+                            "similarity_cutoff": 100,
+                        },
+                        "group_by_return_type": "representatives",
+                        "paginate": {"start": i, "rows": i+batch_size}
+                    },
+                    "return_type": "polymer_entity"
+                }
+                r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
+                try:
+                    response_dict = json.loads(r.text)
+                    ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
+                except:
+                    print('An error occured when querying RCSB.')
+                    print(r.text)
+                    exit()
+                if total is None:
+                    total = response_dict['group_by_count']
+                i += batch_size
 
         ids = list(set(ids)) # filter identical ids
         ids = ids[:self.limit] # for testing
