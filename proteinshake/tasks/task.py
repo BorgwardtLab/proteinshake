@@ -56,6 +56,7 @@ class Task:
                  use_precomputed    = True,
                  **kwargs
                 ):
+        self.root = root
         self.dataset = self.DatasetClass(root=root)
         self.proteins, self.size = self.dataset.proteins()
         class Proteins():
