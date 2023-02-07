@@ -73,7 +73,7 @@ class Task:
         self.name = self.__class__.__name__
 
         # load task info
-        path = f'{self.dataset.root}/{self.name}.json.gz'
+        path = f'{self.dataset.root}/{self.name}.json'
         if not os.path.exists(path):
             if use_precomputed:
                 self.download_precomputed()
@@ -94,6 +94,7 @@ class Task:
 
     def download_precomputed(self):
         download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
+        unzip_file(f'{self.dataset.root}/{self.name}.json.gz')
 
     def compute_splits(self, *args, **kwargs):
         print('Computing splits...')
@@ -105,7 +106,7 @@ class Task:
             },
             'token_map': self.compute_token_map()
         }
-        save(info, f'{self.dataset.root}/{self.name}.json.gz')
+        save(info, f'{self.dataset.root}/{self.name}.json')
 
     def compute_random_split(self, train_ratio, val_ratio, test_ratio, random_state):
         inds = range(self.size)
