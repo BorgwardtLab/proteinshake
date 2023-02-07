@@ -70,6 +70,6 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 *The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
 
-*Protein and Ligand binding structures and annotations were obtained from [PDBbind-CN](http://www.pdbbind.org.cn/), licensed under the [End User Agreement for Access to the PDBbind-CN Database and Web Site](http://www.pdbbind.org.cn/enroll.php). By downloading or using `ProteinLigandInterfaceDataset` or `ProteinProteinInterfaceDataset` you agree to the terms set forth in the agreement.*
+*Protein and Ligand binding structures and annotations were obtained from [PDBbind-CN](http://www.pdbbind.org.cn/), licensed under the [End User Agreement for Access to the PDBbind-CN Database and Web Site](http://www.pdbbind.org.cn/enroll.php).*
 
 </div>
