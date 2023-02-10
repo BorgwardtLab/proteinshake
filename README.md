@@ -21,7 +21,7 @@
 <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notes/contributing.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>
+<a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://colab.research.google.com/github/BorgwardtLab/proteinshake/blob/examples/examples/sup_enzyme_commission.ipynb">Tutorial</a>
 </p>
 
