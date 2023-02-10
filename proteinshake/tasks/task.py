@@ -104,7 +104,7 @@ class Task:
             'splits': {
                 'random': self.compute_random_split(*args, **kwargs),
                 'sequence': self.compute_cluster_split('sequence', *args, **kwargs),
-                #'structure': self.compute_cluster_split('structure', *args, **kwargs)
+                'structure': self.compute_cluster_split('structure', *args, **kwargs)
             },
             'token_map': self.compute_token_map()
         }
