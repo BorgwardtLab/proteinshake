@@ -36,7 +36,7 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 <br/>
 
 ```diff
-- This is a pre-release version. There may be unannounced changes to the API as well as the data. -
+- This is a pre-release version. There may be unannounced changes to the API and datasets. -
 - We expect some bugs as well, please open an issue if you find one. -
 ```
 
