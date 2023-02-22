@@ -39,8 +39,6 @@ class ShakeTask:
         Fraction of dataset to use for validation.
     test_ratio: float, default=0.10
         Fraction of dataset to use for testing.
-    cace_dir: str, default='.proteinshake'
-        Directory where we store the result of computing splits and tokenizing.
     use_precomputed: bool, default=True
     """
     def __init__(self,
@@ -177,15 +175,15 @@ class ShakeTask:
 
     @property
     def train(self):
-        return self.dataset[self.train_ind]
+        return self.dataset[self.train_index]
 
     @property
     def val(self):
-        return self.dataset[self.val_ind]
+        return self.dataset[self.val_index]
 
     @property
     def test(self):
-        return self.dataset[self.test_ind]
+        return self.dataset[self.test_index]
 
     def to_graph(self, *args, **kwargs):
         self.dataset = self.dataset.to_graph(*args, **kwargs)
