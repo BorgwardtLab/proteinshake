@@ -39,7 +39,7 @@ class StructureSearchTask(ShakeTask):
         """ Precompute the set of similar proteins for each query """
         targets = {}
         for q, candidates in self.dataset.tm_score.items():
-            targets[q] = [c for c, sim in candidates.items() if sim <= self.min_sim]
+            targets[q] = [c for c, sim in candidates.items() if sim >= self.min_sim]
         return targets
 
     def _precision_at_k(self, pred, targets, k):
