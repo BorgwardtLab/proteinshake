@@ -117,9 +117,6 @@ class Task:
         return {'train': train, 'val': val, 'test': test}
 
     def compute_cluster_split(self, type, train_ratio, val_ratio, test_ratio, similarity_threshold, random_state):
-        if not f'{type}_cluster_{similarity_threshold}' in self.proteins[0]['protein']:
-            print(f'The {type} split with similarity threshold {similarity_threshold} is not available for {self.name}.')
-            return None
         cluster_ids = np.array([p['protein'][f'{type}_cluster_{similarity_threshold}'] for p in self.proteins])
         # split the unique cluster IDs
         unique, counts = np.unique(cluster_ids, return_counts=True)
