@@ -5,16 +5,15 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 from proteinshake.datasets import TMAlignDataset
-from proteinshake.tasks import ShakeTask
+from proteinshake.tasks import Task
 
-class RetrieveTask(ShakeTask):
+class StructureSimilarityTask(Task):
     """ Predict the structural similarity between two proteins. This is a pair-wise protein-level regression task.
     Ground truth is computed using the TMAlign software. Split indices are stored as tuples which contain two indices in
     the underlying dataset.
     """
-    def __init__(self, root='data', *args, **kwargs):
-        dataset = TMAlignDataset(root=root)
-        super().__init__(dataset, *args, **kwargs)
+
+    DatasetClass = TMAlignDataset
 
     @property
     def task_type(self):

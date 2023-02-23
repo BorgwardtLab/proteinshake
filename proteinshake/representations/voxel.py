@@ -86,7 +86,7 @@ class VoxelDataset():
         gridsize = np.array(gridsize)
         gridsize_string = '_'.join(str(i) for i in gridsize)
         self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
-        self.size = size
+        self.size = len(proteins)
         self.gridsize = gridsize
         self.path = f'{root}/processed/voxel/{name}_{resolution}_voxelsize_{voxelsize}_gridsize_{gridsize_string}_aggregation_{aggregation}'
 

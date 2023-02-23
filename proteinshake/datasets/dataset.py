@@ -15,14 +15,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
 from proteinshake.transforms import IdentityTransform
-from proteinshake.utils import (download_url,
-                                save,
-                                load,
-                                unzip_file,
-                                write_avro,
-                                tmalign_wrapper,
-                                cdhit_wrapper
-                                )
+from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
@@ -89,7 +82,7 @@ class Dataset():
         self.cluster_sequence = cluster_sequence
         self.similarity_threshold_sequence = similarity_threshold_sequence
         self.similarity_threshold_structure = similarity_threshold_structure
-
+        
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
             self.start_download()
@@ -120,7 +113,7 @@ class Dataset():
             with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
                 for x in avro_reader(file):
                     yield x
-        return reader(), total
+        return Generator(reader(), total)
 
     @property
     def limit(self):
@@ -307,31 +300,6 @@ class Dataset():
         # add attributes
         protein = self.add_protein_attributes(protein)
         return protein
-
-    def proteins(self, resolution='residue'):
-        """ Returns a generator of proteins from the avro file.
-
-        Parameters
-        ----------
-        resolution: str, default 'residue'
-            The resolution of the proteins. Can be 'atom' or 'residue'.
-
-        Returns
-        -------
-        generator
-            An avro reader object.
-
-        int
-            The total number of proteins in the file.
-        """
-        self.download_precomputed(resolution=resolution)
-        with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
-            total = int(avro_reader(file).metadata['number_of_proteins'])
-        def reader():
-            with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
-                for x in avro_reader(file):
-                    yield x
-        return reader(), total
 
     def check_arguments_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
@@ -596,99 +564,7 @@ class Dataset():
                 'avg size (# residues)': n_resi
                }
         return data
-
-    def compute_clusters_sequence(self, proteins):
-        """ Use CDHit to cluster sequences. Assigns the field 'sequence_cluster' to an integer cluster ID for each protein.
-
-        Parameters:
-        -----------
-        proteins: list
-            List of protein dictionaries to cluster.
-
-        """
-        print('Sequence clustering...')
-        if isinstance(self.similarity_threshold_sequence, float):
-            thresholds = [self.similarity_threshold_sequence]
-        else:
-            thresholds = self.similarity_threshold_sequence
-
-        representatives = {}
-        for threshold in thresholds:
-            sequences = [p['protein']['sequence'] for p in proteins]
-            ids = [p['protein']['ID'] for p in proteins]
-            clusters, reps = cdhit_wrapper(ids, sequences, sim_thresh=threshold, n_jobs=self.n_jobs)
-            representatives[threshold] = reps
-            if clusters == -1:
-                print("Sequence clustering failed.")
-                return
-            for p, c in zip(proteins, clusters):
-                p['protein'][f'sequence_cluster_{threshold}'] = c
-        save(representatives, f'{self.root}/{self.name}.cdhit.json')
-
-    def compute_clusters_structure(self, proteins, paths):
-        """ Launch TMalign on all pairs of proteins in dataset.
-        Assign a cluster ID to each protein at protein-level key 'structure_cluster'.
-
-        Saves TMalign output to `self.root/{Dataset.__class__}.tmalign.json.gz`
-
-        Parameters:
-        -----------
-        paths: list
-            List of paths to original pdb files (after filtering).
-        """
-        from sklearn.cluster import AgglomerativeClustering
-        dump_name = f'{self.name}.tmalign.json'
-        dump_path = os.path.join(self.root, dump_name)
-
-        if self.n_jobs == 1:
-            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
-
-        paths = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in tqdm(paths, desc='Unzipping')]
-
-        pdbids = [self.get_id_from_filename(p) for p in paths]
-        pairs = list(itertools.combinations(range(len(paths)), 2))
-        todo = [(paths[p1], paths[p2]) for p1, p2 in pairs]
-
-        dist = defaultdict(lambda: {})
-
-        output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Structure clustering')
-        )
-
-        for (pdb1, pdb2), d in zip(todo, output):
-            name1 = self.get_id_from_filename(pdb1)
-            name2 = self.get_id_from_filename(pdb2)
-            # each value is a tuple (tm-core, RMSD)
-            dist[name1][name2] = (d[0], d[2])
-            dist[name2][name1] = (d[0], d[2])
-
-        save(dist, dump_path)
-        num_proteins = len(paths)
-        DM = np.zeros((num_proteins, num_proteins))
-        DM = []
-        for i in range(num_proteins):
-            for j in range(i+1, num_proteins):
-                # take the largest TMscore (most similar) between both
-                # directions and convert to a distance
-                DM.append(
-                    1 - max(
-                        dist[pdbids[i]][pdbids[j]][0],
-                        dist[pdbids[j]][pdbids[i]][0]
-                    )
-                )
-        DM = np.array(DM).reshape(-1, 1)
-
-        if isinstance(self.similarity_threshold_structure, float):
-            thresholds = [self.similarity_threshold_structure]
-        else:
-            thresholds = self.similarity_threshold_structure
-
-        for d in thresholds:
-            clusterer = AgglomerativeClustering(n_clusters=None, distance_threshold=(1-d))
-            clusterer.fit(DM)
-            for i, p in enumerate(proteins):
-                p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
-
+    
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
@@ -698,9 +574,9 @@ class Dataset():
             The dataset in graph representation.
         """
         from proteinshake.representations import GraphDataset
-        proteins, size = self.proteins(resolution=resolution)
-        return GraphDataset((transform(p) for p in proteins),
-                            size,
+        proteins = self.proteins(resolution=resolution)
+        proteins = Generator((transform(p) for p in proteins), len(proteins))
+        return GraphDataset(proteins,
                             self.root,
                             self.name,
                             resolution,
@@ -716,9 +592,9 @@ class Dataset():
             The dataset in point cloud representation.
         """
         from proteinshake.representations import PointDataset
-        proteins, size = self.proteins(resolution=resolution)
-        return PointDataset((transform(p) for p in proteins),
-                            size,
+        proteins = self.proteins(resolution=resolution)
+        proteins = Generator((transform(p) for p in proteins), len(proteins))
+        return PointDataset(proteins,
                             self.root,
                             self.name,
                             resolution,
@@ -734,9 +610,9 @@ class Dataset():
             The dataset in voxel representation.
         """
         from proteinshake.representations import VoxelDataset
-        proteins, size = self.proteins(resolution=resolution)
-        return VoxelDataset((transform(p) for p in proteins),
-                            size,
+        proteins = self.proteins(resolution=resolution)
+        proteins = Generator((transform(p) for p in proteins), len(proteins))
+        return VoxelDataset(proteins,
                             self.root,
                             self.name,
                             resolution,
