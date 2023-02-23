@@ -43,8 +43,10 @@ class StructureSearchTask(ShakeTask):
         return targets
 
     def _precision_at_k(self, pred, targets, k):
-        print(pred, targets)
-        return len(set(pred[:k]).intersection(set(targets[:k]))) / k
+        return len(set(pred[:k]).intersection(set(targets))) / len(pred)
+
+    def _recall_at_k(self, pred, targets, k):
+        return len(set(pred[:k]).intersection(set(targets))) / len(targets)
 
     def evaluate(self, pred, k=5):
         """ Retrieval metrics.
@@ -56,7 +58,9 @@ class StructureSearchTask(ShakeTask):
         """
         results = defaultdict(list)
         for query, preds in zip(self.proteins[self.test_index], pred):
-            results['hits_at_k'].append(self._precision_at_k(preds, self.target(query), k))
+            targets = self.target(query)
+            results['precision_at_k'].append(self._precision_at_k(preds, targets, k))
+            results['recall_at_k'].append(self._recall_at_k(preds, targets, k))
 
         return {k: np.mean(v) for k, v in results.items()}
 
