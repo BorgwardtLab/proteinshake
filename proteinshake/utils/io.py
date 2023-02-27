@@ -30,6 +30,9 @@ class Generator(object):
     def __iter__(self):
         return self.generator
 
+    def __next__(self):
+        return next(self.generator)
+
 def fx2str(fx):
     """ Converts a function to a string representation.
 

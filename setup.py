@@ -15,7 +15,8 @@ install_requires = [
                     'joblib',
                     'rdkit',
                     'tabulate',
-                    'fastavro'
+                    'fastavro',
+                    'freesasa'
                     ]
 test_requires = [
     'pytest',

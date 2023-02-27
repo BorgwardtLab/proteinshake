@@ -8,13 +8,13 @@ import multiprocessing as mp
 
 import pandas as pd
 import numpy as np
+import freesasa
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.transforms import IdentityTransform
 from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -234,7 +234,6 @@ class Dataset():
         """
         if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
-
         # parse and filter
         paths = self.get_raw_files()[:self.limit]
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
@@ -268,6 +267,22 @@ class Dataset():
         residue_df = atom_df[atom_df['atom_type'] == 'CA']
         if not self.validate(atom_df):
             return None
+
+        # add surface accessible area
+        structure = freesasa.Structure(path)
+        result = freesasa.calc(structure)
+        residue_result = result.residueAreas()
+        atom_sasa, residue_sasa, residue_rsa = [], [], []
+        for i in atom_df['atom_number']:
+            try:
+                atom_sasa.append(result.atomArea(i))
+            except:
+                atom_sasa.append(-1)
+        for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
+            residue_sasa.append(residue_result[chain][str(i)].total)
+            residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
+
+        # create protein_dict
         protein = {
             'protein': {
                 'ID': pdbid,
@@ -279,6 +294,8 @@ class Dataset():
                 'x': residue_df['x'].tolist(),
                 'y': residue_df['y'].tolist(),
                 'z': residue_df['z'].tolist(),
+                'SASA': residue_sasa,
+                'RSA': residue_rsa,
             },
             'atom': {
                 'atom_number': atom_df['atom_number'].tolist(),
@@ -288,191 +305,23 @@ class Dataset():
                 'x': atom_df['x'].tolist(),
                 'y': atom_df['y'].tolist(),
                 'z': atom_df['z'].tolist(),
+                'SASA': atom_sasa,
             },
         }
-        if not self.only_single_chain: # only include chains if multi-chain protein
+
+        # only include chains if multi-chain protein
+        if not self.only_single_chain: 
             protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
             protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
+
         # add pLDDT from AlphaFold
         if self.name == 'AlphaFoldDataset':
             protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
             protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
+
         # add attributes
         protein = self.add_protein_attributes(protein)
-        return protein
 
-    def check_arguments_same_as_hosted(self):
-        """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
-        """
-        signature = inspect.signature(self.__init__)
-        default_args = {
-            k: v.default
-            for k, v in signature.parameters.items()
-            if v.default is not inspect.Parameter.empty
-            and (self.name != 'AlphaFoldDataset' or k != 'organism')
-            and (self.name != 'Atom3DDataset' or k != 'atom_dataset')
-        }
-        if self.__class__.__bases__[0].__name__ != 'Dataset':
-            signature = inspect.signature(self.__class__.__bases__[0].__init__)
-            super_args = {
-                k: v.default
-                for k, v in signature.parameters.items()
-                if v.default is not inspect.Parameter.empty
-            }
-            default_args = {**super_args, **default_args}
-        if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
-            print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
-            exit()
-
-    def get_raw_files(self):
-        """ Implement me in a subclass!
-
-        Returns a list of all valid PDB file paths for this dataset. Usually takes the form `glob.glob(f'{self.root}/raw/files/*.pdb')` to search for all pdb files in the root, but can be different in some cases (e.g. with pdb.gz files).
-
-        Returns
-        -------
-        list
-            The list of raw PDB files used in this dataset.
-        """
-        raise NotImplementedError
-
-    def get_id_from_filename(self, filename):
-        """ Implement me in a subclass!
-
-        Extracts an identifier from the pdb filename. This identifier is used in the `ID` field of the parsed protein object. Usually something like `filename[:4]`.
-
-        Parameters
-        ----------
-        filename: str
-            Path to a PDB file.
-
-        Returns
-        -------
-        str
-            A PDB identifier or other ID.
-        """
-        raise NotImplementedError
-
-    def download(self):
-        """ Implement me in a subclass!
-
-        This method is responsible for downloading and extracting raw pdb files from a databank source. All PDB files should be dumped in `f'{self.root}/raw/files`. See e.g. PDBBindRefined for an example.
-        """
-        raise NotImplementedError
-
-    def add_protein_attributes(self, protein):
-        """ Implement me in a subclass!
-
-        This method annotates protein objects with addititional information, such as functional labels or classes. It takes a protein object (a dictionary), modifies, and returns it. Usually, this would utilize the `ID` attribute to load an annotation file or to query information from a database.
-
-        Parameters
-        ----------
-        protein: dict
-            A protein object. See `Dataset.parse_pdb()` for details.
-
-        Returns
-        -------
-        dict
-            The protein object with a new attribute added.
-        """
-        return protein
-
-    def download_complete(self):
-        """ Dumps a marker file when the download was successful, to skip downloading next time.
-        """
-        with open(f'{self.root}/raw/done.txt','w') as file:
-            file.write('done.')
-
-    def start_download(self):
-        """ Helper function to prepare the download. Creates necessary subdirectories.
-        """
-        if os.path.exists(f'{self.root}/raw/done.txt'):
-            return
-        os.makedirs(f'{self.root}/raw/files', exist_ok=True)
-        self.download()
-        self.download_complete()
-
-    def download_precomputed(self, resolution='residue'):
-        """ Downloads the precomputed dataset from the ProteinShake repository.
-        """
-        if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
-
-    def parse(self):
-        """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
-        """
-        if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
-            return
-
-        # parse and filter
-        paths = self.get_raw_files()
-        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
-        before = len(proteins)
-        paths = [path for path,protein in zip(paths,proteins) if protein is not None]
-        proteins = [p for p in proteins if p is not None]
-        if self.cluster_sequence:
-            self.compute_clusters_sequence(proteins)
-        if self.cluster_structure:
-            self.compute_clusters_structure(proteins, paths)
-        print(f'Filtered {before-len(proteins)} proteins.')
-        residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
-        atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
-        write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
-        write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
-
-    def parse_pdb(self, path):
-        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
-
-        Parameters
-        ----------
-        path: str
-            Path to PDB file.
-
-        Returns
-        -------
-        dict
-            A protein object.
-        """
-        pdbid = self.get_id_from_filename(os.path.basename(path))
-        if pdbid in self.exclude_ids:
-            return None
-        atom_df = self.pdb2df(path)
-        residue_df = atom_df[atom_df['atom_type'] == 'CA']
-        if not self.validate(atom_df):
-            return None
-        protein = {
-            'protein': {
-                'ID': pdbid,
-                'sequence': ''.join(residue_df['residue_type']),
-            },
-            'residue': {
-                'residue_number': residue_df['residue_number'].tolist(),
-                'residue_type': residue_df['residue_type'].tolist(),
-                'x': residue_df['x'].tolist(),
-                'y': residue_df['y'].tolist(),
-                'z': residue_df['z'].tolist(),
-            },
-            'atom': {
-                'atom_number': atom_df['atom_number'].tolist(),
-                'atom_type': atom_df['atom_type'].tolist(),
-                'residue_number': atom_df['residue_number'].tolist(),
-                'residue_type': atom_df['residue_type'].tolist(),
-                'x': atom_df['x'].tolist(),
-                'y': atom_df['y'].tolist(),
-                'z': atom_df['z'].tolist(),
-            },
-        }
-        if not self.only_single_chain: # only include chains if multi-chain protein
-            protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
-            protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
-        # add pLDDT from AlphaFold
-        if self.name == 'AlphaFoldDataset':
-            protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
-            protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
-        # add attributes
-        protein = self.add_protein_attributes(protein)
         return protein
 
     def pdb2df(self, path):
@@ -488,12 +337,8 @@ class Dataset():
         DataFrame
             A biopandas DataFrame of the PDB file.
         """
-        if path.endswith('.gz'):
-            with gzip.open(path, 'rb') as file:
-                lines = file.read().decode('utf-8').split('\n')
-        else:
-            with open(path, 'r') as file:
-                lines = file.read().split('\n')
+        with open(path, 'r') as file:
+            lines = file.read().split('\n')
         # filter only the first model
         filtered_lines, in_model, model_done = [], False, False
         for line in lines:
@@ -565,7 +410,7 @@ class Dataset():
                }
         return data
     
-    def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_graph(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
         Returns
@@ -575,7 +420,6 @@ class Dataset():
         """
         from proteinshake.representations import GraphDataset
         proteins = self.proteins(resolution=resolution)
-        proteins = Generator((transform(p) for p in proteins), len(proteins))
         return GraphDataset(proteins,
                             self.root,
                             self.name,
@@ -583,7 +427,7 @@ class Dataset():
                             *args,
                             **kwargs)
 
-    def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_point(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
 
         Returns
@@ -593,7 +437,6 @@ class Dataset():
         """
         from proteinshake.representations import PointDataset
         proteins = self.proteins(resolution=resolution)
-        proteins = Generator((transform(p) for p in proteins), len(proteins))
         return PointDataset(proteins,
                             self.root,
                             self.name,
@@ -601,7 +444,7 @@ class Dataset():
                             *args,
                             **kwargs)
 
-    def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_voxel(self, resolution='residue', *args, **kwargs):
         """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
 
         Returns
@@ -611,7 +454,6 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         proteins = self.proteins(resolution=resolution)
-        proteins = Generator((transform(p) for p in proteins), len(proteins))
         return VoxelDataset(proteins,
                             self.root,
                             self.name,

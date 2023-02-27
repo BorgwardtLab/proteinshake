@@ -5,6 +5,8 @@ setup.sh
 release/
 .DS_Store
 .tm_cache/
+plot.png
+plot.html
 
 
 TMalign
