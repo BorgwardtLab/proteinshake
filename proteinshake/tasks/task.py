@@ -59,8 +59,8 @@ class Task:
                 ):
         self.root = root
         self.dataset = self.DatasetClass(root=root)
-        self.proteins = self.dataset.proteins()
-        self.size = len(self.proteins)
+        proteins = self.dataset.proteins()
+        self.size = len(proteins)
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
                 self.proteins = list(proteins)
@@ -72,72 +72,42 @@ class Task:
                 if idx >= len(self.proteins):
                     raise StopIteration
                 return self.proteins[idx]
-        self.proteins = Proteins(self.proteins)
+        self.proteins = Proteins(proteins)
         self.name = self.__class__.__name__
 
-        # load task info
-        path = f'{self.dataset.root}/{self.name}.json'
-        if not os.path.exists(path):
-            if use_precomputed:
-                self.download_precomputed()
-            else:
-                self.compute_splits(train_ratio, val_ratio, test_ratio, split_similarity_threshold, random_state)
-        info = load(path)
-
         # load split indices
-        self.train_index = np.array(info['splits'][split]['train'])
-        self.val_index = np.array(info['splits'][split]['val'])
-        self.test_index = np.array(info['splits'][split]['test'])
-        self.token_map = info['token_map']
+        split_name = f'{split}_split_{split_similarity_threshold}' if split in ['sequence','structure'] else f'{split}_split'
+        if split_name in self.proteins[0]['protein']:
+            self.train_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'train'])
+            self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
+            self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
+        else:
+            self.train_index, self.val_index, self.test_index = self.compute_custom_split(split)
 
         # compute targets (e.g. for scaling)
         self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
         self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
         self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index])
+            
+    def compute_custom_split(self, split):
+        """ Implements custom splitting. Only necessary when not using the precomputed splits, e.g. when implementing a custom task.
+        Note that the random, sequence and structure splits will be automatically computed for your custom task if it is merged into ProteinShake main.
+        Compare also the proteinshake_release repository.
 
-    def download_precomputed(self):
-        download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
-        unzip_file(f'{self.dataset.root}/{self.name}.json.gz')
+        Parameters:
+        ------------
+        split: str
+            Name of the custom split as passed to the task.
 
-    def compute_splits(self, *args, **kwargs):
-        print('Computing splits...')
-        info = {
-            'splits': {
-                'random': self.compute_random_split(*args, **kwargs),
-                'sequence': self.compute_cluster_split('sequence', *args, **kwargs),
-                'structure': self.compute_cluster_split('structure', *args, **kwargs)
-            },
-            'token_map': self.compute_token_map()
-        }
-        save(info, f'{self.dataset.root}/{self.name}.json')
-
-    def compute_random_split(self, train_ratio, val_ratio, test_ratio, split_similarity_threshold, random_state):
-        inds = range(self.size)
-        train, valtest = train_test_split(inds, test_size=1-train_ratio, random_state=random_state)
-        val, test = train_test_split(valtest, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
-        return {'train': train, 'val': val, 'test': test}
-
-    def compute_cluster_split(self, type, train_ratio, val_ratio, test_ratio, similarity_threshold, random_state):
-        cluster_ids = np.array([p['protein'][f'{type}_cluster_{similarity_threshold}'] for p in self.proteins])
-        # split the unique cluster IDs
-        unique, counts = np.unique(cluster_ids, return_counts=True)
-        seq_threshold = int(np.median(counts))
-        pool = [cluster for cluster, count in zip(unique, counts) if count >= seq_threshold]
-        train, valtest = train_test_split(pool, test_size=1-train_ratio, random_state=random_state)
-        val, test = train_test_split(valtest, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
-        # downsample test and val clusters to equal size
-        indices = np.arange(len(cluster_ids))
-        train, test, val = indices[np.isin(cluster_ids, train)], indices[np.isin(cluster_ids, test)], indices[np.isin(cluster_ids, val)]
-        def downsample(split):
-            sample_cluster = lambda c: np.random.choice(split[cluster_ids[split]==c], size=seq_threshold, replace=False).tolist()
-            return list(itertools.chain.from_iterable(sample_cluster(c) for c in set(cluster_ids[split])))
-        train, test, val = downsample(train), downsample(test), downsample(val)
-        return {'train': train, 'val': val, 'test': test}
-
-
-    def compute_token_map(self):
-        """ Computes and sets a dictionary that maps discrete labels to integers for classification tasks."""
-        return None
+        Returns:
+        --------
+        train_index
+            Numpy array with the index of proteins in the train split.
+        val_index
+            Numpy array with the index of proteins in the validation split.
+        test_index
+            Numpy array with the index of proteins in the test split.
+        """
 
     @property
     def task_type(self):
@@ -182,15 +152,15 @@ class Task:
 
     @property
     def train(self):
-        return self.dataset[self.train_ind]
+        return self.dataset[self.train_index]
 
     @property
     def val(self):
-        return self.dataset[self.val_ind]
+        return self.dataset[self.val_index]
 
     @property
     def test(self):
-        return self.dataset[self.test_ind]
+        return self.dataset[self.test_index]
 
     def to_graph(self, *args, **kwargs):
         self.dataset = self.dataset.to_graph(*args, **kwargs)
