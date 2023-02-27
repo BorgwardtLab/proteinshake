@@ -59,7 +59,8 @@ class Task:
                 ):
         self.root = root
         self.dataset = self.DatasetClass(root=root)
-        self.proteins, self.size = self.dataset.proteins()
+        self.proteins = self.dataset.proteins()
+        self.size = len(self.proteins)
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
                 self.proteins = list(proteins)
@@ -90,9 +91,9 @@ class Task:
         self.token_map = info['token_map']
 
         # compute targets (e.g. for scaling)
-        self.train_targets = [self.target(self.proteins[i]) for i in self.train_index]
-        self.val_targets = [self.target(self.proteins[i]) for i in self.val_index]
-        self.test_targets = [self.target(self.proteins[i]) for i in self.test_index]
+        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
+        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
+        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index])
 
     def download_precomputed(self):
         download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
@@ -110,7 +111,7 @@ class Task:
         }
         save(info, f'{self.dataset.root}/{self.name}.json')
 
-    def compute_random_split(self, train_ratio, val_ratio, test_ratio, random_state):
+    def compute_random_split(self, train_ratio, val_ratio, test_ratio, split_similarity_threshold, random_state):
         inds = range(self.size)
         train, valtest = train_test_split(inds, test_size=1-train_ratio, random_state=random_state)
         val, test = train_test_split(valtest, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
