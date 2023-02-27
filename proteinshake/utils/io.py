@@ -66,7 +66,7 @@ def avro_schema_from_protein(protein):
         if type(v) == dict:
             return {'name':k, 'type':{'name':k, 'type':'record', 'fields': [field_spec(_k,_v) for _k,_v in v.items()]}}
         elif type(v) == list:
-            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__]}}
+            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__] if len(v)>0 else 'string'}}
         elif type(v).__name__ in typedict:
             return {'name':k, 'type': typedict[type(v).__name__]}
         else:

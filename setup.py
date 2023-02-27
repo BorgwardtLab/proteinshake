@@ -16,7 +16,8 @@ install_requires = [
                     'rdkit',
                     'tabulate',
                     'fastavro',
-                    'freesasa'
+                    'freesasa',
+                    'goatools'
                     ]
 test_requires = [
     'pytest',

@@ -53,6 +53,9 @@ class Dataset():
     distance_threshold_sequence: int or lits, default 0.3
         Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
     """
+
+    additional_files = [] # indicates the additional file names that are to be included in the release
+
     def __init__(self,
             root                           = 'data',
             use_precomputed                = True,
