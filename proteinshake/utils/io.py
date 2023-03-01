@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
 
@@ -29,6 +30,9 @@ class Generator(object):
 
     def __iter__(self):
         return self.generator
+
+    def __next__(self):
+        return next(self.generator)
 
 def fx2str(fx):
     """ Converts a function to a string representation.
@@ -63,7 +67,7 @@ def avro_schema_from_protein(protein):
         if type(v) == dict:
             return {'name':k, 'type':{'name':k, 'type':'record', 'fields': [field_spec(_k,_v) for _k,_v in v.items()]}}
         elif type(v) == list:
-            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__]}}
+            return {'name':k, 'type':{'type': 'array', 'items': typedict[type(v[0]).__name__] if len(v)>0 else 'string'}}
         elif type(v).__name__ in typedict:
             return {'name':k, 'type': typedict[type(v).__name__]}
         else:
@@ -107,6 +111,8 @@ def save(obj, path):
     elif path.endswith('.json'):
         with open(Path(path),'w') as file:
             json.dump(obj, file)
+    elif path.endswith('.npy'):
+        np.save(path, obj)
     else:
         with open(Path(path), 'wb') as file:
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
@@ -130,6 +136,8 @@ def load(path):
     elif path.endswith('.json'):
         with open(Path(path),'r') as file:
             obj = json.load(file)
+    elif path.endswith('.npy'):
+        obj = np.load(path)
     else:
         with open(Path(path), 'rb') as handle:
             obj = pickle.load(handle)

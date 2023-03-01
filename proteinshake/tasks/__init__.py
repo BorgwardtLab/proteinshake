@@ -6,15 +6,17 @@ from .structure_similarity import StructureSimilarityTask
 from .ppi_task import ProteinProteinInterfaceTask
 from .tm_search import StructureSearchTask
 from .structural_class import StructuralClassTask
+from .gene_ontology import GeneOntologyTask
 
 classes = ['Task',
            'EnzymeClassTask',
+           'GeneOntologyTask',
            'LigandAffinityTask',
            'BindingSiteDetectionTask',
            'ProteinProteinInterfaceTask',
+           'StructuralClassTask',
            'StructureSimilarityTask',
            'StructureSearchTask',
-           'StructuralClassTask'
            ]
 
 __all__ = classes

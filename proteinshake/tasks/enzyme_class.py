@@ -15,7 +15,7 @@ class EnzymeClassTask(Task):
         super().__init__(*args, **kwargs)
 
     def compute_token_map(self):
-        labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.dataset.proteins()[0]}
+        labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.proteins}
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 
     @property
@@ -33,7 +33,7 @@ class EnzymeClassTask(Task):
     def target(self, protein):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
 
-    def evaluate(self, y_true, y_pred):
+    def evaluate(self, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         return {
             'precision': metrics.precision_score(y_true, y_pred, average='macro', zero_division=0),

@@ -39,11 +39,10 @@ class StructureSimilarityTask(Task):
             pass
         pdbid_1 = protein1['protein']['ID']
         pdbid_2 = protein2['protein']['ID']
-        return self.dataset.tm_score[pdbid_1][pdbid_2]
+        return self.dataset.lddt(pdbid_1,pdbid_2)
 
-    def _retrieve(self):
-        pass
-
-    def evaluate(self, pred, true):
-        return {'mse': metrics.mean_squared_error(pred, true),
-                'r2':  spearmanr(pred, true)}
+    def evaluate(self, y_pred):
+        return {
+            'mse': metrics.mean_squared_error(self.test_targets, y_pred),
+            'r2':  spearmanr(self.test_targets, y_pred)
+        }
