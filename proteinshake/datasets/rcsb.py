@@ -1,4 +1,4 @@
-import requests, glob, json, os
+import requests, glob, json, os, random
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -90,7 +90,9 @@ class RCSBDataset(Dataset):
                     total = response_dict['group_by_count']
                 i += batch_size
 
-        ids = list(set(ids)) # filter identical ids
+        ids = sorted(list(set(ids))) # filter identical ids
+        random.seed(42)
+        random.shuffle(ids) # for reproducible subsampling when using self.limit
         ids = ids[:self.limit] # for testing
 
         n_jobs = min(self.n_jobs, self.max_requests) # RCSB has a request limit

@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
 
@@ -110,6 +111,8 @@ def save(obj, path):
     elif path.endswith('.json'):
         with open(Path(path),'w') as file:
             json.dump(obj, file)
+    elif path.endswith('.npy'):
+        np.save(path, obj)
     else:
         with open(Path(path), 'wb') as file:
             pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
@@ -133,6 +136,8 @@ def load(path):
     elif path.endswith('.json'):
         with open(Path(path),'r') as file:
             obj = json.load(file)
+    elif path.endswith('.npy'):
+        obj = np.load(path)
     else:
         with open(Path(path), 'rb') as handle:
             obj = pickle.load(handle)

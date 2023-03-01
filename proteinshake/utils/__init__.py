@@ -3,7 +3,7 @@ from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
 from .transforms import *
-from .tmalign import tmalign_wrapper
+from .similarity import *
 
 __all__ = ['onehot',
            'tokenize',
@@ -18,8 +18,6 @@ __all__ = ['onehot',
            'unzip_file',
            'write_avro',
            'Compose',
-           'protein_to_pdb',
-           'tmalign_wrapper',
            ]
 
 classes = __all__

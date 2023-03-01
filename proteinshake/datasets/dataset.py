@@ -228,9 +228,10 @@ class Dataset():
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
         if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
+            for filename in [f'{self.name}.{resolution}.avro.gz'] + self.additional_files:
+                download_url(f'{self.repository_url}/{filename}', f'{self.root}')
+                print('Unzipping...')
+                unzip_file(f'{self.root}/{filename}')
 
     def parse(self):
         """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
