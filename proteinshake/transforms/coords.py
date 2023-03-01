@@ -85,8 +85,8 @@ class RandomRotateTransform(Transform):
         axes_choice = [(0, 1), (0, 2), (1, 2)]
         axes = axes_choice[np.random.randint(0, len(axes_choices), size=1)[0]]
 
-        coords_res_rot = rotate(coords_res, angle=angle)
-        coords_atom_rot = rotate(coords_res, angle=angle)
+        coords_res_rot = rotate(coords_res, angle=angle, axes=axes)
+        coords_atom_rot = rotate(coords_res, angle=angle, axes=axes)
 
         _set_coords(protein, coords_res_rot, resolution='residue')
         _set_coords(protein, coord_atom_rot, resolution='atom')
