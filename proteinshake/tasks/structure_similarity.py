@@ -1,5 +1,6 @@
 import itertools
 
+from scipy.stats import spearmanr
 import numpy as np
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
@@ -42,5 +43,6 @@ class StructureSimilarityTask(Task):
 
     def evaluate(self, y_pred):
         return {
-            'mse': metrics.mean_squared_error(y_preself.test_targetsd, y_pred)
+            'mse': metrics.mean_squared_error(self.test_targets, y_pred),
+            'r2':  spearmanr(self.test_targets, y_pred)
         }

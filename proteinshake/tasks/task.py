@@ -39,8 +39,6 @@ class Task:
         Fraction of dataset to use for validation.
     test_ratio: float, default=0.10
         Fraction of dataset to use for testing.
-    cace_dir: str, default='.proteinshake'
-        Directory where we store the result of computing splits and tokenizing.
     use_precomputed: bool, default=True
     """
 
