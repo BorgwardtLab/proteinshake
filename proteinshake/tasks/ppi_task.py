@@ -3,6 +3,8 @@ from sklearn import metrics
 
 from proteinshake.datasets import ProteinProteinInterfaceDataset
 from proteinshake.tasks import Task
+from proteinshake.transforms import CenterTransform
+from proteinshake.transforms import RandomRotateTransform
 
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
@@ -11,7 +13,7 @@ class ProteinProteinInterfaceTask(Task):
     one chain at a time.
     """
     def __init__(self, root='data', resolution='residue', *args, **kwargs):
-        dataset = ProteinProteinInterfaceDataset(root=root)
+        dataset = ProteinProteinInterfaceDataset(root=root, transforms=[CenterTransform(), RandomRotateTransform()])
         super().__init__(dataset, *args, **kwargs)
 
     @property
