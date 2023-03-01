@@ -2,9 +2,9 @@ import numpy as np
 from sklearn import metrics
 
 from proteinshake.datasets import ProteinProteinInterfaceDataset
-from proteinshake.tasks import ShakeTask
+from proteinshake.tasks import Task
 
-class ProteinProteinInterfaceTask(ShakeTask):
+class ProteinProteinInterfaceTask(Task):
     """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
     NOTE: To make this an interesting task, the loader has to
     split the protein into its chains so that the model only sees
@@ -32,7 +32,6 @@ class ProteinProteinInterfaceTask(ShakeTask):
                   self.proteins[self.test_index]]
         labels = np.hstack(labels)
         pred = np.hstack(pred)
-        print(labels, pred)
         return {
                 'auc-roc': metrics.roc_auc_score(labels, pred),
                 'average precision': metrics.average_precision_score(labels, pred),
