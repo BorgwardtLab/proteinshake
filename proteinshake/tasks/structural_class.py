@@ -1,17 +1,18 @@
 from sklearn import metrics
 
 from proteinshake.datasets import SCOPDataset
-from proteinshake.tasks import ShakeTask
+from proteinshake.tasks import Task
 
-class SCOPTask(ShakeTask):
+class StructuralClassTask(Task):
     """ Predict the enzyme commission classification of a protein structure. This is a protein-level multi-class prediction.
 
     """
-    def __init__(self, root='data', scop_level='SCOP-FA', *args, **kwargs):
-        dataset = SCOPDataset(root=root)
-        self.scop_level = scop_level
 
-        super().__init__(dataset, *args, **kwargs)
+    DatasetClass = SCOPDataset
+    
+    def __init__(self, scop_level='SCOP-FA', *args, **kwargs):
+        self.scop_level = scop_level
+        super().__init__(*args, **kwargs)
 
     def compute_token_map(self):
         labels = {p['protein'][self.scop_level] for p in self.dataset.proteins()[0]}

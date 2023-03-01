@@ -5,9 +5,9 @@ import itertools
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from proteinshake.utils import tmalign_wrapper, cdhit_wrapper, download_url, save, load
+from proteinshake.utils import download_url, save, load
 
-class ShakeTask:
+class Task:
     """ Base class for task-related utilities.
     This class wraps a proteinshake dataset and exposes split indices,
     integer-coded labels for classification tasks, and an evaluator function.
@@ -41,18 +41,24 @@ class ShakeTask:
         Fraction of dataset to use for testing.
     use_precomputed: bool, default=True
     """
+
+    DatasetClass = None
+
     def __init__(self,
-                 dataset,
-                 split              = 'random',
-                 random_state       = 42,
-                 train_ratio        = 0.80,
-                 val_ratio          = 0.10,
-                 test_ratio         = 0.10,
-                 use_precomputed    = True
+                 root                       = 'data',
+                 split                      = 'random',
+                 split_similarity_threshold = 0.7,
+                 random_state               = 42,
+                 train_ratio                = 0.80,
+                 val_ratio                  = 0.10,
+                 test_ratio                 = 0.10,
+                 use_precomputed            = True,
+                 **kwargs
                 ):
-        self.dataset = dataset
+        self.root = root
+        self.dataset = self.DatasetClass(root=root)
         self.proteins, self.size = self.dataset.proteins()
-        class Proteins():
+        class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
                 self.proteins = list(proteins)
             def __getitem__(self, idx):
@@ -67,12 +73,12 @@ class ShakeTask:
         self.name = self.__class__.__name__
 
         # load task info
-        path = f'{self.dataset.root}/{self.name}.json.gz'
+        path = f'{self.dataset.root}/{self.name}.json'
         if not os.path.exists(path):
             if use_precomputed:
                 self.download_precomputed()
             else:
-                self.compute_splits(train_ratio, val_ratio, test_ratio, random_state)
+                self.compute_splits(train_ratio, val_ratio, test_ratio, split_similarity_threshold, random_state)
         info = load(path)
 
         # load split indices
@@ -88,6 +94,7 @@ class ShakeTask:
 
     def download_precomputed(self):
         download_url(f'{self.dataset.repository_url}/{self.name}.json.gz', f'{self.dataset.root}')
+        unzip_file(f'{self.dataset.root}/{self.name}.json.gz')
 
     def compute_splits(self, *args, **kwargs):
         print('Computing splits...')
@@ -95,36 +102,33 @@ class ShakeTask:
             'splits': {
                 'random': self.compute_random_split(*args, **kwargs),
                 'sequence': self.compute_cluster_split('sequence', *args, **kwargs),
-                #'structure': self.compute_cluster_split('structure', *args, **kwargs)
+                'structure': self.compute_cluster_split('structure', *args, **kwargs)
             },
             'token_map': self.compute_token_map()
         }
-        save(info, f'{self.dataset.root}/{self.name}.json.gz')
+        save(info, f'{self.dataset.root}/{self.name}.json')
 
     def compute_random_split(self, train_ratio, val_ratio, test_ratio, random_state):
         inds = range(self.size)
-        train, test = train_test_split(inds, test_size=1-train_ratio, random_state=random_state)
-        val, test = train_test_split(test, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
+        train, valtest = train_test_split(inds, test_size=1-train_ratio, random_state=random_state)
+        val, test = train_test_split(valtest, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
         return {'train': train, 'val': val, 'test': test}
 
-    def compute_cluster_split(self, type, train_ratio, val_ratio, test_ratio, random_state):
-        cluster_ids = [p['protein'][f'{type}_cluster_0.7'] for p in self.proteins]
-        num_clusters = max(cluster_ids)
-        test_size = int(num_clusters*test_ratio)
-        val_size = int(num_clusters*val_ratio)
+    def compute_cluster_split(self, type, train_ratio, val_ratio, test_ratio, similarity_threshold, random_state):
+        cluster_ids = np.array([p['protein'][f'{type}_cluster_{similarity_threshold}'] for p in self.proteins])
+        # split the unique cluster IDs
         unique, counts = np.unique(cluster_ids, return_counts=True)
-        cluster_sizes = dict(zip(unique, counts))
-        seq_threshold = int(np.median(list(cluster_sizes.values())))
-        pool = [cluster for cluster, count in cluster_sizes.items() if count >= seq_threshold]
-        np.random.seed(random_state)
-        np.random.shuffle(pool)
-        test_clusters, val_clusters = pool[:test_size], pool[test_size:test_size+val_size]
-        inds = np.arange(self.size)
-        def sample(c):
-            return np.random.choice(inds[cluster_ids==c], size=seq_threshold, replace=False).tolist()
-        test = list(itertools.chain.from_iterable(sample(c) for c in test_clusters))
-        val = list(itertools.chain.from_iterable(sample(c) for c in val_clusters))
-        train = [c for c in cluster_ids if c not in test and c not in val]
+        seq_threshold = int(np.median(counts))
+        pool = [cluster for cluster, count in zip(unique, counts) if count >= seq_threshold]
+        train, valtest = train_test_split(pool, test_size=1-train_ratio, random_state=random_state)
+        val, test = train_test_split(valtest, test_size=test_ratio/(test_ratio+val_ratio), random_state=random_state)
+        # downsample test and val clusters to equal size
+        indices = np.arange(len(cluster_ids))
+        train, test, val = indices[np.isin(cluster_ids, train)], indices[np.isin(cluster_ids, test)], indices[np.isin(cluster_ids, val)]
+        def downsample(split):
+            sample_cluster = lambda c: np.random.choice(split[cluster_ids[split]==c], size=seq_threshold, replace=False).tolist()
+            return list(itertools.chain.from_iterable(sample_cluster(c) for c in set(cluster_ids[split])))
+        train, test, val = downsample(train), downsample(test), downsample(val)
         return {'train': train, 'val': val, 'test': test}
 
 

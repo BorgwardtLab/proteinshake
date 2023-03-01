@@ -1,17 +1,18 @@
 from sklearn import metrics
 
 from proteinshake.datasets import EnzymeCommissionDataset
-from proteinshake.tasks import ShakeTask
+from proteinshake.tasks import Task
 
-class EnzymeCommissionTask(ShakeTask):
+class EnzymeClassTask(Task):
     """ Predict the enzyme commission classification of a protein structure. This is a protein-level multi-class prediction.
 
     """
-    def __init__(self, root='data', ec_level=0, *args, **kwargs):
-        dataset = EnzymeCommissionDataset(root=root)
-        self.ec_level = ec_level
 
-        super().__init__(dataset, *args, **kwargs)
+    DatasetClass = EnzymeCommissionDataset
+    
+    def __init__(self, ec_level=0, *args, **kwargs):
+        self.ec_level = ec_level
+        super().__init__(*args, **kwargs)
 
     def compute_token_map(self):
         labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.dataset.proteins()[0]}
