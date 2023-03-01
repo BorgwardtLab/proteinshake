@@ -7,9 +7,9 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 from proteinshake.datasets import TMAlignDataset
-from proteinshake.tasks import ShakeTask
+from proteinshake.tasks import Task
 
-class StructureSearchTask(ShakeTask):
+class StructureSearchTask(Task):
     """ Retrieve similar proteins to a query.
     Evaluation is cast in the setting of recommender systems where we wish
     to retrieve 'relevant' documents from a large pool of documents.

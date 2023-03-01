@@ -2,7 +2,7 @@
 Abstract class for transforming a protein.
 """
 
-class ShakeTransform:
+class Transform:
     def __init__(self):
         pass
     def __call__(self, protein):
@@ -10,6 +10,6 @@ class ShakeTransform:
         """
         raise NotImplementedError
 
-class IdentityTransform(ShakeTransform):
+class IdentityTransform(Transform):
     def __call__(self, protein):
         return protein

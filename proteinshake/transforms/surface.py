@@ -5,13 +5,13 @@ import tempfile
 
 import pandas as pd
 
-from proteinshake.transforms import ShakeTransform
+from proteinshake.transforms import Transform
 from proteinshake.utils import protein_to_pdb
 from proteinshake.utils import dms_wrapper
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 
-class SurfaceTransform(ShakeTransform):
+class SurfaceTransform(Transform):
     def __init__(self, d=0.2):
         super().__init__()
         self.d = d
