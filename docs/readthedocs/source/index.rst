@@ -6,19 +6,15 @@
 Welcome to proteinshake!
 =====================================
 
-With **proteinshake** you can quickly load datasets of 3D biomolecular structures into your favorite framework and structure representation. 
+**proteinshake** supports deep learning model development for protein 3D structures by providing:
 
-We currently collect structures from the following databases:
+* **Dataset loading** in one line
+* **Multi-framework** support (dgl, torch, pytorch-geometric, JAX, ...)
+* **Represent** proteins as graph, point cloud, and voxel.
+* **Large datasets** of experimental and computational protein structures
+* **Prediction tasks** with easy splitting and evaluation
+* **Customizable** tasks and datasets
 
-* `RCSB <https://www.rcsb.org/>`_: central repository for all solved 3D structures (contains Gene Ontology, Enzyme Classification, Protein Family annotations, etc.). 
-* `TMAlign <https://zhanggroup.org/TM-align/>`_: curated benchmark dataset for protein-protein simlarity computations. 
-* `PDBBind <http://www.pdbbind.org.cn/index.php/>`_: curated dataset of biomolecular complexes (protein-protein, protein-small molecule, etc.) including experimental affinity information. 
-* `AlphaFold <https://www.deepmind.com/open-source/alphafold-protein-structure-database>`_: database of predicted protein 3D structures. 
-
-
-Drawing from these sources we provide many large ML-ready `datasets <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_ organized by annotation property or structure determination method.
-
-Once a dataset is loaded, we provide several options for `representing <https://torch-pdb.readthedocs.io/en/latest/modules/representations.html>`_ the raw atomic coordinates into graphs, point clouds, and voxels (surfaces coming soon).
 
 Go to `quickstart <https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html>`_ guide to get started.
 
@@ -41,7 +37,18 @@ Who is proteinshake for?
    notes/quickstart
    notes/datastats
    notes/contributing
+   notes/citation
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Tutorials
+
+   notes/tutorial_data
+   notes/tutorial_tasks
+   notes/tutorial_ss
+   notes/tutorial_data_advanced
+     
 
 .. toctree::
    :glob:
@@ -49,8 +56,8 @@ Who is proteinshake for?
    :caption: Package Reference
 
    modules/datasets
-   modules/representations
    modules/tasks
+   modules/representations
    modules/utils
 
 

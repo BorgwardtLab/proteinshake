@@ -2,7 +2,7 @@ import datetime
 
 import proteinshake
 
-author = "Kucera, Oliver, O'Bray, Chen"
+author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt"
 project = 'proteinshake'
 version = "0.0.1"
 copyright = f'{datetime.datetime.now().year}, {author}'

@@ -1,5 +1,5 @@
-Protein Datasets
-========================
+``proteinshake.Dataset``
+==========================
 
 .. currentmodule:: proteinshake.datasets
 
