@@ -38,7 +38,7 @@ class StructureSimilarityTask(Task):
             pass
         pdbid_1 = protein1['protein']['ID']
         pdbid_2 = protein2['protein']['ID']
-        return self.dataset.tm_score[pdbid_1][pdbid_2]
+        return self.dataset.lddt(pdbid_1,pdbid_2)
 
     def evaluate(self, y_pred):
         return {
