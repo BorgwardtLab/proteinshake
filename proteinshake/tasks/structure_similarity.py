@@ -1,5 +1,6 @@
 import itertools
 
+from scipy.stats import spearmanr
 import numpy as np
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
@@ -40,5 +41,9 @@ class StructureSimilarityTask(Task):
         pdbid_2 = protein2['protein']['ID']
         return self.dataset.tm_score[pdbid_1][pdbid_2]
 
+    def _retrieve(self):
+        pass
+
     def evaluate(self, pred, true):
-        return {'mse': metrics.mean_squared_error(pred, true)}
+        return {'mse': metrics.mean_squared_error(pred, true),
+                'r2':  spearmanr(pred, true)}
