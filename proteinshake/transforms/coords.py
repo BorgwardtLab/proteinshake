@@ -26,7 +26,8 @@ def _get_coords_array(protein, resolution='residue'):
     return np.array([protein['residue']['x'],
                      protein['residue']['y'],
                      protein['residue']['z']
-                   )].T
+                     ]
+                   ).T
 
 def _set_coords(protein, coord_array, resoluiton='residue', in_place=True):
     """ Given an Nx3 array of coordinates, set them to the
@@ -43,7 +44,7 @@ def _set_coords(protein, coord_array, resoluiton='residue', in_place=True):
 
     """
 
-    assert len(protein([resolution]['x']) == len(coord_array),\
+    assert len(protein[resolution]['x']) == lencoord_array),\
             "Mismatch of coordinate array shape and protein, check choice of resolution"
 
     protein[resolution]['x'] = list(coord_array[:,0])
