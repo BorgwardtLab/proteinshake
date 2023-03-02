@@ -14,9 +14,9 @@ To get the latest version:
 
 .. code-block:: bash
 
-$ git clone https://github.com/BorgwardtLab/proteinshake.git
-$ cd proteinshake
-$ pip install .
+        $ git clone https://github.com/BorgwardtLab/proteinshake.git
+        $ cd proteinshake
+        $ pip install .
 
 Depending on which frameworks you choose to work with, you may be prompted to install any of:
 
