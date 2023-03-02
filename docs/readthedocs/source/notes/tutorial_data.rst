@@ -32,7 +32,7 @@ Loading protein data
 The first step in the snippet above does most of the leg work.
 Once the dataset object is created, it holds an iterable of dictionaries, one for each protein in the dataset which is accessed through the ``Dataset.proteins()`` method.
 
-..code-block:: python
+.. code-block:: python
 
         >>> from proteinshake.datasets import RCSBDataset
         >>> dataset = RCSBDataset(root="./data")
@@ -57,7 +57,7 @@ Protein representations
 Once the processed protein data is in the ``Dataset`` object we need to convert it to a representation that works with downstream deep learning models.
 We currently support graphs, point clouds, and voxels.
 
-..code-block:: python
+.. code-block:: python
 
         >>> cloud_dataset = dataset.to_cloud()
         >>> graph_dataset = dataset.to_graph(eps=9)
@@ -75,7 +75,7 @@ Point clouds simply return the x, y, z coordinates of the alpha carbon for each 
 You can finds some relevant processing in the transforms module (LINK) such as centering and rotating.
 For example, to center the point clouds:
 
-..code-block:: python
+.. code-block:: python
 
         >>> from proteinshake.transforms import CenterTransform
         >>> dataset = RCSBDataset(root="./data_transformed", transforms=[CenterTransform()])
@@ -89,7 +89,7 @@ The epsilon graph is chosen when ``eps`` is passed with a distance threshold.
 All pairs of residues within the distance threshold are connected by an edge.
 If ``k=4`` is passed then each residue is connected by an edge to its 4 nearest neighbors.
 
-..code-block:: pycon 
+.. code-block:: pycon 
 
         >>> knn_graph = dataset.to_graph(k=4)
         >>> eps_graph = dataset.to_graph(eps=8)
@@ -105,8 +105,7 @@ You can obtain a weighted graph where weights correspond to the distance between
 Voxels
 ________
 
-TIM
-
+For the voxel representation we place a 3D grid of voxels over the protein and include a one-hot encoding of the amino acid or atom types present at the each voxel. 
 
 Frameworks
 ~~~~~~~~~~~~~~
