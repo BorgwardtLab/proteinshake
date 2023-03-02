@@ -26,7 +26,8 @@ def _get_coords_array(protein, resolution='residue'):
     return np.array([protein['residue']['x'],
                      protein['residue']['y'],
                      protein['residue']['z']
-                   )].T
+                     ]
+                   ).T
 
 def _set_coords(protein, coord_array, resoluiton='residue', in_place=True):
     """ Given an Nx3 array of coordinates, set them to the
