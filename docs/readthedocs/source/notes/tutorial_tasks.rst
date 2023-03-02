@@ -21,7 +21,6 @@ The user interaction with the task object is quite simple. At a glance it looks 
 .. tip :: 
 
         You can adapt the following code for any downstream tasks provided by ProteinShake.
-        For a complete list of available tasks see (LINK).
 
 
 Next we provide a full tutorial including model construction on the Enzyme Commission task.
@@ -45,14 +44,18 @@ Let's get some imports::
 
 
 
-We convert the protein 3D structures to graphs using an epsilon cutoff of 8 Angstroms::
+We import the task object and convert the protein 3D structures to graphs using an epsilon cutoff of 8 Angstroms::
 
         def transform(data):
             data, protein_dict = data
             data.y = task.target(protein_dict)
             return data
 
-        dset = dset.to_graph(eps=8.0).pyg(
+
+        datapath = './data/ec'
+        task = ps_tasks.EnzymeCommissionTask(root=datapath)
+        dset = task.dataset
+                dset = dset.to_graph(eps=8.0).pyg(
             transform=transform
         )
 
@@ -251,3 +254,4 @@ Let's see the model performance on the different evaluation metrics provided::
         {'precision': 0.5333515066547034, 'recall': 0.4799021029676011, 'accuracy': 0.6675514266755143}
 
 
+:download:`Download source code for this example. <code/sup_enzyme_commission_with_gnn.ipynb>`
