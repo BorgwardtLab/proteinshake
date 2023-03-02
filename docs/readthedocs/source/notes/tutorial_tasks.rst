@@ -254,4 +254,4 @@ Let's see the model performance on the different evaluation metrics provided::
         {'precision': 0.5333515066547034, 'recall': 0.4799021029676011, 'accuracy': 0.6675514266755143}
 
 
-:download:`Download source code for this example. <code/sup_enzyme_commission_with_gnn.ipynb>`
+:download:`Download source code for this example. <code/ec_task.py>`
