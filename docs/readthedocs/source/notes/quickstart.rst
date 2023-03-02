@@ -1,7 +1,7 @@
 Quickstart
 ============
 
-To get started, follow the `installation instructions <https://torch-pdb.readthedocs.io/en/latest/modules/datasets.html>`_.
+First, make sure you have :doc:`installed proteinshake<installation>`. 
 
 Loading a dataset is a one-liner, consisting of three parts:
 1. Choosing a dataset (e.g. AlphaFold or RCSB)

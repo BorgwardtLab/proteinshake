@@ -44,7 +44,7 @@ def _set_coords(protein, coord_array, resoluiton='residue', in_place=True):
 
     """
 
-    assert len(protein[resolution]['x']) == lencoord_array),\
+    assert len(protein[resolution]['x']) == len(coord_array),\
             "Mismatch of coordinate array shape and protein, check choice of resolution"
 
     protein[resolution]['x'] = list(coord_array[:,0])

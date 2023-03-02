@@ -8,10 +8,25 @@ from proteinshake.transforms import RandomRotateTransform
 
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
+
     NOTE: To make this an interesting task, the loader has to
     split the protein into its chains so that the model only sees
-    one chain at a time.
+    one chain at a time. You should also pass the following transforms to the dataset
+    :meth:`proteinshake.transforms.CenterTransform` and :meth:`proteinshake.transforms.RandomRotateTransform` when using representations that are aware of the atomic coordinates.
+
+    NOTE: This task is currently in beta.
+
+
+    .. code-block:: python
+
+        >>> from proteinshake.tasks import ProteinProteinInterfaceTask
+        >>> from proteinshake.transforms import CenterTransform, RandomRotateTransform
+        >>> ta = ProteinProteinInterfaceTask()
+        >>> data = ta.dataset.to_voxel(transforms=[CenterTransform(), RandomRotateTransform()).torch()
     """
+
+    DatasetClass = ProteinProteinInterfaceDataset
+
     def __init__(self, root='data', resolution='residue', *args, **kwargs):
         dataset = ProteinProteinInterfaceDataset(root=root, transforms=[CenterTransform(), RandomRotateTransform()])
         super().__init__(dataset, *args, **kwargs)

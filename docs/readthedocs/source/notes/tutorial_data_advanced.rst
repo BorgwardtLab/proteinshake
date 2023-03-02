@@ -51,7 +51,7 @@ Default Protein Attributes
 
 Each item in the `Dataset` is a multi-level dictionary which holds all the relevant information for the given protein.
 Each dataset child class can add its own attributes, while transforms (LINK) can modify these attributes.
-In the most basic datasets (``RCSBDataset`` and ``AlphaFoldDataset``) we only store coordinates and chain information.
+In the most basic datasets (``RCSBDataset`` and ``AlphaFoldDataset``) we store coordinates and chain information (if multi-chain), as well as surface accessibility values.
 
 .. code-block:: python
 
@@ -76,6 +76,8 @@ The ``atom`` and ``residue`` keys map to dictionaries which hold lists of values
         >>> protein['residue']
         {'residue_number': [11, 12, 13,...],
          'residue_type': ['W', 'T', 'F', 'S', 'S', 'E'..],
+         'SASA': [...],
+         'RSASA': [...],
          'x': [-19.697999954223633, -19.94300079345703, -18.11199951171875, ...]
          'y': [...],
          'z': [...],
@@ -96,9 +98,3 @@ The ``Dataset`` object implements a method called ``add_protein_attributes(prote
 The ``add_protein_attributes()`` can apply any logic to the protein such as computing surfaces, interfaces, or simply looking up annotations in a database of choice.
 
 For example, the ``ProteinProteinInterfaceDataset`` has an additional key at the residue and atom levels which is ``True`` if the atom/residue is on the interface of two protein chains and ``False`` otherwise.
-
-
-Representations
-~~~~~~~~~~~~~~~~~~
-
-

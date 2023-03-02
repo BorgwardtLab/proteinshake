@@ -65,6 +65,7 @@ class TMAlignDataset(RCSBDataset):
         return 1000
     
     def align_structures(self):
+        """ Calls TMAlignn on all pairs of structures and saves the output"""
         if os.path.exists(f'{self.root}/tmscore.npy'):
             return
         pdbids = [p['protein']['ID'] for p in self.proteins()]
@@ -101,16 +102,6 @@ class TMAlignDataset(RCSBDataset):
 
     def lddt(protein_1, protein_2):
         return self._lddt[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = 'TM Score'
-        desc['values'] = "[0-1]"
-        desc['type'] = "Real-valued, Pairwise"
-        return desc
-
-
-
 
 def tmalign_wrapper(pdb1, pdb2):
     """Compute TM score with TMalign between two PDB structures.

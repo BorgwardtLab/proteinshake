@@ -2,7 +2,8 @@ Training a protein structure model
 ===================================
 
 Now that we understand how to create datasets and cast them to an ML framework we can take a look at the tasks class.
-The ``proteinshake.Tasks`` class exposes to main functionalities: dataset splitting, and model evaluation for various tasks.
+The ``proteinshake.Tasks`` class exposes two main functionalities for various tasks: dataset splitting, and model evaluation.
+This, along with the ProteinShake datasets, leaves the user to focus only on coding the model.
 
 Basic Usage
 ~~~~~~~~~~~~
@@ -10,7 +11,7 @@ Basic Usage
 The user interaction with the task object is quite simple. At a glance it looks like this::
 
         >>> from proteinshake.tasks import EnzymeCommissionTask
-        >>> dataset = task.dataset
+        >>> dataset = task.dataset.to_graph(eps=8).pyg()
         >>> pred = model(dataset[task.train_index]) # assuming you have implemented model() elsewhere
         >>> task.evaluate(pred)
         {'precision': 0.5333515066547034, 'recall': 0.4799021029676011, 'accuracy': 0.6675514266755143}
@@ -198,7 +199,7 @@ Define the logic to apply at each training epoch::
             return epoch_loss
 
 
-ProteinShake provides an evaluation function for each task task.evaluate(y_true, y_pred)::
+ProteinShake provides an evaluation function for each task ``task.evaluate(y_pred)``::
 
 
         @torch.no_grad()

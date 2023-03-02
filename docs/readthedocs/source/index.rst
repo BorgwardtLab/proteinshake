@@ -16,9 +16,9 @@ Welcome to proteinshake!
 * **Customizable** tasks and datasets
 
 
-Go to `quickstart <https://torch-pdb.readthedocs.io/en/latest/notes/quickstart.html>`_ guide to get started.
+Go to :doc:`quickstart<notes/quickstart>` guide to get started.
 
-Source code is hosted on `GitHub <https://github.com/BorgwardtLab/torch-pdb>`_.
+Source code is hosted on `GitHub <https://github.com/BorgwardtLab/ProteinShake>`_ and the project homepage is `here <https://borgwardtlab.github.io/proteinshake/>`_.
 
 We welcome contributions and bug reports through issues and pull requests.
 
@@ -46,7 +46,6 @@ Who is proteinshake for?
 
    notes/tutorial_data
    notes/tutorial_tasks
-   notes/tutorial_ss
    notes/tutorial_data_advanced
      
 
@@ -58,6 +57,7 @@ Who is proteinshake for?
    modules/datasets
    modules/tasks
    modules/representations
+   modules/transforms
    modules/utils
 
 

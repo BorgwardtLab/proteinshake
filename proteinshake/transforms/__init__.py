@@ -8,3 +8,5 @@ __all__ = ['Transform',
            'CenterTransform',
            'RandomRotateTransform',
           ]
+
+classes = __all__
