@@ -1,10 +1,10 @@
-import requests, glob, json
+import requests, glob, json, os, random
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import download_url
+from proteinshake.utils import download_url, unzip_file
 
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
@@ -28,7 +28,7 @@ class RCSBDataset(Dataset):
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb.gz')
+        return glob.glob(f'{self.root}/raw/files/*.pdb')
 
     def get_id_from_filename(self, filename):
         return filename[:4]
@@ -90,7 +90,9 @@ class RCSBDataset(Dataset):
                     total = response_dict['group_by_count']
                 i += batch_size
 
-        ids = list(set(ids)) # filter identical ids
+        ids = sorted(list(set(ids))) # filter identical ids
+        random.seed(42)
+        random.shuffle(ids) # for reproducible subsampling when using self.limit
         ids = ids[:self.limit] # for testing
 
         n_jobs = min(self.n_jobs, self.max_requests) # RCSB has a request limit
@@ -108,10 +110,13 @@ class RCSBDataset(Dataset):
             r = requests.get(f'https://data.rcsb.org/rest/v1/core/polymer_entity/{id}/1')
             obj = json.loads(r.text)
             download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
+            unzip_file(f'{self.root}/raw/files/{id}.pdb.gz')
             with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
                 json.dump(obj, file)
             return True
         except KeyboardInterrupt:
             exit()
         except Exception as e:
+            if os.path.exists(f'{self.root}/raw/files/{id}.pdb.gz'):
+                os.remove(f'{self.root}/raw/files/{id}.pdb.gz')
             return id

@@ -58,7 +58,7 @@ class AlphaFoldDataset(Dataset):
         return f'{self.__class__.__name__}_{self.organism}'
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit]
+        return glob.glob(f'{self.root}/raw/*/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
@@ -68,6 +68,7 @@ class AlphaFoldDataset(Dataset):
             os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
             download_url(self.base_url+AF_DATASET_NAMES[organism]+f'_{self.version}.tar', f'{self.root}/raw/{organism}')
             extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_{self.version}.tar', f'{self.root}/raw/{organism}')
+            [unzip_file(f) for f in tqdm(glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit], desc='Unzipping')]
         if type(self.organism) == str:
             _download(self.organism)
         elif type(self.organism) == list:

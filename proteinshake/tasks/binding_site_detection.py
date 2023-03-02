@@ -17,8 +17,8 @@ class BindingSiteDetectionTask(Task):
     def target(self, protein):
         return protein['residue']['binding_site']
 
-    def evaluate(self, pred, true):
+    def evaluate(self, y_pred):
         return {
-                'accuracy': metrics.accuracy_score(true, pred),
-                'mcc': metrics.matthews_corrcoef(true, pred),
+                'accuracy': metrics.accuracy_score(self.test_targets, y_pred),
+                'mcc': metrics.matthews_corrcoef(self.test_targets, y_pred),
                 }
