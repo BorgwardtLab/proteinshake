@@ -10,8 +10,8 @@ Loading a dataset is a one-liner, consisting of three parts:
 
 .. code-block:: python
 
-  from proteinshake.datasets import GODataset
-  proteins = GODataset(root="./data").to_graph(k=5).pyg()
+  from proteinshake.datasets import GeneOntologyDataset
+  proteins = GeneOntologyDataset(root="./data").to_graph(k=5).pyg()
 
 The above line takes a dataset with proteins annotated with Gene Ontology terms and transforms them to graphs with 5 neighbors. They are then loaded into a pytorch geometric dataset.
 
@@ -20,19 +20,14 @@ Some other examples:
 .. code-block:: python
 
   # a graph dataset with epsilon-neighborhood graphs with radius 8 Angstrom, in DGL
-  proteins = GODataset(root="./data").to_graph(eps=8).dgl()
+  proteins = GeneOntologyDataset(root="./data").to_graph(eps=8).dgl()
 
   # a point cloud dataset, in tensorflow
-  proteins = GODataset(root="./data").to_point().tf()
+  proteins = GeneOntologyDataset(root="./data").to_point().tf()
 
   # a voxel dataset with a voxel size of 10 Angstrom, in torch
-  proteins = GODataset(root="./data").to_voxel(size=10).torch()
+  proteins = GeneOntologyDataset(root="./data").to_voxel(size=10).torch()
 
 You can arbitrarily combine datasets, representations and frameworks.
+These datasets can then be passed directly to framework-specific dataloaders and models.
 
-The resulting dataset you can use like any other dataset of your framework. In the case of proteinshake for example:
-
-.. code-block:: python
-
-  from proteinshake.loader import DataLoader
-  loader = DataLoader(proteins, batch_size=32)
