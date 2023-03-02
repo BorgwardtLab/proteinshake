@@ -1,4 +1,4 @@
-Protein Numerical Representations
+``proteinshake.representations``
 ===================================
 
 .. currentmodule:: proteinshake.representations

@@ -11,16 +11,15 @@ class Task:
     """ Base class for task-related utilities.
     This class wraps a proteinshake dataset and exposes split indices,
     integer-coded labels for classification tasks, and an evaluator function.
-    Users should use this class to build their own dataloaders for training
-    and evaluating models.
 
-    Sample usage (assuming you have a model and dataloader in the namespace):
+    Sample usage (assuming you have a model in the namespace):
 
      .. code-block:: python
 
         >>> from proteinshake.tasks import EnzymeCommissionTask
         >>> task = EnzymeCommissionTask()
-        >>> y_pred = model(task.train)
+        >>> data = task.dataset.to_graph(eps=8).pyg()
+        >>> y_pred = model(data[task.train])
         >>> task.evaluate(y_pred)
         ... {'roc_auc_score': 0.7}
 
@@ -31,6 +30,8 @@ class Task:
         Dataset to use for this task.
     split: str, default='random'
         How to split the data. Can be 'random', 'sequence', or 'structure'.
+    split_similarity_threshold: float
+        Maximum similarity to allow between train and test samples.
     random_state: int, default=42
         Random seed for reproducible splitting.
     train_ratio: float, default=0.80
@@ -130,6 +131,12 @@ class Task:
         ------------
         protein: dict
             proteinshake protein dictionary
+
+
+        .. code-block: python
+
+            >>> from proteinshake.tasks import EnzymeCommissionTask
+            >>> ta = EnzymeCommissionTask()
         """
         raise NotImplementedError
 

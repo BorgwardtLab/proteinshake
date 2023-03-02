@@ -4,8 +4,8 @@ from proteinshake.datasets import ProteinLigandInterfaceDataset
 from proteinshake.tasks import Task
 
 class BindingSiteDetectionTask(Task):
-    """ Identify the binding residues of a protein-small molecule binding site. This is a residue-level binary classification
-    task.
+    """ Identify the binding residues of a protein-small molecule binding site. This is a residue-level binary classification task.
+
     """
     
     DatasetClass = ProteinLigandInterfaceDataset

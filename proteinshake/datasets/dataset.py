@@ -28,8 +28,10 @@ RELEASES = {
 
 class Dataset():
     """ Base dataset class. Holds the logic for downloading and parsing PDB files.
+    If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
+    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
-    Parameters
+    Parameter
     ----------
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
@@ -107,8 +109,11 @@ class Dataset():
         generator
             An avro reader object.
 
-        int
-            The total number of proteins in the file.
+
+        .. code-block:: python
+
+            >>> from proteinshake.datasets import RCSBDataset
+            >>> protein = next(RCSBDataset().proteins())
         """
         self.download_precomputed(resolution=resolution)
         with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
@@ -201,7 +206,7 @@ class Dataset():
         Parameters
         ----------
         protein: dict
-            A protein object. See `Dataset.parse_pdb()` for details.
+            A protein object. See :meth:`proteinshake.datasets.Dataset.parse_pdb` for details.
 
         Returns
         -------
@@ -235,7 +240,7 @@ class Dataset():
                 unzip_file(f'{self.root}/{filename}')
 
     def parse(self):
-        """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
+        """ Parses all PDB files returned from :meth:`proteinshake.datasets.Dataset.get_raw_files()` and saves them to disk. Can run in parallel.
         """
         if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
@@ -416,11 +421,11 @@ class Dataset():
         return data
     
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
+        """ Converts the raw dataset to a graph dataset. See :meth:`proteinshake.representations.GraphDataset` for arguments.
 
         Returns
         -------
-        GraphDataset
+        proteinshake.representations.GraphDataset
             The dataset in graph representation.
         """
         from proteinshake.representations import GraphDataset
@@ -433,11 +438,11 @@ class Dataset():
                             **kwargs)
 
     def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
+        """ Converts the raw dataset to a point cloud dataset. See :meth:`proteinshake.representations.PointDataset` for arguments.
 
         Returns
         -------
-        PointDataset
+        proteinshake.representations.PointDataset
             The dataset in point cloud representation.
         """
         from proteinshake.representations import PointDataset
@@ -450,11 +455,11 @@ class Dataset():
                             **kwargs)
 
     def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
+        """ Converts the raw dataset to a voxel dataset. See :meth:`proteinshake.representations.VoxelDataset` for arguments.
 
         Returns
         -------
-        VoxelDataset
+        proteinshake.representations.VoxelDataset
             The dataset in voxel representation.
         """
         from proteinshake.representations import VoxelDataset
