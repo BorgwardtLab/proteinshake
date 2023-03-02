@@ -13,6 +13,7 @@ Installation
 To get the latest version:
 
 .. code-block:: bash
+
 $ git clone https://github.com/BorgwardtLab/proteinshake.git
 $ cd proteinshake
 $ pip install .
