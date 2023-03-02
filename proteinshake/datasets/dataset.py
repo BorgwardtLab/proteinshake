@@ -15,6 +15,7 @@ from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
+from proteinshake.transforms import IdentityTransform
 from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -414,7 +415,7 @@ class Dataset():
                }
         return data
     
-    def to_graph(self, resolution='residue', *args, **kwargs):
+    def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
 
         Returns
@@ -424,14 +425,14 @@ class Dataset():
         """
         from proteinshake.representations import GraphDataset
         proteins = self.proteins(resolution=resolution)
-        return GraphDataset(proteins,
+        return GraphDataset((transform(p) for p in proteins),
                             self.root,
                             self.name,
                             resolution,
                             *args,
                             **kwargs)
 
-    def to_point(self, resolution='residue', *args, **kwargs):
+    def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
 
         Returns
@@ -441,14 +442,14 @@ class Dataset():
         """
         from proteinshake.representations import PointDataset
         proteins = self.proteins(resolution=resolution)
-        return PointDataset(proteins,
+        return PointDataset((transform(p) for p in proteins),
                             self.root,
                             self.name,
                             resolution,
                             *args,
                             **kwargs)
 
-    def to_voxel(self, resolution='residue', *args, **kwargs):
+    def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
         """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
 
         Returns
@@ -458,7 +459,7 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         proteins = self.proteins(resolution=resolution)
-        return VoxelDataset(proteins,
+        return VoxelDataset((transform(p) for p in proteins),
                             self.root,
                             self.name,
                             resolution,
