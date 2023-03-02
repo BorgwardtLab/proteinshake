@@ -18,7 +18,8 @@ extensions = [
 
 # logos
 
-html_theme = 'pyg_sphinx_theme'
+# html_theme = 'pyg_sphinx_theme'
+html_theme = 'sphinx_rtd_theme'
 html_logo = ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
              'master/pyg_sphinx_theme/static/img/proteinshake.png')
 html_favicon= ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
