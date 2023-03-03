@@ -1,8 +1,12 @@
-from .transforms import ShakeTransform
+from .transforms import Transform
 from .transforms import IdentityTransform
-from .surface import SurfaceTransform
+from .coords import CenterTransform
+from .coords import RandomRotateTransform
 
-__all__ = ['ShakeTransform',
-          'IdentityTransform',
-          'SurfaceTransform',
+__all__ = ['Transform',
+           'IdentityTransform',
+           'CenterTransform',
+           'RandomRotateTransform',
           ]
+
+classes = __all__

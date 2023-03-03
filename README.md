@@ -21,7 +21,8 @@
 <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notes/contributing.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>
+<a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://colab.research.google.com/github/BorgwardtLab/proteinshake/blob/examples/examples/sup_enzyme_commission.ipynb">Tutorial</a>
 </p>
 
 <div align="center">
@@ -30,11 +31,15 @@
 
 We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level.
 
-Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>.
+Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
 
 <br/>
 
 **Installation:**
+```diff
+- This is a pre-release version. There may be unannounced changes to the API and datasets. -
+- We expect some bugs as well, please open an issue if you find one. -
+```
 ```
 pip install proteinshake
 ```
@@ -62,12 +67,14 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 **Legal Note**
 
+*Copyright 2023, the authors.*
+
 *We obtained and modified data from the following sources:*
 
-*The AlphaFold protein structures were downloaded from the [AlphaFold Structure Database](https://alphafold.ebi.ac.uk/), licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
+*The AlphaFold protein structures were downloaded from the [AlphaFold Structure Database](https://alphafold.ebi.ac.uk/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
 
-*The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), licensed under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
+*The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), available under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
 
-*Protein and Ligand binding structures and annotations were obtained from [PDBBind](http://www.pdbbind.org.cn/).*
+*Protein and Ligand binding structures and annotations were obtained from [PDBbind-CN](http://www.pdbbind.org.cn/), available under the [End User Agreement for Access to the PDBbind-CN Database and Web Site](http://www.pdbbind.org.cn/enroll.php).*
 
 </div>

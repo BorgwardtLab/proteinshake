@@ -1,4 +1,4 @@
-Prediction Tasks
+``proteinshake.Task``
 ========================
 
 .. currentmodule:: proteinshake.tasks

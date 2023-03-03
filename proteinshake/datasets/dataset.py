@@ -8,6 +8,7 @@ import multiprocessing as mp
 
 import pandas as pd
 import numpy as np
+import freesasa
 from biopandas.pdb import PandasPdb
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -15,27 +16,22 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
 from proteinshake.transforms import IdentityTransform
-from proteinshake.utils import (download_url,
-                                save,
-                                load,
-                                unzip_file,
-                                write_avro,
-                                tmalign_wrapper,
-                                cdhit_wrapper
-                                )
+from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1134474',
+    'latest': '1147155',
 }
 
 class Dataset():
     """ Base dataset class. Holds the logic for downloading and parsing PDB files.
+    If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
+    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
-    Parameters
+    Parameter
     ----------
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
@@ -60,6 +56,9 @@ class Dataset():
     distance_threshold_sequence: int or lits, default 0.3
         Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
     """
+
+    additional_files = [] # indicates the additional file names that are to be included in the release
+
     def __init__(self,
             root                           = 'data',
             use_precomputed                = True,
@@ -89,7 +88,7 @@ class Dataset():
         self.cluster_sequence = cluster_sequence
         self.similarity_threshold_sequence = similarity_threshold_sequence
         self.similarity_threshold_structure = similarity_threshold_structure
-
+        
         os.makedirs(f'{self.root}', exist_ok=True)
         if not use_precomputed:
             self.start_download()
@@ -110,8 +109,11 @@ class Dataset():
         generator
             An avro reader object.
 
-        int
-            The total number of proteins in the file.
+
+        .. code-block:: python
+
+            >>> from proteinshake.datasets import RCSBDataset
+            >>> protein = next(RCSBDataset().proteins())
         """
         self.download_precomputed(resolution=resolution)
         with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
@@ -120,7 +122,7 @@ class Dataset():
             with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
                 for x in avro_reader(file):
                     yield x
-        return reader(), total
+        return Generator(reader(), total)
 
     @property
     def limit(self):
@@ -204,7 +206,7 @@ class Dataset():
         Parameters
         ----------
         protein: dict
-            A protein object. See `Dataset.parse_pdb()` for details.
+            A protein object. See :meth:`proteinshake.datasets.Dataset.parse_pdb` for details.
 
         Returns
         -------
@@ -232,16 +234,16 @@ class Dataset():
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
         if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
+            for filename in [f'{self.name}.{resolution}.avro.gz'] + self.additional_files:
+                download_url(f'{self.repository_url}/{filename}', f'{self.root}')
+                print('Unzipping...')
+                unzip_file(f'{self.root}/{filename}')
 
     def parse(self):
-        """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
+        """ Parses all PDB files returned from :meth:`proteinshake.datasets.Dataset.get_raw_files()` and saves them to disk. Can run in parallel.
         """
         if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
-
         # parse and filter
         paths = self.get_raw_files()[:self.limit]
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
@@ -275,6 +277,22 @@ class Dataset():
         residue_df = atom_df[atom_df['atom_type'] == 'CA']
         if not self.validate(atom_df):
             return None
+
+        # add surface accessible area
+        structure = freesasa.Structure(path)
+        result = freesasa.calc(structure)
+        residue_result = result.residueAreas()
+        atom_sasa, residue_sasa, residue_rsa = [], [], []
+        for i in atom_df['atom_number']:
+            try:
+                atom_sasa.append(result.atomArea(i))
+            except:
+                atom_sasa.append(-1)
+        for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
+            residue_sasa.append(residue_result[chain][str(i)].total)
+            residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
+
+        # create protein_dict
         protein = {
             'protein': {
                 'ID': pdbid,
@@ -286,6 +304,8 @@ class Dataset():
                 'x': residue_df['x'].tolist(),
                 'y': residue_df['y'].tolist(),
                 'z': residue_df['z'].tolist(),
+                'SASA': residue_sasa,
+                'RSA': residue_rsa,
             },
             'atom': {
                 'atom_number': atom_df['atom_number'].tolist(),
@@ -295,216 +315,23 @@ class Dataset():
                 'x': atom_df['x'].tolist(),
                 'y': atom_df['y'].tolist(),
                 'z': atom_df['z'].tolist(),
+                'SASA': atom_sasa,
             },
         }
-        if not self.only_single_chain: # only include chains if multi-chain protein
+
+        # only include chains if multi-chain protein
+        if not self.only_single_chain: 
             protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
             protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
+
         # add pLDDT from AlphaFold
         if self.name == 'AlphaFoldDataset':
             protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
             protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
+
         # add attributes
         protein = self.add_protein_attributes(protein)
-        return protein
 
-    def proteins(self, resolution='residue'):
-        """ Returns a generator of proteins from the avro file.
-
-        Parameters
-        ----------
-        resolution: str, default 'residue'
-            The resolution of the proteins. Can be 'atom' or 'residue'.
-
-        Returns
-        -------
-        generator
-            An avro reader object.
-
-        int
-            The total number of proteins in the file.
-        """
-        self.download_precomputed(resolution=resolution)
-        with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
-            total = int(avro_reader(file).metadata['number_of_proteins'])
-        def reader():
-            with open(f'{self.root}/{self.name}.{resolution}.avro', 'rb') as file:
-                for x in avro_reader(file):
-                    yield x
-        return reader(), total
-
-    def check_arguments_same_as_hosted(self):
-        """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
-        """
-        signature = inspect.signature(self.__init__)
-        default_args = {
-            k: v.default
-            for k, v in signature.parameters.items()
-            if v.default is not inspect.Parameter.empty
-            and (self.name != 'AlphaFoldDataset' or k != 'organism')
-            and (self.name != 'Atom3DDataset' or k != 'atom_dataset')
-        }
-        if self.__class__.__bases__[0].__name__ != 'Dataset':
-            signature = inspect.signature(self.__class__.__bases__[0].__init__)
-            super_args = {
-                k: v.default
-                for k, v in signature.parameters.items()
-                if v.default is not inspect.Parameter.empty
-            }
-            default_args = {**super_args, **default_args}
-        if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
-            print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
-            exit()
-
-    def get_raw_files(self):
-        """ Implement me in a subclass!
-
-        Returns a list of all valid PDB file paths for this dataset. Usually takes the form `glob.glob(f'{self.root}/raw/files/*.pdb')` to search for all pdb files in the root, but can be different in some cases (e.g. with pdb.gz files).
-
-        Returns
-        -------
-        list
-            The list of raw PDB files used in this dataset.
-        """
-        raise NotImplementedError
-
-    def get_id_from_filename(self, filename):
-        """ Implement me in a subclass!
-
-        Extracts an identifier from the pdb filename. This identifier is used in the `ID` field of the parsed protein object. Usually something like `filename[:4]`.
-
-        Parameters
-        ----------
-        filename: str
-            Path to a PDB file.
-
-        Returns
-        -------
-        str
-            A PDB identifier or other ID.
-        """
-        raise NotImplementedError
-
-    def download(self):
-        """ Implement me in a subclass!
-
-        This method is responsible for downloading and extracting raw pdb files from a databank source. All PDB files should be dumped in `f'{self.root}/raw/files`. See e.g. PDBBindRefined for an example.
-        """
-        raise NotImplementedError
-
-    def add_protein_attributes(self, protein):
-        """ Implement me in a subclass!
-
-        This method annotates protein objects with addititional information, such as functional labels or classes. It takes a protein object (a dictionary), modifies, and returns it. Usually, this would utilize the `ID` attribute to load an annotation file or to query information from a database.
-
-        Parameters
-        ----------
-        protein: dict
-            A protein object. See `Dataset.parse_pdb()` for details.
-
-        Returns
-        -------
-        dict
-            The protein object with a new attribute added.
-        """
-        return protein
-
-    def download_complete(self):
-        """ Dumps a marker file when the download was successful, to skip downloading next time.
-        """
-        with open(f'{self.root}/raw/done.txt','w') as file:
-            file.write('done.')
-
-    def start_download(self):
-        """ Helper function to prepare the download. Creates necessary subdirectories.
-        """
-        if os.path.exists(f'{self.root}/raw/done.txt'):
-            return
-        os.makedirs(f'{self.root}/raw/files', exist_ok=True)
-        self.download()
-        self.download_complete()
-
-    def download_precomputed(self, resolution='residue'):
-        """ Downloads the precomputed dataset from the ProteinShake repository.
-        """
-        if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
-
-    def parse(self):
-        """ Parses all PDB files returned from `self.get_raw_files()` and saves them to disk. Can run in parallel.
-        """
-        if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
-            return
-
-        # parse and filter
-        paths = self.get_raw_files()
-        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
-        before = len(proteins)
-        paths = [path for path,protein in zip(paths,proteins) if protein is not None]
-        proteins = [p for p in proteins if p is not None]
-        if self.cluster_sequence:
-            self.compute_clusters_sequence(proteins)
-        if self.cluster_structure:
-            self.compute_clusters_structure(proteins, paths)
-        print(f'Filtered {before-len(proteins)} proteins.')
-        residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
-        atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
-        write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
-        write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
-
-    def parse_pdb(self, path):
-        """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.
-
-        Parameters
-        ----------
-        path: str
-            Path to PDB file.
-
-        Returns
-        -------
-        dict
-            A protein object.
-        """
-        pdbid = self.get_id_from_filename(os.path.basename(path))
-        if pdbid in self.exclude_ids:
-            return None
-        atom_df = self.pdb2df(path)
-        residue_df = atom_df[atom_df['atom_type'] == 'CA']
-        if not self.validate(atom_df):
-            return None
-        protein = {
-            'protein': {
-                'ID': pdbid,
-                'sequence': ''.join(residue_df['residue_type']),
-            },
-            'residue': {
-                'residue_number': residue_df['residue_number'].tolist(),
-                'residue_type': residue_df['residue_type'].tolist(),
-                'x': residue_df['x'].tolist(),
-                'y': residue_df['y'].tolist(),
-                'z': residue_df['z'].tolist(),
-            },
-            'atom': {
-                'atom_number': atom_df['atom_number'].tolist(),
-                'atom_type': atom_df['atom_type'].tolist(),
-                'residue_number': atom_df['residue_number'].tolist(),
-                'residue_type': atom_df['residue_type'].tolist(),
-                'x': atom_df['x'].tolist(),
-                'y': atom_df['y'].tolist(),
-                'z': atom_df['z'].tolist(),
-            },
-        }
-        if not self.only_single_chain: # only include chains if multi-chain protein
-            protein['residue']['chain_id'] = residue_df['chain_id'].tolist()
-            protein['atom']['chain_id'] = atom_df['chain_id'].tolist()
-        # add pLDDT from AlphaFold
-        if self.name == 'AlphaFoldDataset':
-            protein['residue']['pLDDT'] = residue_df['b_factor'].tolist()
-            protein['atom']['pLDDT'] = atom_df['b_factor'].tolist()
-        # add attributes
-        protein = self.add_protein_attributes(protein)
         return protein
 
     def pdb2df(self, path):
@@ -520,12 +347,8 @@ class Dataset():
         DataFrame
             A biopandas DataFrame of the PDB file.
         """
-        if path.endswith('.gz'):
-            with gzip.open(path, 'rb') as file:
-                lines = file.read().decode('utf-8').split('\n')
-        else:
-            with open(path, 'r') as file:
-                lines = file.read().split('\n')
+        with open(path, 'r') as file:
+            lines = file.read().split('\n')
         # filter only the first model
         filtered_lines, in_model, model_done = [], False, False
         for line in lines:
@@ -595,111 +418,18 @@ class Dataset():
                 'avg size (# residues)': n_resi
                }
         return data
-
-    def compute_clusters_sequence(self, proteins):
-        """ Use CDHit to cluster sequences. Assigns the field 'sequence_cluster' to an integer cluster ID for each protein.
-
-        Parameters:
-        -----------
-        proteins: list
-            List of protein dictionaries to cluster.
-
-        """
-        print('Sequence clustering...')
-        if isinstance(self.similarity_threshold_sequence, float):
-            thresholds = [self.similarity_threshold_sequence]
-        else:
-            thresholds = self.similarity_threshold_sequence
-
-        representatives = {}
-        for threshold in thresholds:
-            sequences = [p['protein']['sequence'] for p in proteins]
-            ids = [p['protein']['ID'] for p in proteins]
-            clusters, reps = cdhit_wrapper(ids, sequences, sim_thresh=threshold, n_jobs=self.n_jobs)
-            representatives[threshold] = reps
-            if clusters == -1:
-                print("Sequence clustering failed.")
-                return
-            for p, c in zip(proteins, clusters):
-                p['protein'][f'sequence_cluster_{threshold}'] = c
-        save(representatives, f'{self.root}/{self.name}.cdhit.json')
-
-    def compute_clusters_structure(self, proteins, paths):
-        """ Launch TMalign on all pairs of proteins in dataset.
-        Assign a cluster ID to each protein at protein-level key 'structure_cluster'.
-
-        Saves TMalign output to `self.root/{Dataset.__class__}.tmalign.json.gz`
-
-        Parameters:
-        -----------
-        paths: list
-            List of paths to original pdb files (after filtering).
-        """
-        from sklearn.cluster import AgglomerativeClustering
-        dump_name = f'{self.name}.tmalign.json'
-        dump_path = os.path.join(self.root, dump_name)
-
-        if self.n_jobs == 1:
-            print('Computing the TM scores with use_precompute = False is very slow. Consider increasing n_jobs.')
-
-        paths = [unzip_file(p, remove=False) if p.endswith('.gz') else p for p in tqdm(paths, desc='Unzipping')]
-
-        pdbids = [self.get_id_from_filename(p) for p in paths]
-        pairs = list(itertools.combinations(range(len(paths)), 2))
-        todo = [(paths[p1], paths[p2]) for p1, p2 in pairs]
-
-        dist = defaultdict(lambda: {})
-
-        output = Parallel(n_jobs=self.n_jobs)(
-            delayed(tmalign_wrapper)(*pair) for pair in tqdm(todo, desc='Structure clustering')
-        )
-
-        for (pdb1, pdb2), d in zip(todo, output):
-            name1 = self.get_id_from_filename(pdb1)
-            name2 = self.get_id_from_filename(pdb2)
-            # each value is a tuple (tm-core, RMSD)
-            dist[name1][name2] = (d[0], d[2])
-            dist[name2][name1] = (d[0], d[2])
-
-        save(dist, dump_path)
-        num_proteins = len(paths)
-        DM = np.zeros((num_proteins, num_proteins))
-        DM = []
-        for i in range(num_proteins):
-            for j in range(i+1, num_proteins):
-                # take the largest TMscore (most similar) between both
-                # directions and convert to a distance
-                DM.append(
-                    1 - max(
-                        dist[pdbids[i]][pdbids[j]][0],
-                        dist[pdbids[j]][pdbids[i]][0]
-                    )
-                )
-        DM = np.array(DM).reshape(-1, 1)
-
-        if isinstance(self.similarity_threshold_structure, float):
-            thresholds = [self.similarity_threshold_structure]
-        else:
-            thresholds = self.similarity_threshold_structure
-
-        for d in thresholds:
-            clusterer = AgglomerativeClustering(n_clusters=None, distance_threshold=(1-d))
-            clusterer.fit(DM)
-            for i, p in enumerate(proteins):
-                p['protein'][f'structure_cluster_{d}'] = int(clusterer.labels_[i])
-
+    
     def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a graph dataset. See `GraphDataset` for arguments.
+        """ Converts the raw dataset to a graph dataset. See :meth:`proteinshake.representations.GraphDataset` for arguments.
 
         Returns
         -------
-        GraphDataset
+        proteinshake.representations.GraphDataset
             The dataset in graph representation.
         """
         from proteinshake.representations import GraphDataset
-        proteins, size = self.proteins(resolution=resolution)
+        proteins = self.proteins(resolution=resolution)
         return GraphDataset((transform(p) for p in proteins),
-                            size,
                             self.root,
                             self.name,
                             resolution,
@@ -707,17 +437,16 @@ class Dataset():
                             **kwargs)
 
     def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a point cloud dataset. See `PointDataset` for arguments.
+        """ Converts the raw dataset to a point cloud dataset. See :meth:`proteinshake.representations.PointDataset` for arguments.
 
         Returns
         -------
-        PointDataset
+        proteinshake.representations.PointDataset
             The dataset in point cloud representation.
         """
         from proteinshake.representations import PointDataset
-        proteins, size = self.proteins(resolution=resolution)
+        proteins = self.proteins(resolution=resolution)
         return PointDataset((transform(p) for p in proteins),
-                            size,
                             self.root,
                             self.name,
                             resolution,
@@ -725,17 +454,16 @@ class Dataset():
                             **kwargs)
 
     def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
-        """ Converts the raw dataset to a voxel dataset. See `VoxelDataset` for arguments.
+        """ Converts the raw dataset to a voxel dataset. See :meth:`proteinshake.representations.VoxelDataset` for arguments.
 
         Returns
         -------
-        VoxelDataset
+        proteinshake.representations.VoxelDataset
             The dataset in voxel representation.
         """
         from proteinshake.representations import VoxelDataset
-        proteins, size = self.proteins(resolution=resolution)
+        proteins = self.proteins(resolution=resolution)
         return VoxelDataset((transform(p) for p in proteins),
-                            size,
                             self.root,
                             self.name,
                             resolution,

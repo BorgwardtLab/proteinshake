@@ -6,10 +6,11 @@ from proteinshake.datasets import Dataset
 from proteinshake.utils import get_interfaces, extract_tar, download_url
 
 class ProteinProteinInterfaceDataset(Dataset):
-    """Protein-protein complexes with annotated interfaces. Residues
-    in each protein are marked with a boolean `is_interface` to indicate
-    residues defined to belong to the interface of two protein chains.
+    """Protein-protein complexes from PDBBind with annotated interfaces. Residues
+    and atoms in each protein are marked with a boolean `is_interface` to indicate
+    residues/atoms defined to belong to the interface of two protein chains.
     The default threshold for determining interface residues is 6 Angstroms.
+    See :meth:`proteinshake.utils.get_interfaces` for details.
 
     Parameters
     ----------
@@ -17,9 +18,20 @@ class ProteinProteinInterfaceDataset(Dataset):
         Root directory where the dataset should be saved.
     name: str
         The name of the dataset.
+    version: str
+        PDBBind database version to use.
     cutoff: float
         Distance in angstroms within which a pair of residues is considered to
         belong to the interface.
+
+    .. code-block:: python
+
+            >>> from proteinshake.datasets import ProteinProteinInterfaceDataset 
+            >>> dataset = ProteinProteinInterfaceDataset()
+            >>> protein = next(dataset.proteins())
+            >>> interface = [r for r in protein['residues'] if r['is_interface']]
+
+
     """
 
 

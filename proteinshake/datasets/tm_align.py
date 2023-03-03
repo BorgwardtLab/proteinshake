@@ -8,78 +8,143 @@ import os
 import itertools
 import re
 import subprocess
+import tempfile
+import shutil
+import numpy as np
+from biopandas.pdb import PandasPdb
 from collections import defaultdict
-
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-from proteinshake.datasets import Dataset
+from proteinshake.datasets import RCSBDataset
 from proteinshake.utils import (extract_tar,
                                 download_url,
                                 save,
                                 load,
                                 unzip_file,
-                                tmalign_wrapper
+                                global_distance_test,
+                                local_distance_difference_test
                                 )
 
 
-class TMAlignDataset(Dataset):
-    """Proteins with TM scores between all pairs.
-    This dataset contains 200 proteins from the TMalign benchmark dataset.
-    The dataset has a global attribute `tm_score` which is a dictionary
-    containing the TMscore between all pairs of proteins in the dataset.
+class TMAlignDataset(RCSBDataset):
+    """Proteins that were aligned with TMalign. The dataset provides the TM-score, RMSD, Global Distance Test (GDT), and Local Distance Difference Test (LDDT) as similarity/distance metrics between any two proteins.
 
     .. code-block:: python
 
-        from proteinshake.datasets import TMScoreBenchmark
+        from proteinshake.datasets import TMAlignDataset
 
-        dataset = TMScoreBenchmark()
-        protein_1, protein_2 = dataset[0].name, dataset[2].name
+        dataset = TMAlignDataset()
+        proteins = dataset.proteins()
+        protein_1, protein_2 = proteins[1]['protein']['ID'], proteins[2]['protein']['ID']
 
-        dataset[protein_1][protein_2]
-        >>> 0.32
+        dataset.tm_score(protein_1, protein_2)
+        >>> 0.81
+        dataset.rmsd(protein_1, protein_2)
+        >>> 1.2
+        dataset.gdt(protein_1, protein_2)
+        >>> 0.75
+        dataset.lddt(protein_1, protein_2)
+        >>> 0.83
 
-    Parameters
-    ----------
-    root: str
-        Root directory where the dataset should be saved.
-    name: str
-        The name of the dataset.
-    use_precomputed: bool
-        If `True` uses TM scores from saved TMalign output. Otherwise, recomputes.
     """
+
+    additional_files = ['tmscore.npy','gdt.npy','rmsd.npy','lddt.npy']
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if not os.path.exists(f'{self.root}/tmalign.json'):
-            download_url(f'{self.repository_url}/tmalign.json.gz', f'{self.root}')
-            print('Unzipping...')
-            unzip_file(f'{self.root}/tmalign.json.gz')
-        self.tm_score, self.rmsd = load(f'{self.root}/tmalign.json')
+        self.align_structures()
+        self._tm_score = load(f'{self.root}/tmscore.npy')
+        self._gdt = load(f'{self.root}/gdt.npy')
+        self._rmsd = load(f'{self.root}/rmsd.npy')
+        self._lddt = load(f'{self.root}/lddt.npy')
+        self.protein_ids = [p['protein']['ID'] for p in self.proteins()]
+        
+    @property
+    def limit(self):
+        return 1000
+    
+    def align_structures(self):
+        """ Calls TMAlignn on all pairs of structures and saves the output"""
+        if os.path.exists(f'{self.root}/tmscore.npy'):
+            return
+        pdbids = [p['protein']['ID'] for p in self.proteins()]
+        path_dict = {self.get_id_from_filename(os.path.basename(f)):f for f in self.get_raw_files()}
+        paths = [path_dict[id] for id in pdbids]
+        num_proteins = len(paths)
+        combinations = np.array(list(itertools.combinations(range(num_proteins), 2)))
+        TM, RMSD, GDT, LDDT = [np.ones((num_proteins,num_proteins), dtype=np.float16) * np.nan for _ in ['tm','rmsd','gdt','lddt']]
+        np.fill_diagonal(TM, 1.0), np.fill_diagonal(RMSD, 0.0), np.fill_diagonal(GDT, 1.0), np.fill_diagonal(LDDT, 1.0)
+        d = Parallel(n_jobs=self.n_jobs)(delayed(tmalign_wrapper)(paths[i], paths[j]) for i,j in combinations)
+        x,y = tuple(combinations[:,0]), tuple(combinations[:,1])
+        TM[x,y] = [x['TM1'] for x in d]
+        TM[y,x] = [x['TM2'] for x in d]
+        RMSD[x,y] = [x['RMSD'] for x in d]
+        RMSD[y,x] = [x['RMSD'] for x in d]
+        GDT[x,y] = [x['GDT'] for x in d]
+        GDT[y,x] = [x['GDT'] for x in d]
+        LDDT[x,y] = [x['LDDT'] for x in d]
+        LDDT[y,x] = [x['LDDT'] for x in d]
+        # save
+        np.save(f'{self.root}/tmscore.npy', TM)
+        np.save(f'{self.root}/rmsd.npy', RMSD)
+        np.save(f'{self.root}/gdt.npy', GDT)
+        np.save(f'{self.root}/lddt.npy', LDDT)
 
-    def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
+    def tm_score(protein_1, protein_2):
+        return self._tm_score[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
+    
+    def rmsd(protein_1, protein_2):
+        return self._rmsd[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
-    def get_id_from_filename(self, filename):
-        return filename[:-4]
+    def gdt(protein_1, protein_2):
+        return self._gdt[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
-    def download(self):
-        lines = requests.get("https://zhanggroup.org/TM-align/benchmark/").text.split("\n")
-        links = []
-        print('Downloading TMScore Benchmark PDBs...')
-        for l in lines:
-            m = re.search(".pdb", l)
-            if m:
-                start, end = m.span()
-                pdbid = l[start-5:end]
-                links.append(f"https://zhanggroup.org/TM-align/benchmark/{pdbid}")
-        links = links[:self.limit] # for testing
-        for link in tqdm(links):
-            download_url(link, f'{self.root}/raw/files', log=False)
+    def lddt(protein_1, protein_2):
+        return self._lddt[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = 'TM Score'
-        desc['values'] = "[0-1]"
-        desc['type'] = "Real-valued, Pairwise"
-        return desc
+def tmalign_wrapper(pdb1, pdb2):
+    """Compute TM score with TMalign between two PDB structures.
+    Parameters
+    ----------
+    pdb1: str
+        Path to PDB.
+    pdb2 : str
+        Path to PDB.
+    return_superposition: bool
+        If True, returns a protein dataframe with superposed structures.
+    Returns
+    -------
+    dict
+        Metric values TM1/TM2 (TM-Scores normalized to pdb1 or pdb2), RMSD, GDT
+    """
+    assert shutil.which('TMalign') is not None,\
+           "No TMalign installation found. Go here to install : https://zhanggroup.org/TM-align/TMalign.cpp"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        lines = subprocess.run(['TMalign','-outfmt','-1', pdb1, pdb2, '-o', f'{tmpdir}/superposition'], stdout=subprocess.PIPE).stdout.decode().split('\n')
+        TM1 = lines[7].split()[1]
+        TM2 = lines[8].split()[1]
+        RMSD = lines[6].split()[4][:-1]
+        seq1, ali, seq2 = lines[12], lines[13], lines[14]
+        i, j, alignmentA, alignmentB = 0, 0, [], []
+        for s1,a,s2 in zip(seq1,ali,seq2):
+            if a != ' ': alignmentA.append(i)
+            if a != ' ': alignmentB.append(j)
+            if s1 != '-': i += 1
+            if s2 != '-': j += 1
+        os.rename(f'{tmpdir}/superposition_all', f'{tmpdir}/superposition_all.pdb')
+        superposition = PandasPdb().read_pdb(f'{tmpdir}/superposition_all.pdb')
+        df = superposition.df['ATOM']
+        A = df[df['chain_id'] == 'A']
+        B = df[df['chain_id'] == 'B']
+        coordsA = np.array(list(zip(A['x_coord'], A['y_coord'], A['z_coord'])))[alignmentA]
+        coordsB = np.array(list(zip(B['x_coord'], B['y_coord'], B['z_coord'])))[alignmentB]
+        GDT = global_distance_test(coordsA, coordsB)
+        LDDT = local_distance_difference_test(coordsA, coordsB)
+    return {
+        'TM1': float(TM1),
+        'TM2': float(TM2),
+        'RMSD': float(RMSD),
+        'GDT': GDT,
+        'LDDT': LDDT
+    }

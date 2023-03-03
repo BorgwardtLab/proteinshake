@@ -17,9 +17,9 @@ from proteinshake.utils import extract_tar, download_url
 RDLogger.DisableLog('rdApp.*') # disable warnings
 
 class ProteinLigandInterfaceDataset(Dataset):
-    """Proteins bound to small molecules with binding site and affinity information. Residues
-    in each protein are marked with a boolean `binding_site` to indicate
-    residues defined to be inside the binding pocket.
+    """Proteins bound to small molecules from PDBBind with binding site, ligand and affinity information.
+
+
 
     Parameters
     ----------
@@ -27,6 +27,24 @@ class ProteinLigandInterfaceDataset(Dataset):
         Root directory where the dataset should be saved.
     name: str
         The name of the dataset.
+    version: str
+        PDBBind version to use.
+
+
+
+    .. code-block:: python
+
+        >>> from proteinshake.datasets import ProteinLigandInterfaceDataset
+        >>> dataset = ProteinLigandInterfaceDataset()
+        >>> protein = next(dataset.proteins())
+        >>> protein['protein']['ligand_smiles']
+        'NC(=O)CC[C@H]([NH2+]C[C@@]1(O)OC[C@@H](O)[C@@H](O)[C@@H]1O)C(=O)O'
+        >>> protein['protein']['kd']
+        99.0
+        >>> pocket = [r for r in protein['residues'] if r['binding_site']]
+
+
+
     """
 
 
