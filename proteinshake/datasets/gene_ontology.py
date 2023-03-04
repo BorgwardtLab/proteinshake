@@ -13,8 +13,8 @@ class GeneOntologyDataset(RCSBDataset):
     additional_files = ['go-basic.obo']
 
     def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs):
-        self.godag = GODag(f'{kwargs["root"]}/go-basic.obo', prt=None)
         super().__init__(query=query, **kwargs)
+        self.godag = GODag(f'{kwargs["root"]}/go-basic.obo', prt=None)
 
     def download(self):
         super().download()
@@ -23,15 +23,16 @@ class GeneOntologyDataset(RCSBDataset):
         self.godag = GODag(f'{self.root}/go-basic.obo', prt=None)
 
     def add_protein_attributes(self, protein):
+        godag = GODag(f'{self.root}/go-basic.obo', prt=None)
         with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
         go_terms = []
         for a in annot['rcsb_polymer_entity_annotation']:
             if a['type'] == 'GO':
                 go_terms.extend([go['id'] for go in a['annotation_lineage']])
-        protein['protein']['molecular_function'] = [term for term in go_terms if self.godag[term].namespace == 'molecular_function']
-        protein['protein']['cellular_component'] = [term for term in go_terms if self.godag[term].namespace == 'cellular_component']
-        protein['protein']['biological_process'] = [term for term in go_terms if self.godag[term].namespace == 'biological_process']
+        protein['protein']['molecular_function'] = [term for term in go_terms if godag[term].namespace == 'molecular_function']
+        protein['protein']['cellular_component'] = [term for term in go_terms if godag[term].namespace == 'cellular_component']
+        protein['protein']['biological_process'] = [term for term in go_terms if godag[term].namespace == 'biological_process']
         return protein
 
     def describe(self):
