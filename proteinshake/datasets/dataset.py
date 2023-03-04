@@ -289,8 +289,13 @@ class Dataset():
             except:
                 atom_sasa.append(-1)
         for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
-            residue_sasa.append(residue_result[chain][str(i)].total)
-            residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
+            try:
+                residue_sasa.append(residue_result[chain][str(i)].total)
+                residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
+            except:
+                residue_sasa.append(-1)
+                residue_rsa.append(-1)
+            
 
         # create protein_dict
         protein = {
