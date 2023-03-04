@@ -13,7 +13,7 @@ class GeneOntologyDataset(RCSBDataset):
     additional_files = ['go-basic.obo']
 
     def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs):
-        self.godag = GODag(f'{kwargs['root']}/go-basic.obo', prt=None)
+        self.godag = GODag(f'{kwargs["root"]}/go-basic.obo', prt=None)
         super().__init__(query=query, **kwargs)
 
     def download(self):
