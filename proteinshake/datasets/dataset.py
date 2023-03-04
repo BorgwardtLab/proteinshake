@@ -429,7 +429,7 @@ class Dataset():
         """
         from proteinshake.representations import GraphDataset
         proteins = self.proteins(resolution=resolution)
-        return GraphDataset(Generator(transform(p) for p in proteins), len(proteins)),
+        return GraphDataset(Generator((transform(p) for p in proteins), len(proteins)),
                             self.root,
                             self.name,
                             resolution,
@@ -446,7 +446,7 @@ class Dataset():
         """
         from proteinshake.representations import PointDataset
         proteins = self.proteins(resolution=resolution)
-        return PointDataset(Generator(transform(p) for p in proteins), len(proteins)),
+        return PointDataset(Generator((transform(p) for p in proteins), len(proteins)),
                             self.root,
                             self.name,
                             resolution,
@@ -463,7 +463,7 @@ class Dataset():
         """
         from proteinshake.representations import VoxelDataset
         proteins = self.proteins(resolution=resolution)
-        return VoxelDataset(Generator(transform(p) for p in proteins), len(proteins)),
+        return VoxelDataset(Generator((transform(p) for p in proteins), len(proteins)),
                             self.root,
                             self.name,
                             resolution,
