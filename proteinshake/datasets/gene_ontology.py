@@ -20,7 +20,6 @@ class GeneOntologyDataset(RCSBDataset):
         super().download()
         if not os.path.exists(f'{self.root}/godag.obo'):
             download_url(f'http://current.geneontology.org/ontology/go-basic.obo', f'{self.root}', log=False)
-        self.godag = GODag(f'{self.root}/go-basic.obo', prt=None)
 
     def add_protein_attributes(self, protein):
         godag = GODag(f'{self.root}/go-basic.obo', prt=None)
