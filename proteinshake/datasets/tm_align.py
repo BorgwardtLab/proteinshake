@@ -75,7 +75,7 @@ class TMAlignDataset(RCSBDataset):
         combinations = np.array(list(itertools.combinations(range(num_proteins), 2)))
         TM, RMSD, GDT, LDDT = [np.ones((num_proteins,num_proteins), dtype=np.float16) * np.nan for _ in ['tm','rmsd','gdt','lddt']]
         np.fill_diagonal(TM, 1.0), np.fill_diagonal(RMSD, 0.0), np.fill_diagonal(GDT, 1.0), np.fill_diagonal(LDDT, 1.0)
-        d = Parallel(n_jobs=self.n_jobs)(delayed(tmalign_wrapper)(paths[i], paths[j]) for i,j in combinations)
+        d = Parallel(n_jobs=self.n_jobs)(delayed(tmalign_wrapper)(paths[i], paths[j]) for i,j in tqdm(combinations, desc='Aligning'))
         x,y = tuple(combinations[:,0]), tuple(combinations[:,1])
         TM[x,y] = [x['TM1'] for x in d]
         TM[y,x] = [x['TM2'] for x in d]
