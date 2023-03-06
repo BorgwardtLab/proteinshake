@@ -88,7 +88,7 @@ class Task:
 
         self.compute_targets()
 
-    def compute_targets():
+    def compute_targets(self):
         # compute targets (e.g. for scaling)
         self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
         self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
