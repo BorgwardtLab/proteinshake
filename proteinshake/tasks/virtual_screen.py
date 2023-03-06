@@ -109,16 +109,3 @@ class VirtualScreenTask(Task):
             val, test = train_test_split(rest, test_size=.1, random_state=self.random_state)
             return train, val, test
 
-
-
-
-if __name__ == "__main__":
-    from proteinshake.tasks import VirtualScreenTask
-    import numpy as np
-    task = VirtualScreenTask(use_precomputed=False)
-    preds = [np.random.rand(len(task.target(p))) for p in task.dataset.proteins()]
-    metrics = task.evaluate(preds, cutoff_fraction=.2)
-    print(metrics)
-
-
-
