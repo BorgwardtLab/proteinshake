@@ -393,20 +393,26 @@ class Dataset():
             Whether or not the DataFrame is valid.
         """
         if len(df['residue_number'].unique()) < self.minimum_length:
+            print("too small")
             return False
         if len(df['residue_number'].unique()) > self.maximum_length:
+            print("too big")
             return False
         # check if single chain protein
         if self.only_single_chain and len(df['chain_id'].unique()) > 1:
+            print("multi chain")
             return False
         # check if sequence and structure are consistent
         if self.check_sequence and not max(df['residue_number']) == len(df['residue_number'].unique()):
+            print("inconsitent")
             return False
         # check if all standard amino acids
         if not all(df['residue_type'].map(lambda x: not x is None)):
+            print("nonstandard aa")
             return False
         # check if sequence is empty (e.g. with non-canonical amino acids)
         if not sum(df['residue_type'].map(lambda x: not x is None)) > 0:
+            print("empty seq")
             return False
         return True
 
