@@ -40,7 +40,7 @@ class PointDataset():
 
     """
 
-    def __init__(self, proteins, size, root, name, resolution='residue'):
+    def __init__(self, proteins, root, name, resolution='residue'):
         self.path = f'{root}/processed/point/{name}_{resolution}'
         self.points = (Point(protein) for protein in proteins)
         self.size = len(proteins)

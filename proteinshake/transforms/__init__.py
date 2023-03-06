@@ -1,12 +1,12 @@
-from .transforms import Transform
-from .transforms import IdentityTransform
-from .coords import CenterTransform
-from .coords import RandomRotateTransform
+from .transforms import *
+from .coords import *
 
-__all__ = ['Transform',
-           'IdentityTransform',
-           'CenterTransform',
-           'RandomRotateTransform',
+__all__ = [
+            'Compose',
+            'Transform',
+            'IdentityTransform',
+            'CenterTransform',
+            'RandomRotateTransform',
           ]
 
 classes = __all__

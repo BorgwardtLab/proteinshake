@@ -3,8 +3,7 @@ from sklearn import metrics
 
 from proteinshake.datasets import ProteinProteinInterfaceDataset
 from proteinshake.tasks import Task
-from proteinshake.transforms import CenterTransform
-from proteinshake.transforms import RandomRotateTransform
+from proteinshake.transforms import CenterTransform, RandomRotateTransform, Compose
 
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
@@ -27,10 +26,6 @@ class ProteinProteinInterfaceTask(Task):
 
     DatasetClass = ProteinProteinInterfaceDataset
 
-    def __init__(self, root='data', resolution='residue', *args, **kwargs):
-        dataset = ProteinProteinInterfaceDataset(root=root, transforms=[CenterTransform(), RandomRotateTransform()])
-        super().__init__(dataset, *args, **kwargs)
-
     @property
     def task_type(self):
         return "binary-classification"
@@ -38,28 +33,30 @@ class ProteinProteinInterfaceTask(Task):
     def target(self, protein):
         return protein['residue']['is_interface']
 
-    def evaluate(self, pred):
+    def evaluate(self, y_pred):
         """ Evaluate performance of an interface classifier.
 
-        pred: list
+        y_pred: list
             One list for each protein in the test set with a probability for each residue in the protein.
 
         """
         labels = [self.target(p) for p in \
                   self.proteins[self.test_index]]
         labels = np.hstack(labels)
-        pred = np.hstack(pred)
+        y_pred = np.hstack(y_pred)
         return {
-                'auc-roc': metrics.roc_auc_score(labels, pred),
-                'average precision': metrics.average_precision_score(labels, pred),
+                'auc-roc': metrics.roc_auc_score(labels, y_pred),
+                'average precision': metrics.average_precision_score(labels, y_pred),
                 }
 
-if __name__ == "__main__":
-    import random
-    ta = ProteinProteinInterfaceTask(use_precomputed=False).to_graph(eps=8).pyg()
+    def to_graph(self, *args, **kwargs):
+        self.dataset = self.dataset.to_graph(*args, **kwargs, transform=Compose([CenterTransform(), RandomRotateTransform()]))
+        return self
 
-    preds = []
-    for p in ta.proteins[ta.test_index]:
-        preds.append([random.random() for _ in range(len(p['residue']['residue_number']))])
+    def to_point(self, *args, **kwargs):
+        self.dataset = self.dataset.to_point(*args, **kwargs, transform=Compose([CenterTransform(), RandomRotateTransform()]))
+        return self
 
-    print(ta.evaluate(preds))
+    def to_voxel(self, *args, **kwargs):
+        self.dataset = self.dataset.to_voxel(*args, **kwargs, transform=Compose([CenterTransform(), RandomRotateTransform()]))
+        return self

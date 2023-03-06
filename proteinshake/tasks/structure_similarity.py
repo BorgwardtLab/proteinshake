@@ -16,27 +16,27 @@ class StructureSimilarityTask(Task):
 
     DatasetClass = TMAlignDataset
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.train_index = self.compute_pairs(self.train_index)
+        self.val_index = self.compute_pairs(self.val_index)
+        self.test_index = self.compute_pairs(self.test_index)
+        
+        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
+        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
+        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index])
+
     @property
     def task_type(self):
         return "regression"
 
-    def compute_pairs(self, indices):
-        com = list(itertools.combinations(range(len(indices)), 2))
-        return np.array(indices)[com].tolist()
-
-    def compute_random_split(self, *args, **kwargs):
-        splits = super().compute_random_split(*args, **kwargs)
-        return {k: self.compute_pairs(v) for k,v in splits.items()}
-
-    def compute_cluster_split(self, *args, **kwargs):
-        splits = super().compute_cluster_split(*args, **kwargs)
-        return {k: self.compute_pairs(v) for k,v in splits.items()}
+    def compute_pairs(self, index):
+        combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)
+        return index[combinations]
 
     def target(self, protein1, protein2=None):
-        try:
-            protein1, protein2 = protein1
-        except:
-            pass
+        if protein2 is None: return None
         pdbid_1 = protein1['protein']['ID']
         pdbid_2 = protein2['protein']['ID']
         return self.dataset.lddt(pdbid_1,pdbid_2)

@@ -1,4 +1,5 @@
 from sklearn import metrics
+from functools import cached_property
 
 from proteinshake.datasets import SCOPDataset
 from proteinshake.tasks import Task
@@ -14,8 +15,9 @@ class StructuralClassTask(Task):
         self.scop_level = scop_level
         super().__init__(*args, **kwargs)
 
-    def compute_token_map(self):
-        labels = {p['protein'][self.scop_level] for p in self.proteins()}
+    @cached_property
+    def token_map(self):
+        labels = {p['protein'][self.scop_level] for p in self.proteins}
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 
     @property

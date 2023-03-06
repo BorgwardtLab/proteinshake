@@ -74,7 +74,8 @@ class VoxelDataset():
 
     """
 
-    def __init__(self, proteins, size, root, name, resolution='residue', gridsize=None, voxelsize=10, aggregation='mean'):
+    def __init__(self, proteins, root, name, resolution='residue', gridsize=None, voxelsize=10, aggregation='mean'):
+        self.size = len(proteins)
         if gridsize is None:
             proteins, proteins_copy = itertools.tee(proteins)
             gridsize = np.array([[
@@ -85,9 +86,8 @@ class VoxelDataset():
             gridsize = np.ceil(gridsize/voxelsize).astype(int)
         gridsize = np.array(gridsize)
         gridsize_string = '_'.join(str(i) for i in gridsize)
-        self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
-        self.size = len(proteins)
         self.gridsize = gridsize
+        self.voxels = (Voxel(protein, gridsize, voxelsize, aggregation) for protein in proteins)
         self.path = f'{root}/processed/voxel/{name}_{resolution}_voxelsize_{voxelsize}_gridsize_{gridsize_string}_aggregation_{aggregation}'
 
     def torch(self, *args, **kwargs):

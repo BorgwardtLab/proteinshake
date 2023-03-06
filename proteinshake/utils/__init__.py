@@ -2,7 +2,6 @@ from .embeddings import *
 from .pdbbind import *
 from .ppi import get_interfaces
 from .io import *
-from .transforms import *
 from .similarity import *
 
 __all__ = ['onehot',
@@ -17,7 +16,6 @@ __all__ = ['onehot',
            'zip_file',
            'unzip_file',
            'write_avro',
-           'Compose',
            ]
 
 classes = __all__

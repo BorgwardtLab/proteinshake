@@ -2,7 +2,8 @@ import json, os
 from goatools.obo_parser import GODag
 
 from proteinshake.datasets import RCSBDataset
-from proteinshake.utils import download_url
+from proteinshake.utils import download_url, unzip_file
+from functools import cached_property
 
 class GeneOntologyDataset(RCSBDataset):
     """ Proteins from RCSB for which the Gene Ontology (GO) term is known.
@@ -10,16 +11,23 @@ class GeneOntologyDataset(RCSBDataset):
     from the root to the leaves along the GO hierarchy.
     """
 
-    additional_files = ['go-basic.obo']
+    additional_files = ['GeneOntologyDataset.godag.obo']
 
     def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs):
         super().__init__(query=query, **kwargs)
-        self.godag = GODag(f'{self.root}/go-basic.obo', prt=None)
+
+    @cached_property
+    def godag(self):
+        if not os.path.exists(f'{self.root}/go-basic.obo'):
+            download_url(f'{self.repository_url}/go-basic.obo.gz', f'{self.root}')
+            unzip_file(f'{self.root}/go-basic.obo.gz')
+        return GODag(f'{self.root}/go-basic.obo', prt=None)
 
     def download(self):
         super().download()
         if not os.path.exists(f'{self.root}/godag.obo'):
             download_url(f'http://current.geneontology.org/ontology/go-basic.obo', f'{self.root}', log=False)
+            os.rename(f'{self.root}/go-basic.obo', f'{self.root}/{self.name}.godag.obo')
 
     def add_protein_attributes(self, protein):
         godag = GODag(f'{self.root}/go-basic.obo', prt=None)

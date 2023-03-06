@@ -15,6 +15,7 @@ from biopandas.pdb import PandasPdb
 from collections import defaultdict
 from joblib import Parallel, delayed
 from tqdm import tqdm
+from functools import cached_property
 
 from proteinshake.datasets import RCSBDataset
 from proteinshake.utils import (extract_tar,
@@ -36,29 +37,42 @@ class TMAlignDataset(RCSBDataset):
 
         dataset = TMAlignDataset()
         proteins = dataset.proteins()
-        protein_1, protein_2 = proteins[1]['protein']['ID'], proteins[2]['protein']['ID']
+        protein_1, protein_2 = next(proteins)['protein']['ID'], next(proteins)['protein']['ID']
 
         dataset.tm_score(protein_1, protein_2)
-        >>> 0.81
+        >>> 0.03
         dataset.rmsd(protein_1, protein_2)
-        >>> 1.2
+        >>> 3.64
         dataset.gdt(protein_1, protein_2)
-        >>> 0.75
+        >>> 0.61
         dataset.lddt(protein_1, protein_2)
-        >>> 0.83
+        >>> 0.65
 
     """
 
-    additional_files = ['tmscore.npy','gdt.npy','rmsd.npy','lddt.npy']
+    additional_files = [
+        'TMAlignDataset.tmscore.npy',
+        'TMAlignDataset.gdt.npy',
+        'TMAlignDataset.rmsd.npy',
+        'TMAlignDataset.lddt.npy'
+    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.align_structures()
-        self._tm_score = load(f'{self.root}/tmscore.npy')
-        self._gdt = load(f'{self.root}/gdt.npy')
-        self._rmsd = load(f'{self.root}/rmsd.npy')
-        self._lddt = load(f'{self.root}/lddt.npy')
+
+        if not self.use_precomputed: self.align_structures()
         self.protein_ids = [p['protein']['ID'] for p in self.proteins()]
+
+        def download_file(filename):
+            if not os.path.exists(f'{self.root}/{filename}'):
+                download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', log=False)
+                unzip_file(f'{self.root}/{filename}.gz')
+            return load(f'{self.root}/{filename}')
+
+        self._tm_score = download_file('tmscore.npy')
+        self._rmsd = download_file('rmsd.npy')
+        self._gdt = download_file('gdt.npy')
+        self._lddt = download_file('lddt.npy')
         
     @property
     def limit(self):
@@ -86,21 +100,21 @@ class TMAlignDataset(RCSBDataset):
         LDDT[x,y] = [x['LDDT'] for x in d]
         LDDT[y,x] = [x['LDDT'] for x in d]
         # save
-        np.save(f'{self.root}/tmscore.npy', TM)
-        np.save(f'{self.root}/rmsd.npy', RMSD)
-        np.save(f'{self.root}/gdt.npy', GDT)
-        np.save(f'{self.root}/lddt.npy', LDDT)
+        np.save(f'{self.root}/{self.name}.tmscore.npy', TM)
+        np.save(f'{self.root}/{self.name}.rmsd.npy', RMSD)
+        np.save(f'{self.root}/{self.name}.gdt.npy', GDT)
+        np.save(f'{self.root}/{self.name}.lddt.npy', LDDT)
 
-    def tm_score(protein_1, protein_2):
+    def tm_score(self, protein_1, protein_2):
         return self._tm_score[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
     
-    def rmsd(protein_1, protein_2):
+    def rmsd(self, protein_1, protein_2):
         return self._rmsd[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
-    def gdt(protein_1, protein_2):
+    def gdt(self, protein_1, protein_2):
         return self._gdt[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
-    def lddt(protein_1, protein_2):
+    def lddt(self, protein_1, protein_2):
         return self._lddt[self.protein_ids.index(protein_1)][self.protein_ids.index(protein_2)]
 
 def tmalign_wrapper(pdb1, pdb2):

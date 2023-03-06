@@ -1,4 +1,5 @@
 from sklearn import metrics
+from functools import cached_property
 
 from proteinshake.datasets import EnzymeCommissionDataset
 from proteinshake.tasks import Task
@@ -14,7 +15,8 @@ class EnzymeClassTask(Task):
         self.ec_level = ec_level
         super().__init__(*args, **kwargs)
 
-    def compute_token_map(self):
+    @cached_property
+    def token_map(self):
         labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.proteins}
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 

@@ -10,10 +10,9 @@ import gzip
 import shutil
 import requests
 import re
-from pathlib import Path
-
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from tqdm import tqdm
 from fastavro import writer as avro_writer, reader as avro_reader, parse_schema as parse_avro_schema
 
