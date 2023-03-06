@@ -90,9 +90,9 @@ class Task:
 
     def compute_targets(self):
         # compute targets (e.g. for scaling)
-        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
-        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
-        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index])
+        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index], dtype=object)
+        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index], dtype=object)
+        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index], dtype=object)
             
     def compute_custom_split(self, split):
         """ Implements custom splitting. Only necessary when not using the precomputed splits, e.g. when implementing a custom task.
