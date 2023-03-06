@@ -5,20 +5,17 @@ __version__ = '0.2.1'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
 
 install_requires = [
-                    'numpy',
-                    'scipy',
-                    'biopandas',
-                    'scikit-learn',
-                    'tqdm',
-                    'wget',
-                    'requests',
-                    'joblib',
-                    'rdkit',
-                    'tabulate',
-                    'fastavro',
-                    'freesasa',
-                    'goatools'
-                    ]
+    'biopandas==0.4.1',
+    'pandas==1.4.3',
+    'rdkit-pypi==2022.3.3',
+    'tqdm==4.64.0',
+    'scikit-learn==1.1.1',
+    'joblib==1.2.0',
+    'requests==2.27.1',
+    'fastavro==1.6.1',
+    'freesasa==2.2.0',
+    'goatools==1.3.1',
+]
 test_requires = [
     'pytest',
 ]
@@ -28,7 +25,7 @@ setup(
     version=__version__,
     description='Deep learning ready datasets of 3D protein structures.',
     author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt",
-    author_email = "tim.kucera@bsse.ethz.ch",
+    author_email = "kucera@biochem.mpg.de",
     url=URL,
     keywords = ['bioinformatics',
                 'deep-learning',
