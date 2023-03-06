@@ -23,7 +23,7 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1147155',
+    'latest': '1169895',
 }
 
 class Dataset():
@@ -235,6 +235,7 @@ class Dataset():
         """
         if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
             for filename in [f'{self.name}.{resolution}.avro.gz'] + self.additional_files:
+                if not filename.endswith('.gz'): filename += '.gz'
                 download_url(f'{self.repository_url}/{filename}', f'{self.root}')
                 print('Unzipping...')
                 unzip_file(f'{self.root}/{filename}')
