@@ -5,7 +5,19 @@ from proteinshake.datasets import ProteinLigandDecoysDataset
 from proteinshake.tasks import Task
 
 class VirtualScreenTask(Task):
-    """ Test an affinity scoring model on a virtual screen
+    """ Test an affinity scoring model on a virtual screen.
+    The goal in a virtual screen is: for a given protein and a library of potential
+    binders, bring the binders to the top of the list.
+    In this task, the model is given a protein and a list of ligands to score.
+    The model scores each ligand in a library with a score proportional to the likelihood
+    that the protein and ligand will bind. This can be a docking score, energy calculation,
+    or just a probability.
+    Each protein's ligand library contains a certain number of active molecules (ligands)
+    and a certai (larger) number of decoys (non-binders).
+    We use the predicted scores to sort the whole library and calculate the position of each
+    active ligand in the sorted library.
+    Ligands in the topi percentiles which are known to be active contribute a 1 to the score
+    and those below the cutoff contribute a 0.
 
     .. warning::
 
@@ -22,8 +34,8 @@ class VirtualScreenTask(Task):
         >>> task.evaluate(preds, cutoff_fraction=.2)
         {'enrichment_factor-@.2': 0.6}
 
-
     """
+
     DatasetClass = ProteinLigandDecoysDataset
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
