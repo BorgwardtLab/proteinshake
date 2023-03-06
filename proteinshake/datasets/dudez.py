@@ -197,6 +197,7 @@ class ProteinLigandDecoysDataset(Dataset):
             protein['protein'][f'{mode}_ids'] = ids
             protein['protein'][f'num_{mode}'] = len(ids)
 
+        protein['protein']['num_mols'] = protein['protein']['num_ligands'] + protein['protein']['num_decoys']
         return protein
 
 if __name__ == "__main__":
