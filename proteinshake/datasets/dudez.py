@@ -7,7 +7,31 @@ from biopandas.pdb import PandasPdb
 from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url
 
-AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'CYX': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HID': 'H', 'HIE': 'HIS', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
+AA_THREE_TO_ONE = {'ALA': 'A',
+                   'CYS': 'C',
+                   'CYZ': 'C',
+                   'CYX': 'C',
+                   'ASP': 'D',
+                   'GLU': 'E',
+                   'PHE': 'F',
+                   'GLY': 'G',
+                   'HIP': 'H',
+                   'HID': 'H',
+                   'HIE': 'H',
+                   'HIS': 'H',
+                   'ILE': 'I',
+                   'LYS': 'K',
+                   'LEU': 'L',
+                   'MET': 'M',
+                   'ASN': 'N',
+                   'PRO': 'P',
+                   'GLN': 'Q',
+                   'ARG': 'R',
+                   'SER': 'S',
+                   'THR': 'T',
+                   'VAL': 'V',
+                   'TRP': 'W',
+                   'TYR': 'Y'}
 
 class ProteinLigandDecoyDataset(Dataset):
     """ Proteins (targets) from `DUDE-Z <https://pubs.acs.org/doi/10.1021/acs.jcim.0c00598>`_ with a list of decoys and active molecules for each.
@@ -16,30 +40,31 @@ class ProteinLigandDecoyDataset(Dataset):
     that the given molecule is a binder. Then, this score is used to sort the union of all the ligands and
     decoys. A good model places true ligands at the top of this list. This is known as enrichment factor
     analysis.
+    `data source <https://dudez.docking.org/>`_.
 
-
-    Parameters
-    ----------
-    root: str
-        Root directory where the dataset should be saved.
-    name: str
-        The name of the dataset.
 
     .. code-block:: python
 
         >>> from proteinshake.datasets import ProteinLigandDecoyDataset
         >>> dataset = ProteinLigandDecoyDataset()
         >>> protein = next(dataset.proteins())
-        >>> protein['ligands'][:3]
-        >>> protein['decoys'][:3]
+        >>> protein['ligands_smiles'][:3]
+        ['C1=CC(NC2=NC(N3CC[NH2+]CC3)=NC(NC3CCCC3)=N2)=CC=[NH+]1', 'C[C@@H]([NH3+])C1=CC=C(C(=O)NC2=C3C=CNC3=NC=C2)C=C1', 'NC1=NON=C1C1=NC2=CC=CC=C2N1C1=CC=CC=C1']
+        >>> protein['ligands_ids'][:3]
+        ['CHEMBL575962', 'CHEMBL571948', 'CHEMBL1078426']
+        >>> protein['decoys_smiles'][:3]
+        ['Cc1nc(C)c(N(C)C)nc1C', 'O=C(c1ccc(Cl)cc1Cl)N1CCC(c2cnc[nH]2)CC1', 'O=C(Nc1ccc(O)cc1)C(Cl)(Cl)Cl']
+        >>> protein['decoys_ids'][:3]
+        ['ZINC000000002211', 'ZINC000000006000', 'ZINC000000002214']
+
 
     """
 
     def pdb2df(self, path):
         """ Parses a single PDB file to a DataFrame (with biopandas).
         Also deals with multiple structure models in a PDB (e.g. from NMR) by only selecting the first model.
-        This modification allows for protonated histidine residues which are common in this dataset.
-        We just map them to regular HIS for now.
+        This modification allows for protonated histidine and cysteine residues which are common in this dataset.
+        We just map them to regular HIS and CYS for now.
 
         Parameters
         ----------
@@ -64,8 +89,9 @@ class ProteinLigandDecoyDataset(Dataset):
                 model_done = True
                 in_model = False
             filtered_lines.append(line)
+        IONS = ['ZN', 'MG']
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
-        print(df['residue_name'].unique())
+        df = df.loc[~df['residue_name'].isin(IONS)]
         df['residue_name'] = df['residue_name'].map(lambda x: AA_THREE_TO_ONE[x] if x in AA_THREE_TO_ONE else None)
         #df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
         df = df.rename(columns={
@@ -84,7 +110,7 @@ class ProteinLigandDecoyDataset(Dataset):
         return glob.glob(f'{self.root}/raw/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
-        return filename[:4]
+        return filename.split(".")[0]
 
     def download(self):
 
@@ -135,7 +161,7 @@ class ProteinLigandDecoyDataset(Dataset):
                 ]
 
 
-        for target_id in targets[:3]:
+        for target_id in targets:
             # grab receptor
             print(target_id)
             download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb",
@@ -158,18 +184,25 @@ class ProteinLigandDecoyDataset(Dataset):
     def add_protein_attributes(self, protein):
 
         target = protein['protein']['ID']
-        with open(f"{self.root}/raw/decoys_{target}.smi", "r") as ligands:
-            protein['protein']['ligands_smiles'] = [line.split()[0] for line in ligands.readlines()]
-            protein['protein']['ligands_ids'] = [line.split()[1] for line in ligands.readlines()]
 
-        with open(f"{self.root}/raw/decoys_{target}.smi", "r") as decoys:
-            protein['protein']['decoys_smiles'] = [line.split()[0] for line in decoys.readlines()]
-            protein['protein']['decoys_ids'] = [line.split()[1] for line in decoys.readlines()]
+        for mode in ['decoys', 'ligands']:
+            with open(f"{self.root}/raw/{mode}_{target}.smi", "r") as mols:
+                smiles, ids = [], []
+                for line in mols:
+                    smile, mol_id = line.split()
+                    smiles.append(smile)
+                    ids.append(mol_id)
+
+            protein['protein'][f'{mode}_smiles'] = smiles
+            protein['protein'][f'{mode}_ids'] = ids
 
         return protein
 
 if __name__ == "__main__":
     da = ProteinLigandDecoyDataset(use_precomputed=False)
     protein = next(da.proteins())
-    # print(protein)
+    print(protein['protein']['ligands_smiles'][:3])
+    print(protein['protein']['ligands_ids'][:3])
+    print(protein['protein']['decoys_smiles'][:3])
+    print(protein['protein']['decoys_ids'][:3])
 
