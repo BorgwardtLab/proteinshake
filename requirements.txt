@@ -3,7 +3,7 @@ pandas==1.4.3
 rdkit-pypi==2022.3.3
 tqdm==4.64.0
 scikit-learn==1.1.1
-joblib==1.1.0
+joblib==1.2.0
 requests==2.27.1
 fastavro==1.6.1
 freesasa==2.2.0
