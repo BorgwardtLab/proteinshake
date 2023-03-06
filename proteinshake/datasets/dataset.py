@@ -364,7 +364,9 @@ class Dataset():
                 model_done = True
                 in_model = False
             filtered_lines.append(line)
+        IONS = ['ZN', 'MG']
         df = PandasPdb().read_pdb_from_list(filtered_lines).df['ATOM']
+        df = df.loc[~df['residue_name'].isin(IONS)]
         df['residue_name'] = df['residue_name'].map(lambda x: AA_THREE_TO_ONE[x] if x in AA_THREE_TO_ONE else None)
         #df['atom_name'] = df['atom_name'].map(lambda x: x[0]) # each atom is a multi-letter code where the first letter indicates the atom type
         df = df.rename(columns={
