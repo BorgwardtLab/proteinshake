@@ -8,6 +8,7 @@ from .pfam import PfamDataset
 from .tm_align import TMAlignDataset
 from .alphafold import AlphaFoldDataset
 from .scop import SCOPDataset
+from .dudez import ProteinLigandDecoysDataset
 
 __all__ = [
     'Dataset',
@@ -19,7 +20,8 @@ __all__ = [
     'PfamDataset',
     'TMAlignDataset',
     'AlphaFoldDataset',
-    'SCOPDataset'
+    'SCOPDataset',
+    'ProteinLigandDecoysDataset'
     ]
 
 classes = __all__

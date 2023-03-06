@@ -7,6 +7,7 @@ from .ppi_task import ProteinProteinInterfaceTask
 from .tm_search import StructureSearchTask
 from .structural_class import StructuralClassTask
 from .gene_ontology import GeneOntologyTask
+from .virtual_screen import VirtualScreenTask
 
 classes = ['Task',
            'EnzymeClassTask',
@@ -17,6 +18,7 @@ classes = ['Task',
            'StructuralClassTask',
            'StructureSimilarityTask',
            'StructureSearchTask',
+           'VirtualScreenTask'
            ]
 
 __all__ = classes

@@ -33,7 +33,7 @@ AA_THREE_TO_ONE = {'ALA': 'A',
                    'TRP': 'W',
                    'TYR': 'Y'}
 
-class ProteinLigandDecoyDataset(Dataset):
+class ProteinLigandDecoysDataset(Dataset):
     """ Proteins (targets) from `DUDE-Z <https://pubs.acs.org/doi/10.1021/acs.jcim.0c00598>`_ with a list of decoys and active molecules for each.
     Each molecule is encoded as a SMILES string, meant to be used in a virtual screen setting.
     In this setting a model is given a protein and a ligand and outputs a score reflecting the likelihood
@@ -45,7 +45,7 @@ class ProteinLigandDecoyDataset(Dataset):
 
     .. code-block:: python
 
-        >>> from proteinshake.datasets import ProteinLigandDecoyDataset
+        >>> from proteinshake.datasets import ProteinLigandDecoysDataset
         >>> dataset = ProteinLigandDecoyDataset()
         >>> protein = next(dataset.proteins())
         >>> protein['ligands_smiles'][:3]
@@ -195,11 +195,12 @@ class ProteinLigandDecoyDataset(Dataset):
 
             protein['protein'][f'{mode}_smiles'] = smiles
             protein['protein'][f'{mode}_ids'] = ids
+            protein['protein'][f'num_{mode}'] = len(ids)
 
         return protein
 
 if __name__ == "__main__":
-    da = ProteinLigandDecoyDataset(use_precomputed=False)
+    da = ProteinLigandDecoysDataset(use_precomputed=False)
     protein = next(da.proteins())
     print(protein['protein']['ligands_smiles'][:3])
     print(protein['protein']['ligands_ids'][:3])
