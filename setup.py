@@ -13,7 +13,7 @@ install_requires = [
     'joblib==1.2.0',
     'requests==2.27.1',
     'fastavro==1.6.1',
-    'freesasa==2.2.0',
+    'freesasa==2.2.0.post3',
     'goatools==1.3.1',
 ]
 test_requires = [
