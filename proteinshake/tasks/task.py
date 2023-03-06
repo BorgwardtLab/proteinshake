@@ -57,12 +57,18 @@ class Task:
                  **kwargs
                 ):
         self.root = root
-        self.dataset = self.DatasetClass(root=root)
+        self.dataset = self.DatasetClass(root=root, use_precomputed=use_precomputed)
         proteins = self.dataset.proteins()
         self.size = len(proteins)
+        self.random_state = random_state
+
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
                 self.proteins = list(proteins)
+
+            def __len__(self):
+                return len(self.proteins)
+
             def __getitem__(self, idx):
                 try:
                     idx = int(idx)
@@ -71,6 +77,7 @@ class Task:
                 if idx >= len(self.proteins):
                     raise StopIteration
                 return self.proteins[idx]
+
         self.proteins = Proteins(proteins)
         self.name = self.__class__.__name__
 
@@ -83,6 +90,9 @@ class Task:
         else:
             self.train_index, self.val_index, self.test_index = self.compute_custom_split(split)
 
+        self.compute_targets()
+
+    def compute_targets():
         # compute targets (e.g. for scaling)
         self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index])
         self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index])
@@ -107,6 +117,7 @@ class Task:
         test_index
             Numpy array with the index of proteins in the test split.
         """
+        raise NotImplementedError
 
     @property
     def task_type(self):
