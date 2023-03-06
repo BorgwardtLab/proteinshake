@@ -2,7 +2,7 @@ import json
 
 from proteinshake.datasets import RCSBDataset
 
-class PfamDataset(RCSBDataset):
+class ProteinFamilyDataset(RCSBDataset):
     """ Proteins from RCSB for which the protein family (Pfam) term is known.
     Each protein in the dataset has a `Pfam` attribute which stores the list of protein families.
     """

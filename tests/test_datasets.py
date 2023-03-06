@@ -6,7 +6,7 @@ import unittest, tempfile
 from proteinshake.datasets import (RCSBDataset,
                                    GeneOntologyDataset,
                                    EnzymeCommissionDataset,
-                                   PfamDataset,
+                                   ProteinFamilyDataset,
                                    ProteinProteinInterfaceDataset,
                                    ProteinLigandInterfaceDataset,
                                    TMAlignDataset,
@@ -39,7 +39,7 @@ class TestDatasets(unittest.TestCase):
 
     def test_pfam(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = PfamDataset(root=tmp).download_precomputed()
+            ds = ProteinFamilyDataset(root=tmp).download_precomputed()
 
     def test_rcsb(self):
         with tempfile.TemporaryDirectory() as tmp:

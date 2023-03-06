@@ -37,15 +37,6 @@ class VirtualScreenTask(Task):
     """
 
     DatasetClass = ProteinLigandDecoysDataset
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def compute_token_map(self):
-        labels = {p['protein']['EC'].split(".")[self.ec_level] for p in self.proteins}
-        return {label: i for i, label in enumerate(sorted(list(labels)))}
-
-    def compute_targets(self):
-        pass
 
     @property
     def task_type(self):
@@ -100,12 +91,4 @@ class VirtualScreenTask(Task):
             efs.append(mean_active_rank)
 
         return {'enrichment_factor-@{self.cutoff_fraction}': np.mean(efs)}
-
-    def compute_custom_split(self, split):
-        inds = list(range(self.size))
-
-        if split == 'random':
-            train, rest = train_test_split(inds, test_size=.2, random_state=self.random_state)
-            val, test = train_test_split(rest, test_size=.1, random_state=self.random_state)
-            return train, val, test
 

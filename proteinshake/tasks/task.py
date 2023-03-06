@@ -32,8 +32,6 @@ class Task:
         How to split the data. Can be 'random', 'sequence', or 'structure'.
     split_similarity_threshold: float
         Maximum similarity to allow between train and test samples.
-    random_state: int, default=42
-        Random seed for reproducible splitting.
     train_ratio: float, default=0.80
         Fraction of dataset to use for training.
     val_ratio: float, default=0.10
@@ -49,7 +47,6 @@ class Task:
                  root                       = 'data',
                  split                      = 'random',
                  split_similarity_threshold = 0.7,
-                 random_state               = 42,
                  train_ratio                = 0.80,
                  val_ratio                  = 0.10,
                  test_ratio                 = 0.10,
@@ -60,7 +57,6 @@ class Task:
         self.dataset = self.DatasetClass(root=root, use_precomputed=use_precomputed)
         proteins = self.dataset.proteins()
         self.size = len(proteins)
-        self.random_state = random_state
 
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
