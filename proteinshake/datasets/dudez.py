@@ -104,8 +104,6 @@ class ProteinLigandDecoysDataset(Dataset):
         df = df.sort_values(by=['chain_id', 'residue_number', 'atom_number'])
         return df
 
-
-
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/*.pdb')[:self.limit]
 
@@ -163,7 +161,6 @@ class ProteinLigandDecoysDataset(Dataset):
 
         for target_id in targets:
             # grab receptor
-            print(target_id)
             download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb",
                          f"{self.root}/raw/"
                         )
