@@ -1,5 +1,4 @@
 from setuptools import find_packages, setup
-import subprocess, sys
 
 __version__ = '0.2.1'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
@@ -29,8 +28,6 @@ setup(
     url=URL,
     keywords = ['bioinformatics',
                 'deep-learning',
-                'pytorch',
-                'torch-geometric',
                 'computational-biology',
                 'macromolecular-structure'],
     python_requires='>=3.7',
