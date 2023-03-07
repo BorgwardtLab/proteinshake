@@ -11,7 +11,8 @@ from proteinshake.datasets import (RCSBDataset,
                                    ProteinLigandInterfaceDataset,
                                    TMAlignDataset,
                                    AlphaFoldDataset,
-                                   SCOPDataset
+                                   SCOPDataset,
+                                   ProteinLigandDecoysDataset
                                    )
 from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
@@ -49,6 +50,10 @@ class TestDatasets(unittest.TestCase):
         organism = 'methanocaldococcus jannaschii'
         with tempfile.TemporaryDirectory() as tmp:
             ds = AlphaFoldDataset(root=tmp, organism=organism).download_precomputed()
+
+    def test_dude(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = ProteinLigandDecoysDataset(root=tmp).download_precomputed()
 
 if __name__ == '__main__':
     unittest.main()

@@ -31,8 +31,8 @@ class Dataset():
     If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
     Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
-    Parameter
-    ----------
+    Arguments
+    -----------
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
     use_precomputed: bool, default True
@@ -55,6 +55,7 @@ class Dataset():
         Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
     distance_threshold_sequence: int or lits, default 0.3
         Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
+
     """
 
     additional_files = [] # indicates the additional file names that are to be included in the release

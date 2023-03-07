@@ -24,7 +24,7 @@ class Task:
         ... {'roc_auc_score': 0.7}
 
 
-    Parameters
+    Arguments
     ----------
     dataset: pytorch.datasets.Dataset
         Dataset to use for this task.
@@ -99,7 +99,7 @@ class Task:
         Note that the random, sequence and structure splits will be automatically computed for your custom task if it is merged into ProteinShake main.
         Compare also the proteinshake_release repository.
 
-        Parameters:
+        Arguments
         ------------
         split: str
             Name of the custom split as passed to the task.
@@ -134,7 +134,7 @@ class Task:
     def target(self, protein):
         """ Return the prediction target for one protein in the dataset.
 
-        Parameters:
+        Arguments
         ------------
         protein: dict
             proteinshake protein dictionary
@@ -150,7 +150,7 @@ class Task:
     def evaluate(self, y_pred):
         """ Evaluates prediction quality.
 
-        Parameters:
+        Arguments
         -----------
         y_pred: list
             List of predicted outputs.
