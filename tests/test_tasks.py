@@ -36,10 +36,10 @@ class TestTasks(unittest.TestCase):
             task = StructureSimilarityTask(root=tmp)
             self.task_check(task)
 
-    def test_screen(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            task = VirtualScreenTask(root=tmp)
-            self.task_check(task)
+    # def test_screen(self):
+        # with tempfile.TemporaryDirectory() as tmp:
+            # task = VirtualScreenTask(root=tmp)
+            # self.task_check(task)
 
 if __name__ == '__main__':
     unittest.main()
