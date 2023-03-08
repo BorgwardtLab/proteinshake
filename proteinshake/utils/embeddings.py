@@ -7,7 +7,7 @@ All embeddings take a sequence string as an input and return the embedding as a 
 import numpy as np
 
 residue_alphabet = 'ARNDCEQGHILKMFPSTWYV'
-atom_alphabet = 'NCOS'
+atom_alphabet = 'NCOSH'
 
 def onehot(sequence, resolution='residue'):
     """ Compute the one-hot encoding of a protein sequence.
