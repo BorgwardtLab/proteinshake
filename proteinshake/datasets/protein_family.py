@@ -7,7 +7,8 @@ class ProteinFamilyDataset(RCSBDataset):
     Each protein in the dataset has a `Pfam` attribute which stores the list of protein families.
     """
 
-    def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
+    def __init__(self, pfam_version='34.0', query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
+        self.pfam_version = pfam_version
         super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
@@ -16,7 +17,8 @@ class ProteinFamilyDataset(RCSBDataset):
         pfams = []
         for a in annot['rcsb_polymer_entity_annotation']:
             if a['type'] == 'Pfam':
-                pfams.append(a['name'])
+                # pfams.append(a['name'])
+                pfams.append(a['annotation_id'])
         protein['protein']['Pfam'] = pfams
         return protein
 
