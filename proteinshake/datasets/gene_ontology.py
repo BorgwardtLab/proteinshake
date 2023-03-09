@@ -18,10 +18,10 @@ class GeneOntologyDataset(RCSBDataset):
 
     @cached_property
     def godag(self):
-        if not os.path.exists(f'{self.root}/go-basic.obo'):
-            download_url(f'{self.repository_url}/go-basic.obo.gz', f'{self.root}')
-            unzip_file(f'{self.root}/go-basic.obo.gz')
-        return GODag(f'{self.root}/go-basic.obo', prt=None)
+        if not os.path.exists(f'{self.root}/{self.name}.godag.obo'):
+            download_url(f'{self.repository_url}/{self.name}.godag.obo.gz', f'{self.root}')
+            unzip_file(f'{self.root}/{self.name}.godag.obo.gz')
+        return GODag(f'{self.root}/{self.name}.godag.obo', prt=None)
 
     def download(self):
         super().download()
@@ -30,7 +30,7 @@ class GeneOntologyDataset(RCSBDataset):
             os.rename(f'{self.root}/go-basic.obo', f'{self.root}/{self.name}.godag.obo')
 
     def add_protein_attributes(self, protein):
-        godag = GODag(f'{self.root}/go-basic.obo', prt=None)
+        godag = GODag(f'{self.root}/{self.name}.godag.obo', prt=None)
         with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
         go_terms = []
