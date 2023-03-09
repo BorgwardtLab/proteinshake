@@ -15,7 +15,6 @@ class ProteinFamilyDataset(RCSBDataset):
         with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
         pfams = []
-        print(protein['protein']['ID'])
         for a in annot['rcsb_polymer_entity_annotation']:
             if a['type'] == 'Pfam':
                 # pfams.append(a['name'])
