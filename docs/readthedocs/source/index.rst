@@ -58,7 +58,6 @@ Who is ProteinShake for?
    modules/datasets
    modules/tasks
    modules/representations
-   modules/frameworks
    modules/transforms
    modules/utils
 

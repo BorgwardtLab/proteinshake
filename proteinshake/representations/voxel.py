@@ -91,13 +91,13 @@ class VoxelDataset():
         self.path = f'{root}/processed/voxel/{name}_{resolution}_voxelsize_{voxelsize}_gridsize_{gridsize_string}_aggregation_{aggregation}'
 
     def torch(self, *args, **kwargs):
-        from proteinshake.frameworks import TorchVoxelDataset
+        from proteinshake.frameworks.torch import TorchVoxelDataset
         return TorchVoxelDataset(self.voxels, self.size, self.path+'.torch', *args, **kwargs)
 
     def tf(self, *args, **kwargs):
-        from proteinshake.frameworks import TensorflowVoxelDataset
+        from proteinshake.frameworks.tf import TensorflowVoxelDataset
         return TensorflowVoxelDataset(self.voxels, self.size, self.path+'.tf', *args, **kwargs)
 
     def np(self, *args, **kwargs):
-        from proteinshake.frameworks import NumpyVoxelDataset
+        from proteinshake.frameworks.np import NumpyVoxelDataset
         return NumpyVoxelDataset(self.voxels, self.size, self.path+".np", *args, **kwargs)
