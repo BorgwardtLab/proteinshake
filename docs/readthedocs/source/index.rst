@@ -3,14 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to proteinshake!
+Welcome to ProteinShake!
 =====================================
 
-**proteinshake** supports deep learning model development for protein 3D structures by providing:
+**ProteinShake** supports deep learning model development for protein 3D structures by providing:
 
 * **Dataset loading** in one line
-* **Multi-framework** support (dgl, torch, pytorch-geometric, JAX, ...)
-* **Represent** proteins as graph, point cloud, and voxel.
+* **Multi-framework** support (PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL, NetworkX)
+* **Represent** proteins as graph, point cloud, and voxel.\
 * **Large datasets** of experimental and computational protein structures
 * **Prediction tasks** with easy splitting and evaluation
 * **Customizable** tasks and datasets
@@ -22,10 +22,10 @@ Source code is hosted on `GitHub <https://github.com/BorgwardtLab/ProteinShake>`
 
 We welcome contributions and bug reports through issues and pull requests.
 
-Who is proteinshake for?
+Who is ProteinShake for?
 -------------------------
 
-``proteinshake`` is intended for computational biologists and machine learning resarchers who need quick access to ML-ready curated datasets. To our knowledge, this is the largest repository of stready to use datasets with rich property annotations. Going beyond experimental structures, this is also making AlphaFold predicted structures for SwissProt and over a dozen organism proteomes. 
+``ProteinShake`` is intended for computational biologists and machine learning resarchers who need quick access to ML-ready curated datasets. To our knowledge, this is the largest repository of stready to use datasets with rich property annotations. Going beyond experimental structures, this is also making AlphaFold predicted structures for SwissProt and over a dozen organism proteomes. 
 
 
 .. toctree::
