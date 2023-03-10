@@ -32,7 +32,7 @@ Each row corresponds to a protein that is hosted in the RCSB Databank so we can 
                         return protein
 
 
-For more detailed information on how we construct datasets see (LINK).
+Now you can use the same functionality as the hosted datasets.
 
 Custom Task
 ~~~~~~~~~~~~
@@ -50,7 +50,7 @@ This is a template for a fully customized task::
             or one that you created yourself
         """
 
-        DatasetClass = MyTaskDataset
+        DatasetClass = MyTask 
 
         class MyTask(Tasks):
 
@@ -60,7 +60,7 @@ This is a template for a fully customized task::
                             This can accept pairs of proteins or other objects
                             depending on the task.
                         """ 
-                        return protein['protein']['my_attribute']
+                        return protein['protein']['my_annotation']
 
                                 
                 def compute_custom_splits(self):
