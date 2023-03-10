@@ -111,39 +111,15 @@ Frameworks
 ~~~~~~~~~~~~~~
 
 The final step is converting the protein representation to a computation framework of choice (e.g. pytorch-geometric, dgl, JAX, etc.)
-Different frameworks are available for each task (refer to LINK for list of frameworks).
+frameworks are available for each task and that is how we end up with the complete dataset creation command:
+
+..code-block:: pycon 
+
+        >>> data = dataset.to_graph(eps=8, weighted=True).pyg()
 
 
-Custom Dataset
-~~~~~~~~~~~~~~~~
-
-The ``Dataset`` object logic takes care of two major steps: (i) loading the raw PDBs, and (ii) parsing/annotating each protein.
-Once these two are taken care of, all the downstream work (repsrentations, frameworks) can be re-used.
-This makes customizing the datasets very simple.
-Here is an example of how you can create a custom dataset in a situation where you have your own annotations on a local file that looks like this::
-
-        pdbid, annotation
-        xyz,2.3
-        abc,1.0
-        cde,3.4
+In this example we converted to pytorch-geometric objects but you can use many others. See the ``Representation`` page for more.
+At this point you can pass the dataset to a dataloader in your framework of choice.
 
 
-Each row corresponds to a protein that is hosted in the RCSB Databank so we can subclass the ``RCSBDataset`` object and add our own annotations::
 
-
-        import pandas as pd
-        from proteinshake.datasets import RCSBDataset
-
-        class MyDataset(RCSBDataset):
-                def __init__(self, annotation_csv, *args, **kwargs):
-                        self.annotations = pd.read_csv(annotation_csv)
-                        self.ids = self.annotations['pdbid']
-                        super().__init__(from_list=self.ids, *args ,** kwargs)
-
-                def add_protein_attribute(self, protein):
-                        """ Store annotation in downloaded protein object"""
-                        protein ["protein"]["my_annotation"] = self.annotations[protein.ID]["annotation"]
-                        return protein
-
-
-For more detailed information on how we construct datasets see (LINK).

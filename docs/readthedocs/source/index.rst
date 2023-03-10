@@ -46,6 +46,7 @@ Who is proteinshake for?
 
    notes/tutorial_data
    notes/tutorial_tasks
+   notes/tutorial_custom
    notes/tutorial_data_advanced
      
 
@@ -57,6 +58,7 @@ Who is proteinshake for?
    modules/datasets
    modules/tasks
    modules/representations
+   modules/frameworks
    modules/transforms
    modules/utils
 

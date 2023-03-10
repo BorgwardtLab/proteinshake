@@ -75,13 +75,13 @@ class GraphDataset():
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
     def pyg(self, *args, **kwargs):
-        from proteinshake.frameworks.pyg import PygGraphDataset
+        from proteinshake.frameworks import PygGraphDataset
         return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', *args, **kwargs)
 
     def dgl(self, *args, **kwargs):
-        from proteinshake.frameworks.dgl import DGLGraphDataset
+        from proteinshake.frameworks import DGLGraphDataset
         return DGLGraphDataset(self.graphs, self.size, self.path+'.dgl', *args, **kwargs)
 
     def nx(self, *args, **kwargs):
-        from proteinshake.frameworks.nx import NetworkxGraphDataset
+        from proteinshake.frameworks import NetworkxGraphDataset
         return NetworkxGraphDataset(self.graphs, self.size, self.path+'.nx', *args, **kwargs)
