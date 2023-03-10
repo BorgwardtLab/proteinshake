@@ -15,15 +15,21 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
 ]
+html_static_path = ['_static']
+html_css_files = [
+    'style.css',
+]
+html_theme_options = {
+    'logo_only': True,
+    'display_version': False,
+}
 
 # logos
 
 # html_theme = 'pyg_sphinx_theme'
 html_theme = 'sphinx_rtd_theme'
-html_logo = ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
-             'master/pyg_sphinx_theme/static/img/proteinshake.png')
-html_favicon= ('https://raw.githubusercontent.com/cgoliver/proteinshake_sphinx_theme/'
-             'master/pyg_sphinx_theme/static/img/favicon.ico')
+html_logo = ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/docs_logo.png')
+html_favicon= ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/favicon.ico')
 
 add_module_names = False
 autodoc_member_order = 'bysource'
@@ -42,3 +48,4 @@ def setup(app):
         source[0] = app.builder.templates.render_string(source[0], rst_context)
 
     app.connect('source-read', rst_jinja_render)
+
