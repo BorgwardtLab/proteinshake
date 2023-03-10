@@ -38,8 +38,8 @@ class EnzymeClassTask(Task):
     def evaluate(self, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         return {
-            'precision': metrics.precision_score(y_true, y_pred, average='macro', zero_division=0),
-            'recall': metrics.recall_score(y_true, y_pred, average='macro', zero_division=0),
-            'accuracy': metrics.accuracy_score(y_true, y_pred),
+            'precision': metrics.precision_score(self.test_targets, y_pred, average='macro', zero_division=0),
+            'recall': metrics.recall_score(self.test_targets, y_pred, average='macro', zero_division=0),
+            'accuracy': metrics.accuracy_score(self.test_targets, y_pred),
             #'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro', multi_class='ovo'),
         }
