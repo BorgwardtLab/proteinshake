@@ -67,7 +67,7 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 **Legal Note**
 
-*Copyright 2023, the authors.*
+*Code in this repository is licensed under [BSD-3](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE), the dataset files on Zenodo are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).*
 
 *We obtained and modified data from the following sources:*
 
