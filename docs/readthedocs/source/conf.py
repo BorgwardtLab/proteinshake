@@ -28,7 +28,7 @@ html_theme_options = {
 
 # html_theme = 'pyg_sphinx_theme'
 html_theme = 'sphinx_rtd_theme'
-html_logo = ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/docs_logo.png')
+html_logo = ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_docs.png')
 html_favicon= ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/favicon.ico')
 
 add_module_names = False
