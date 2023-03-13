@@ -42,13 +42,7 @@ class AlphaFoldDataset(Dataset):
     """
 
     def __init__(self, organism, version='v4', **kwargs):
-        if organism == 'all':
-            self.organism = [o for o in AF_DATASET_NAMES.keys() if o != 'swissprot']
-        else:
-            if type(organism) == str:
-                self.organism = organism.lower().replace(' ','_')
-            elif type(organism) == list:
-                self.organism = [o.lower().replace(' ','_') for o in organism]
+        self.organism = organism.lower().replace(' ','_')
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
         self.version = version
         super().__init__(only_single_chain=True, **kwargs)
@@ -64,12 +58,7 @@ class AlphaFoldDataset(Dataset):
         return re.search('(?<=AF-)(.*)(?=-F.+-model)', filename).group()
 
     def download(self):
-        def _download(organism):
-            os.makedirs(f'{self.root}/raw/{organism}', exist_ok=True)
-            download_url(self.base_url+AF_DATASET_NAMES[organism]+f'_{self.version}.tar', f'{self.root}/raw/{organism}')
-            extract_tar(f'{self.root}/raw/{organism}/{AF_DATASET_NAMES[organism]}_{self.version}.tar', f'{self.root}/raw/{organism}')
-            [unzip_file(f) for f in tqdm(glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit], desc='Unzipping')]
-        if type(self.organism) == str:
-            _download(self.organism)
-        elif type(self.organism) == list:
-            _ = [_download(organism) for organism in self.organism]
+        os.makedirs(f'{self.root}/raw/{self.organism}', exist_ok=True)
+        download_url(self.base_url+AF_DATASET_NAMES[self.organism]+f'_{self.version}.tar', f'{self.root}/raw/{self.organism}')
+        extract_tar(f'{self.root}/raw/{self.organism}/{AF_DATASET_NAMES[self.organism]}_{self.version}.tar', f'{self.root}/raw/{self.organism}')
+        [unzip_file(f) for f in tqdm(glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit], desc='Unzipping')]
