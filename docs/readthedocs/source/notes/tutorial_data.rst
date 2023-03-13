@@ -59,7 +59,7 @@ We currently support graphs, point clouds, and voxels.
 
 .. code-block:: python
 
-        >>> cloud_dataset = dataset.to_cloud()
+        >>> point_dataset = dataset.to_point()
         >>> graph_dataset = dataset.to_graph(eps=9)
         >>> voxel_dataset = dataset.to_voxel()
 

@@ -11,7 +11,8 @@ Loading a dataset is a one-liner, consisting of three parts:
 .. code-block:: python
 
   from proteinshake.datasets import RCSBDataset
-  proteins = RCSBDataset(root="./data").to_graph(k=5).pyg()
+  proteins = RCSBDataset(root="./data").to_point(size=10).torch()
+
 
 The above line takes a dataset with proteins from the RCSB PDB Databank and transforms them to graphs with 5 neighbors. They are then loaded into a pytorch geometric dataset (make sure you have pytorch-geometric installed for this to work).
 
@@ -22,8 +23,8 @@ Some other examples:
   # a graph dataset with epsilon-neighborhood graphs with radius 8 Angstrom, in DGL
   proteins = RCSBDataset(root="./data").to_graph(eps=8).dgl()
 
-  # a point cloud dataset, in tensorflow
-  proteins = RCSBDataset(root="./data").to_point().tf()
+  # a graph dataset, in torch-geometric 
+  proteins = RCSBDataset(root="./data").to_graph().pyg()
 
   # a voxel dataset with a voxel size of 10 Angstrom, in torch
   proteins = RCSBDataset(root="./data").to_voxel(size=10).torch()
@@ -31,3 +32,7 @@ Some other examples:
 You can arbitrarily combine datasets, representations and frameworks.
 These datasets can then be passed directly to framework-specific dataloaders and models.
 
+
+.. warning:: 
+
+        Make sure you have installed the necessary downstream frameworks (e.g. pytorch, torch-geometric, etc.)
