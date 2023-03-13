@@ -77,8 +77,8 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 
 *Protein and Ligand binding structures and annotations were downloaded from [PDBbind-CN](http://www.pdbbind.org.cn/), available under the [End User Agreement for Access to the PDBbind-CN Database and Web Site](http://www.pdbbind.org.cn/enroll.php).*
 
-*The Gene Ontology was downloaded from the [Gene Ontology Consortium](http://geneontology.org/), avaliable under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
+*The Gene Ontology was downloaded from the [Gene Ontology Consortium](http://geneontology.org/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
 
-*The SCOP data was downloaded from the [Structural Classification of Proteins](https://scop.mrc-lmb.cam.ac.uk/), avaliable under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
+*The SCOP data was downloaded from the [Structural Classification of Proteins](https://scop.mrc-lmb.cam.ac.uk/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
 
 </div>
