@@ -23,7 +23,7 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1170307',
+    'latest': '1172258',
 }
 
 class Dataset():

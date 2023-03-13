@@ -69,10 +69,10 @@ class TMAlignDataset(RCSBDataset):
                 unzip_file(f'{self.root}/{filename}.gz')
             return load(f'{self.root}/{filename}')
 
-        self._tm_score = download_file('tmscore.npy')
-        self._rmsd = download_file('rmsd.npy')
-        self._gdt = download_file('gdt.npy')
-        self._lddt = download_file('lddt.npy')
+        self._tm_score = download_file(f'{self.name}.tmscore.npy')
+        self._rmsd = download_file(f'{self.name}.rmsd.npy')
+        self._gdt = download_file(f'{self.name}.gdt.npy')
+        self._lddt = download_file(f'{self.name}.lddt.npy')
         
     @property
     def limit(self):
@@ -80,7 +80,7 @@ class TMAlignDataset(RCSBDataset):
     
     def align_structures(self):
         """ Calls TMAlignn on all pairs of structures and saves the output"""
-        if os.path.exists(f'{self.root}/tmscore.npy'):
+        if os.path.exists(f'{self.root}/{self.name}.tmscore.npy'):
             return
         pdbids = [p['protein']['ID'] for p in self.proteins()]
         path_dict = {self.get_id_from_filename(os.path.basename(f)):f for f in self.get_raw_files()}
