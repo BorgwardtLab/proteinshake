@@ -46,6 +46,7 @@ Who is ProteinShake for?
 
    notes/tutorial_data
    notes/tutorial_tasks
+   notes/tutorial_custom
    notes/tutorial_data_advanced
      
 
