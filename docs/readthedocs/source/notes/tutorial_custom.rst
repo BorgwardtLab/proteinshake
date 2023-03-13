@@ -63,7 +63,7 @@ This is a template for a fully customized task::
                         return protein['protein']['my_annotation']
 
                                 
-                def compute_custom_splits(self):
+                def compute_custom_split(self):
                         """ (iii) Return three lists of indices over 
                                   the task's dataset (``self.dataset``)
                         """

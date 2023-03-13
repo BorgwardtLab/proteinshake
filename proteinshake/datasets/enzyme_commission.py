@@ -3,9 +3,32 @@ import json
 from proteinshake.datasets import RCSBDataset
 
 class EnzymeCommissionDataset(RCSBDataset):
-    """ Proteins from RCSB for which Enzyme Classification is known.
-    Each item in this dataset has the attribute `EC` which is a string
-    identifier.
+    """
+    Datsaet of enzymes which are assigned label based
+    on the reaction they catalyze.
+
+
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
+
+       * - # proteins
+       * - xxx
+
+
+   .. list-table:: Annotations
+      :widths: 25 25 25 25
+      :header-rows: 1
+
+      * - Attribute
+        - Level
+        - Key
+        - Sample value
+      * - Enzyme Commission
+        - Protein
+        - ``'EC'``
+        - ``'2.7.7.4'``
+
     """
 
     def __init__(self, query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs):
@@ -18,14 +41,9 @@ class EnzymeCommissionDataset(RCSBDataset):
         super().__init__(query=query, **kwargs)
 
     def add_protein_attributes(self, protein):
+        """ Fetch the enzyme class for each protein.
+        """
         with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
         protein['protein']['EC'] = annot['rcsb_polymer_entity']['rcsb_ec_lineage'][-1]['id']
         return protein
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = 'Enzyme Classification (`EC`)'
-        desc['values'] = len(set((p['EC'] for p in self.proteins)))
-        desc['type'] = 'Categorical'
-        return desc
