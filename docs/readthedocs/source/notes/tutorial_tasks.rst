@@ -5,6 +5,7 @@ Now that we understand how to create datasets and cast them to an ML framework w
 The ``proteinshake.Tasks`` class exposes two main functionalities for various tasks: dataset splitting, and model evaluation.
 This, along with the ProteinShake datasets, leaves the user to focus only on coding the model.
 
+
 Basic Usage
 ~~~~~~~~~~~~
 
@@ -18,19 +19,18 @@ The user interaction with the task object is quite simple. At a glance it looks 
 
 
 
-.. tip :: 
-
-        You can adapt the following code for any downstream tasks provided by ProteinShake.
-
-
 Next we provide a full tutorial including model construction on the Enzyme Commission task.
 
-Enzyme Commission Prediciton
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Predicting enzyme class with ProteinShake 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. image:: https://colab.research.google.com/assets/colab-badge.svg 
+   :target: https://colab.research.google.com/github/BorgwardtLab/proteinshake/blob/main/examples/sup_enzyme_commission_with_gnn.ipynb 
 
 We will use a simple GNN model, namely GCN, and evaluate its performance for enzyme commission prediction.
 The model can be trained with either CPU or GPU, but GPU is recommended for faster computation.
+
+
 
 Let's get some imports::
 

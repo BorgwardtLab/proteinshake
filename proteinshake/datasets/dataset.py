@@ -31,6 +31,63 @@ class Dataset():
     If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
     Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
+    .. note::
+
+        All child classes inherit these attributes and optionally add their own.
+
+    .. list-table:: Annotations
+      :widths: 25 25 10 40
+      :header-rows: 1
+
+      * - Attribute
+        - Level
+        - Key
+        - Sample value
+      * - Protein identifier
+        - Protein
+        - ``'ID'``
+        - ``'1JC8'``
+      * - Sequence
+        - Protein
+        - ``'sequence'``
+        - ``'IWGDSGKLITTA'``
+      * - Assigned train/val/test split
+        - Protein
+        - ``sequence_split_<CUTOFF>``, ``structure_split_<CUTOFF>``
+        - ``'train'``
+      * - Residue position on chain
+        - Residue
+        - ``'residue_number'``
+        - ``[2, 3, 4, 5, 6, 7, 8, 9, 10, ...,]``
+      * - Amino acid type (single letter)
+        - Residue
+        - ``'residue_type'``
+        - :code:`['I', 'W', 'G', 'D', 'S',..]`
+      * - 3D coordinates
+        - Residue (alpha carbon) & Atom
+        - ``'x'``, ``'y'``, ``'z'``
+        - ``[5.191999912261963, 3.9860000610351562,..]``
+      * - Solvent accessible surface area
+        - Residue & Atom
+        - ``'SASA'``
+        - :code:`[242.03138732910156, 136.46714782714844,... ]`
+      * - Relative accessible surface area
+        - Residue
+        - ``'RSA'``
+        - :code:`[1.377291202545166, 0.5476430058479309,... ]`
+      * - Atom position
+        - Atom
+        - ``'atom_number'``
+        - :code:`[7, 8, 9, 10, 11,..]`
+      * - Atom type
+        - Atom
+        - ``'atom_type'``
+        - :code:`['N', 'CA', 'C', 'O',...]`
+
+    
+
+
+
     Arguments
     -----------
     root: str, default 'data'

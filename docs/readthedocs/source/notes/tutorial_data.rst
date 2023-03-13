@@ -22,7 +22,7 @@ The above code executes the three main steps of dataset preparation:
 3. Converting the dataset to your framework of choice: ``.pyg()``
 
 To reproduce the processing you can pass the ``use_precomputed=False`` flag to ``RCSBDataset()``.
-This executes all the processing steps locally, whereas by default we try to fetch the dataset from the datasets we host on Zenodo (LINK) as the processing can be quite time-consuming.
+This executes all the processing steps locally, whereas by default we try to fetch the dataset from the datasets we host on `Zenodo <https://sandbox.zenodo.org/record/1170307>`_  as the processing can be quite time-consuming.
 
 Next, we break down the three steps into some more detail.
 
@@ -87,17 +87,13 @@ ________
 Graph construction can be done in two ways: epsilon or k nearest neighbors.
 The epsilon graph is chosen when ``eps`` is passed with a distance threshold.
 All pairs of residues within the distance threshold are connected by an edge.
-If ``k=4`` is passed then each residue is connected by an edge to its 4 nearest neighbors.
-
-.. code-block:: pycon 
+If ``k=4`` is passed then each residue is connected by an edge to its 4 nearest neighbors.::
 
         >>> knn_graph = dataset.to_graph(k=4)
         >>> eps_graph = dataset.to_graph(eps=8)
 
 
-You can obtain a weighted graph where weights correspond to the distance between connected residues:
-
-..code-block:: pycon 
+You can obtain a weighted graph where weights correspond to the distance between connected residues::
 
         >>> eps_graph = dataset.to_graph(eps=8, weighted=True)
 
@@ -110,15 +106,13 @@ For the voxel representation we place a 3D grid of voxels over the protein and i
 Frameworks
 ~~~~~~~~~~~~~~
 
-The final step is converting the protein representation to a computation framework of choice (e.g. pytorch-geometric, dgl, JAX, etc.)
-frameworks are available for each task and that is how we end up with the complete dataset creation command:
-
-..code-block:: pycon 
+The final step is converting the protein representation to a computation framework of choice (e.g. pytorch-geometric, dgl, JAX/Numpy, etc.)
+frameworks are available for each task and that is how we end up with the complete dataset creation command: ::
 
         >>> data = dataset.to_graph(eps=8, weighted=True).pyg()
 
 
-In this example we converted to pytorch-geometric objects but you can use many others. See the ``Representation`` page for more.
+In this example we converted to pytorch-geometric objects but you can use many others. See the :doc:`Representation <../modules/representations>` page for more.
 At this point you can pass the dataset to a dataloader in your framework of choice.
 
 

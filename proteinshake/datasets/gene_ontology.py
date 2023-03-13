@@ -9,6 +9,37 @@ class GeneOntologyDataset(RCSBDataset):
     """ Proteins from RCSB for which the Gene Ontology (GO) term is known.
     Each protein in the dataset has a `GO` attribute which stores the path
     from the root to the leaves along the GO hierarchy.
+
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
+
+       * - # proteins
+       * - xxx
+
+
+   .. list-table:: Annotations
+      :widths: 25 25 25 25
+      :header-rows: 1
+
+      * - Attribute
+        - Level
+        - Key
+        - Sample value
+      * - Molecular Function
+        - Protein
+        - ``'molecular_function'``
+        - ``['GO:0003674', 'GO:0005198']``
+      * - Localization
+        - Protein
+        - ``'cellular_component'``
+        - ``['GO:0005575', 'GO:0018995',..]``
+      * - Biological process
+        - Protein
+        - ``'biological_process'``
+        - ...
+
+
     """
 
     additional_files = ['GeneOntologyDataset.godag.obo']

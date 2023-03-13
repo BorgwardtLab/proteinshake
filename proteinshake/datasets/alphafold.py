@@ -35,6 +35,48 @@ class AlphaFoldDataset(Dataset):
     Requires the `organism` name to be specified. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
     Pass the full latin organism name separated by a space or underscore. `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
 
+    .. list-table :: Data Properties
+       :widths: 50 50
+       :header-rows: 1
+
+       * - organism
+         - # proteins
+       * - ``'arabidopsis_thaliana'``
+         -
+       * - ``'caenorhabditis_elegans'``
+         -
+       * - ``'candida_albicans'``
+         -
+       * - ``'danio_rerio'``
+         -
+       * - ``'dictyostelium_discoideum'``
+         -
+       * - ``'drosophila_melanogaster'``
+         -
+       * - ``'escherichia_coli'``
+         -
+       * - ``'glycine_max'``
+         -
+       * - ``'homo_sapiens'``
+         -
+       * - ``'methanocaldococcus_jannaschii'``
+         -
+       * - ``'mus_musculus'``
+         -
+       * - ``'oryza_sativa'``
+         -
+       * - ``'rattus_norvegicus'``
+         -
+       * - ``'saccharomyces_cerevisiae'``
+         -
+       * - ``'schizosaccharomyces_pombe'``
+         -
+       * - ``'zea_mays'``
+         -
+       * - ``'swissprot'``
+         -
+
+
     Parameters
     ----------
     organism: str

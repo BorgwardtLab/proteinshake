@@ -74,6 +74,8 @@ class ProteinLigandDecoysDataset(Dataset):
 
 
     def add_protein_attributes(self, protein):
+        """ We annotte each protein with a list of decoys and a list of active SMILES strings and molecule IDs.
+        """
         target = protein['protein']['ID']
         
         for mode in ['decoys', 'ligands']:
