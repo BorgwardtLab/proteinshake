@@ -8,6 +8,36 @@ from proteinshake.utils import download_url
 
 class SCOPDataset(RCSBDataset):
     """ Proteins for which the SCOP classification is known.
+
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
+
+       * - # proteins
+       * - 10066
+
+
+   .. list-table:: Annotations
+      :widths: 25 45 35
+      :header-rows: 1
+
+      * - Attribute
+        - Key
+        - Sample value
+      * - Protein type
+        - :code:`protein['protein']['SCOP-TP']`
+        - :code:`'1'`
+      * - Protein class 
+        - :code:`protein['protein']['SCOP-CL']`
+        - ``'1000000'``
+      * - Superfamily 
+        - :code:`protein['protein']['SCOP-SF']`
+        - ``'3000001'``
+      * - Family
+        - :code:`protein['protein']['SCOP-FA']`
+        - ``'4002873'``
+
+
     """
 
     def __init__(self, **kwargs):

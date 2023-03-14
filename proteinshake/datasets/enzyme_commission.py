@@ -13,21 +13,19 @@ class EnzymeCommissionDataset(RCSBDataset):
        :header-rows: 1
 
        * - # proteins
-       * - xxx
+       * - 15603 
 
 
    .. list-table:: Annotations
-      :widths: 25 25 25 25
+      :widths: 25 35 45
       :header-rows: 1
 
       * - Attribute
-        - Level
         - Key
         - Sample value
       * - Enzyme Commission
-        - Protein
-        - ``'EC'``
-        - ``'2.7.7.4'``
+        - :code:`protein['protein']['EC']`
+        - :code:`'2.7.7.4'`
 
     """
 

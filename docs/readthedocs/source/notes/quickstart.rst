@@ -14,7 +14,7 @@ Loading a dataset is a one-liner, consisting of three parts:
   proteins = RCSBDataset(root="./data").to_point(size=10).torch()
 
 
-The above line takes a dataset with proteins from the RCSB PDB Databank and transforms them to graphs with 5 neighbors. They are then loaded into a pytorch geometric dataset (make sure you have pytorch-geometric installed for this to work).
+The above line takes a dataset with proteins from the RCSB PDB Databank and transforms them to point clouds. They are then loaded into a pytorch dataset (make sure you have pytorch installed for this to work).
 
 Some other examples:
 

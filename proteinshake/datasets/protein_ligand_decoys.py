@@ -28,19 +28,36 @@ class ProteinLigandDecoysDataset(Dataset):
     `data source <https://dudez.docking.org/>`_.
 
 
-    .. code-block:: python
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
 
-        >>> from proteinshake.datasets import ProteinLigandDecoysDataset
-        >>> dataset = ProteinLigandDecoyDataset()
-        >>> protein = next(dataset.proteins())
-        >>> protein['ligands_smiles'][:3]
-        ['C1=CC(NC2=NC(N3CC[NH2+]CC3)=NC(NC3CCCC3)=N2)=CC=[NH+]1', 'C[C@@H]([NH3+])C1=CC=C(C(=O)NC2=C3C=CNC3=NC=C2)C=C1', 'NC1=NON=C1C1=NC2=CC=CC=C2N1C1=CC=CC=C1']
-        >>> protein['ligands_ids'][:3]
-        ['CHEMBL575962', 'CHEMBL571948', 'CHEMBL1078426']
-        >>> protein['decoys_smiles'][:3]
-        ['Cc1nc(C)c(N(C)C)nc1C', 'O=C(c1ccc(Cl)cc1Cl)N1CCC(c2cnc[nH]2)CC1', 'O=C(Nc1ccc(O)cc1)C(Cl)(Cl)Cl']
-        >>> protein['decoys_ids'][:3]
-        ['ZINC000000002211', 'ZINC000000006000', 'ZINC000000002214']
+       * - # proteins
+       * - 38
+
+
+   .. list-table:: Annotations
+      :widths: 25 35 45
+      :header-rows: 1
+
+      * - Attribute
+        - Key
+        - Sample value
+      * - Non-binders SIMLES
+        - :code:`protein['protein']['deocys_smiles']`
+        - :code:`['O=C(CSc1nnc(COc2ccccc2)o1)NC1CCCCC1', 'C[N@H+]1CC[C@@](N)(C(=O)NC[C@@H]2CC[C@@H](C[NH3+])CC2)C1',..]`
+      * - Non-binders identifiers
+        - :code:`protein['protein']['decoys_ids']`
+        - :code:`['ZINC000000087599', 'ZINC000648138664',..]`
+      * - Binders SIMLES
+        - :code:`protein['protein']['ligands_smiles']`
+        - :code:`['CC1=CC2=C(NC(=O)[C@H](CC3CC3)C2)C(=O)N1CC(=O)NCC1=CC=C(N)N=C1C', 'ClC1=CC=CC(CC2=NC3=C(NCCC4CCCC[NH2+]4)N=CC=C3O2)=C1',..]`
+      * - Binders identifiers 
+        - :code:`protein['protein']['ligands_ids']`
+        - :code:`['CHEMBL10785', 'CHEMBL439678', 'CHEMBL278985',..]`
+      * - Pfam accession code
+        - :code:`protein['protein']['Pfam']`
+        - ``['PF00102']``
 
 
     """

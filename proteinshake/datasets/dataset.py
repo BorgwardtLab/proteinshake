@@ -36,56 +36,42 @@ class Dataset():
         All child classes inherit these attributes and optionally add their own.
 
     .. list-table:: Annotations
-      :widths: 25 25 10 40
+      :widths: 25 35 45
       :header-rows: 1
 
       * - Attribute
-        - Level
         - Key
         - Sample value
       * - Protein identifier
-        - Protein
-        - ``'ID'``
+        - :code:`protein['protein']['ID']`
         - ``'1JC8'``
       * - Sequence
-        - Protein
-        - ``'sequence'``
+        - :code:`protein['protein']['sequence']`
         - ``'IWGDSGKLITTA'``
       * - Assigned train/val/test split
-        - Protein
-        - ``sequence_split_<CUTOFF>``, ``structure_split_<CUTOFF>``
+        - :code:`protein['protein']['sequence_split_<CUTOFF>']`, :code:`protein['protein']['structure_split_<CUTOFF>']`
         - ``'train'``
       * - Residue position on chain
-        - Residue
-        - ``'residue_number'``
+        - :code:`protein['residue']['residue_number']`
         - ``[2, 3, 4, 5, 6, 7, 8, 9, 10, ...,]``
       * - Amino acid type (single letter)
-        - Residue
-        - ``'residue_type'``
+        - :code:`protein['residue']['residue_type']`
         - :code:`['I', 'W', 'G', 'D', 'S',..]`
       * - 3D coordinates
-        - Residue (alpha carbon) & Atom
-        - ``'x'``, ``'y'``, ``'z'``
+        - :code:`protein[{'residue' | 'atom'}][{'x'|'y'|'z'}]`
         - ``[5.191999912261963, 3.9860000610351562,..]``
       * - Solvent accessible surface area
-        - Residue & Atom
-        - ``'SASA'``
+        - :code:`protein[{'residue'|'atom'}]['SASA']`
         - :code:`[242.03138732910156, 136.46714782714844,... ]`
       * - Relative accessible surface area
-        - Residue
-        - ``'RSA'``
+        - :code:`protein['residue']['RSA']`
         - :code:`[1.377291202545166, 0.5476430058479309,... ]`
       * - Atom position
-        - Atom
-        - ``'atom_number'``
+        - :code:`protein['atom']['atom_number']`
         - :code:`[7, 8, 9, 10, 11,..]`
       * - Atom type
-        - Atom
-        - ``'atom_type'``
+        - :code:`protein['atom']['atom_type']`
         - :code:`['N', 'CA', 'C', 'O',...]`
-
-    
-
 
 
     Arguments

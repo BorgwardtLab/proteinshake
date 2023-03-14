@@ -45,11 +45,6 @@ Once the dataset object is created, it holds an iterable of dictionaries, one fo
 Different implementations of the ``Dataset`` parent class let you customize this step.
 For example, the ``RCSBDataset`` accepts a ``from_list`` argument which lets you specify which PDBs to fetch.
 
-.. warning:: 
-
-   The default behaviour is to fetch the pre-processed proteins from Zenodo. In order to see custom parameters in the dataset creation stage, set ``use_precomputed=False``.
-
-
 
 Protein representations
 ~~~~~~~~~~~~~~~~~~~~~~~~

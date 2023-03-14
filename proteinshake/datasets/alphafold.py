@@ -42,39 +42,39 @@ class AlphaFoldDataset(Dataset):
        * - organism
          - # proteins
        * - ``'arabidopsis_thaliana'``
-         -
+         - 27,386
        * - ``'caenorhabditis_elegans'``
-         -
+         - 19,613
        * - ``'candida_albicans'``
-         -
+         - 5,951
        * - ``'danio_rerio'``
-         -
+         - 24,430
        * - ``'dictyostelium_discoideum'``
-         -
+         - 12,485
        * - ``'drosophila_melanogaster'``
-         -
+         - 13,318
        * - ``'escherichia_coli'``
-         -
+         - 4,362
        * - ``'glycine_max'``
-         -
+         - 55,696
        * - ``'homo_sapiens'``
-         -
+         - 23,172
        * - ``'methanocaldococcus_jannaschii'``
-         -
+         - 1,773
        * - ``'mus_musculus'``
-         -
+         - 21,398
        * - ``'oryza_sativa'``
-         -
+         - 43,631
        * - ``'rattus_norvegicus'``
-         -
+         - 21,069
        * - ``'saccharomyces_cerevisiae'``
-         -
+         - 6,016
        * - ``'schizosaccharomyces_pombe'``
-         -
+         - 5,104
        * - ``'zea_mays'``
-         -
+         - 39,203
        * - ``'swissprot'``
-         -
+         - 541,143
 
 
     Parameters

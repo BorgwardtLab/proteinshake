@@ -15,28 +15,24 @@ class GeneOntologyDataset(RCSBDataset):
        :header-rows: 1
 
        * - # proteins
-       * - xxx
+       * - 32633
 
 
    .. list-table:: Annotations
-      :widths: 25 25 25 25
+      :widths: 25 25 50
       :header-rows: 1
 
       * - Attribute
-        - Level
         - Key
         - Sample value
       * - Molecular Function
-        - Protein
-        - ``'molecular_function'``
-        - ``['GO:0003674', 'GO:0005198']``
+        - :code:`protein['protein']['molecular_function']`
+        - :code:`['GO:0003674', 'GO:0005198']`
       * - Localization
-        - Protein
-        - ``'cellular_component'``
-        - ``['GO:0005575', 'GO:0018995',..]``
+        - :code:`protein['protein']['cellular_component']`
+        - :code:`['GO:0005575', 'GO:0018995',..]`
       * - Biological process
-        - Protein
-        - ``'biological_process'``
+        - :code:`protein['protein']['biological_process']`
         - ...
 
 
