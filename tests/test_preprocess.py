@@ -40,7 +40,7 @@ class TestDownload(unittest.TestCase):
             ds = GeneOntologyDataset(root=tmp, use_precomputed=False)
 
     @mock.patch('proteinshake.datasets.EnzymeCommissionDataset.limit', return_value=5)
-    def test_go(self, mock):
+    def test_ec(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = EnzymeCommissionDataset(root=tmp, use_precomputed=False)
 
@@ -50,12 +50,12 @@ class TestDownload(unittest.TestCase):
             ds = ProteinFamilyDataset(root=tmp, use_precomputed=False)
 
     @mock.patch('proteinshake.datasets.TMAlignDataset.limit', return_value=5)
-    def test_pfam(self, mock):
+    def test_tm(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = TMAlignDataset(root=tmp, use_precomputed=False)
 
     @mock.patch('proteinshake.datasets.AlphaFoldDataset.limit', return_value=5)
-    def test_pfam(self, mock):
+    def test_af(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             organism = 'methanocaldococcus jannaschii'
             ds = AlphaFoldDataset(root=tmp, version='v4', organism=organism, use_precomputed=False)
