@@ -8,7 +8,11 @@
 
 name: Upload Python Package
 
-on: push
+on:
+  push:
+    branches:
+      - main
+
 
 permissions:
   contents: read
