@@ -7,9 +7,10 @@ from unittest import mock
 from proteinshake.datasets import (RCSBDataset,
                                    GeneOntologyDataset,
                                    EnzymeCommissionDataset,
-                                   PfamDataset,
+                                   ProteinFamilyDataset,
                                    ProteinProteinInterfaceDataset,
                                    ProteinLigandInterfaceDataset,
+                                   ProteinLigandDecoysDataset,
                                    TMAlignDataset,
                                    AlphaFoldDataset,
                                    SCOPDataset
@@ -43,10 +44,10 @@ class TestDownload(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ds = EnzymeCommissionDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch('proteinshake.datasets.PfamDataset.limit', return_value=5)
+    @mock.patch('proteinshake.datasets.ProteinFamilyDataset.limit', return_value=5)
     def test_pfam(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = PfamDataset(root=tmp, use_precomputed=False)
+            ds = ProteinFamilyDataset(root=tmp, use_precomputed=False)
 
     @mock.patch('proteinshake.datasets.TMAlignDataset.limit', return_value=5)
     def test_pfam(self, mock):
@@ -63,6 +64,11 @@ class TestDownload(unittest.TestCase):
     def test_scop(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = SCOPDataset(root=tmp, use_precomputed=False)
+
+    @mock.patch('proteinshake.datasets.ProteinLigandDecoysDataset.limit', return_value=5)
+    def test_scop(self, mock):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = ProteinLigandDecoysDataset(root=tmp, use_precomputed=False)
 
 if __name__ == '__main__':
     unittest.main()
