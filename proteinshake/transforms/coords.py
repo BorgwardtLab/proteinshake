@@ -1,4 +1,3 @@
-from scipy.ndimage import rotate
 import numpy as np
 
 from proteinshake.transforms import Transform
@@ -23,11 +22,13 @@ def _get_coords_array(protein, resolution='residue'):
 
     """
 
-    return np.array([protein['residue']['x'],
-                     protein['residue']['y'],
-                     protein['residue']['z']
+    N = len(protein[resolution]['x'])
+
+    return np.array([protein[resolution]['x'],
+                     protein[resolution]['y'],
+                     protein[resolution]['z']
                      ]
-                   ).T
+                   ).T.reshape((N, 3, 1))
 
 def _set_coords(protein, coord_array, resolution='residue', in_place=True):
     """ Given an Nx3 array of coordinates, set them to the
@@ -80,12 +81,11 @@ class RandomRotateTransform(Transform):
         coords = _get_coords_array(protein, resolution=self.resolution)
 
         # choose an angle and axis along which to rotate
-        angle = np.random.randint(-180, 180, size=1)[0]
-        axes_choice = [(0, 1), (0, 2), (1, 2)]
-        axes = axes_choice[np.random.randint(0, len(axes_choice), size=1)[0]]
-        print(axes)
-
-        coords_rot = rotate(coords, angle=angle, axes=axes)
+        rnd = int(np.random.randint(0,2+1,(1,)))
+        rot = int(np.random.randint(1,3+1,(1,)))
+        rotation_plane = {0:[0,1],1:[1,2],2:[0,2]}[rnd]
+        N = len(protein[self.resolution]['x'])
+        coords_rot = np.rot90(coords,k=rot, axes=rotation_plane).reshape(N, 3)
 
         _set_coords(protein, coords_rot, resolution=self.resolution)
 
