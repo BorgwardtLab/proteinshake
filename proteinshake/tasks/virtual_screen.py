@@ -38,9 +38,13 @@ class VirtualScreenTask(Task):
 
     DatasetClass = ProteinLigandDecoysDataset
 
+    def __init__(self, *args, **kwargs):
+        kwargs['split'] = 'none'
+        super().__init__(*args, **kwargs)
+
     @property
     def task_type(self):
-        return 'zero-shot'
+        return ('protein', 'virtual_screen')
 
     def target(self, protein):
         """ The target here is a sorted list of smiles where the true ligands
@@ -53,6 +57,10 @@ class VirtualScreenTask(Task):
     @property
     def num_features(self):
         return 20
+
+    def dummy_output(self):
+        import random
+        return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
 
     def evaluate(self, y_pred, cutoff_fraction=.2):
         """ Computing enrichment factor on the whole dataset.
@@ -78,7 +86,7 @@ class VirtualScreenTask(Task):
         """
         
         efs = []
-        for i, protein in enumerate(self.dataset.proteins()):
+        for i, protein in enumerate(self.proteins):
             lig_ids = self.target(protein)
             active_ids = lig_ids[:protein['protein']['num_ligands']]
 

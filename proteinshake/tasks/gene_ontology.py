@@ -1,6 +1,7 @@
 import itertools
 import numpy as np
 from sklearn import metrics
+from functools import cached_property
 
 from proteinshake.datasets import GeneOntologyDataset
 from proteinshake.tasks import Task
@@ -18,7 +19,8 @@ class GeneOntologyTask(Task):
         self.branch = branch
         super().__init__(*args, **kwargs)
 
-    def compute_token_map(self):
+    @cached_property
+    def token_map(self):
         labels = set(itertools.chain(*[p['protein'][self.branch] for p in self.proteins]))
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 
@@ -32,7 +34,7 @@ class GeneOntologyTask(Task):
 
     @property
     def task_type(self):
-        return 'classification, multi-label'
+        return ('protein', 'multi_label')
 
     @property
     def num_features(self):
@@ -82,7 +84,12 @@ class GeneOntologyTask(Task):
             for t in np.linspace(0,1,21)
         ])
 
+    def dummy_output(self):
+        import numpy as np
+        return np.random.rand(len(self.test_index), len(self.token_map.keys()))
+
     def evaluate(self, y_pred):
+        print(y_pred)
         return {
             'Fmax': self.fmax(y_pred),
             #'Smin': self.smin(y_pred),

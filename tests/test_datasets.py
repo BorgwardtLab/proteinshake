@@ -51,9 +51,9 @@ class TestDatasets(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ds = AlphaFoldDataset(root=tmp, organism=organism).download_precomputed()
 
-    # def test_dude(self):
-        # with tempfile.TemporaryDirectory() as tmp:
-            # ds = ProteinLigandDecoysDataset(root=tmp).download_precomputed()
+    def test_dude(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = ProteinLigandDecoysDataset(root=tmp).download_precomputed()
 
 if __name__ == '__main__':
     unittest.main()
