@@ -24,12 +24,27 @@ class ProteinProteinInterfaceDataset(Dataset):
         Distance in angstroms within which a pair of residues is considered to
         belong to the interface.
 
-    .. code-block:: python
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
 
-            >>> from proteinshake.datasets import ProteinProteinInterfaceDataset 
-            >>> dataset = ProteinProteinInterfaceDataset()
-            >>> protein = next(dataset.proteins())
-            >>> interface = [r for r in protein['residues'] if r['is_interface']]
+       * - # proteins
+       * - 2839
+
+
+   .. list-table:: Annotations
+      :widths: 25 55 20
+      :header-rows: 1
+
+      * - Attribute
+        - Key
+        - Sample value
+      * - Chain Identifier 
+        - :code:`protein[{'residue' | 'atom'}]['chain_id']`
+        - ``['X', 'X', ..'Y', 'Y']``
+      * - Binding interface
+        - :code:`protein[{'residue' | 'atom'}]['is_interface']`
+        - ``[0, 0, .., 1, 0]``
 
 
     """

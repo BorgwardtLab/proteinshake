@@ -98,3 +98,10 @@ The ``Dataset`` object implements a method called ``add_protein_attributes(prote
 The ``add_protein_attributes()`` can apply any logic to the protein such as computing surfaces, interfaces, or simply looking up annotations in a database of choice.
 
 For example, the ``ProteinProteinInterfaceDataset`` has an additional key at the residue and atom levels which is ``True`` if the atom/residue is on the interface of two protein chains and ``False`` otherwise.
+
+.. warning:: 
+
+   The default behaviour is to fetch the pre-processed proteins from Zenodo. In order to see custom parameters in the dataset creation stage, set ``use_precomputed=False``.
+
+
+

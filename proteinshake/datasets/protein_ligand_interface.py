@@ -30,18 +30,50 @@ class ProteinLigandInterfaceDataset(Dataset):
     version: str
         PDBBind version to use.
 
+    .. list-table:: Dataset stats
+       :widths: 100
+       :header-rows: 1
+
+       * - # proteins
+       * - 4642
 
 
-    .. code-block:: python
+   .. list-table:: Annotations
+      :widths: 20 55 25
+      :header-rows: 1
 
-        >>> from proteinshake.datasets import ProteinLigandInterfaceDataset
-        >>> dataset = ProteinLigandInterfaceDataset()
-        >>> protein = next(dataset.proteins())
-        >>> protein['protein']['ligand_smiles']
-        'NC(=O)CC[C@H]([NH2+]C[C@@]1(O)OC[C@@H](O)[C@@H](O)[C@@H]1O)C(=O)O'
-        >>> protein['protein']['kd']
-        99.0
-        >>> pocket = [r for r in protein['residues'] if r['binding_site']]
+      * - Attribute
+        - Key
+        - Sample value
+      * - Dissociation constant (kd)
+        - :code:`protein['protein']['kd']`
+        - :code:`77.0`
+      * - Affinity
+        - :code:`protein['protein']['neglog_aff']`
+        - :code:`4.11000`
+      * - Resolution (Angstroms)
+        - :code:`protein['protein']['resolution']`
+        - :code:`2.20`
+      * - Year solved
+        - :code:`protein['protein']['year']`
+        - :code:`2016`
+      * - Ligand identifier (PDB code)
+        - :code:`protein['protein']['ligands_id']`
+        - :code:`IEE`
+      * - Ligand SMILES 
+        - :code:`protein['protein']['ligand_smiles']`
+        - :code:`'Cc1ccc(CNc2cc(Cl)nc(N)n2)cc1'`
+      * - Molecular ingerprints
+        - :code:`protein['protein']['fp_maccs']`, :code:`protein['protein']['fp_morgan_r2']`
+        - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
+      * - Molecular ingerprints
+        - :code:`protein['protein']['fp_maccs']`, :code:`protein['protein']['fp_morgan_r2']`
+        - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
+      * - Binding site (1 if in binding site, 0 else)
+        - :code:`protein['residue']['binding_site']`
+        - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
+
+
 
 
 
