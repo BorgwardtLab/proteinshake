@@ -13,7 +13,11 @@ class LigandAffinityTask(Task):
 
     @property
     def task_type(self):
-        return "regression"
+        return ('protein', 'regression')
+
+    def dummy_output(self):
+        import random
+        return [random.random() for _ in range(len(self.test_index))] 
 
     def target(self, protein):
         return protein['protein']['neglog_aff']

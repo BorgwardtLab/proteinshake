@@ -24,9 +24,14 @@ class StructuralClassTask(Task):
     def num_classes(self):
         return len(self.token_map)
 
+    def dummy_output(self):
+        import random
+        tokens = list(self.token_map.values())
+        return [random.choice(tokens) for _ in range(len(self.test_targets))]
+
     @property
     def task_type(self):
-        return 'classification, multi-class'
+        return ('protein', 'multi-class')
 
     @property
     def num_features(self):
@@ -38,8 +43,8 @@ class StructuralClassTask(Task):
     def evaluate(self, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         return {
-            'precision': metrics.precision_score(self.test_targets, y_pred, average='macro', zero_division=0),
-            'recall': metrics.recall_score(self.test_targets, y_pred, average='macro', zero_division=0),
-            'accuracy': metrics.accuracy_score(self.test_targets, y_pred),
+            'precision': metrics.precision_score(list(self.test_targets), y_pred, average='macro', zero_division=0),
+            'recall': metrics.recall_score(list(self.test_targets), y_pred, average='macro', zero_division=0),
+            'accuracy': metrics.accuracy_score(list(self.test_targets), y_pred),
             #'AUROC': metrics.roc_auc_score(self.test_targets, y_pred, average='macro', multi_class='ovo'),
         }

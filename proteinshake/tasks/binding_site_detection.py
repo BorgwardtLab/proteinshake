@@ -12,10 +12,20 @@ class BindingSiteDetectionTask(Task):
 
     @property
     def task_type(self):
-        return "binary-classification"
+        return ('residue', 'binary')
+
+    def dummy_output(self):
+        import random
+        return [random.randint(0, 1) for p in self.test_targets]
 
     def target(self, protein):
         return protein['residue']['binding_site']
+
+    def compute_targets(self):
+        # compute targets (e.g. for scaling)
+        self.train_targets = [p for i in self.train_index for p in self.target(self.proteins[i])]
+        self.val_targets = [p for i in self.val_index for p in self.target(self.proteins[i])]
+        self.test_targets = [p for i in self.test_index for p in self.target(self.proteins[i])]
 
     def evaluate(self, y_pred):
         return {

@@ -27,14 +27,14 @@ class StructureSearchTask(Task):
 
     @property
     def task_type(self):
-        return "retrieval"
+        return ('protein', 'retrieval')
 
     @cached_property
     def targets(self):
         """ Precompute the set of similar proteins for each query """
         targets = {}
-        for q, candidates in self.dataset.tm_score.items():
-            targets[q] = [c for c, sim in candidates.items() if sim >= self.min_sim]
+        for query in self.proteins:
+            targets[query['protein']['ID']] = [c['protein']['ID'] for c in self.proteins if self.dataset.lddt(query['protein']['ID'], c['protein']['ID']) >= self.min_sim]
         return targets
 
     def target(self, protein):
@@ -49,13 +49,22 @@ class StructureSearchTask(Task):
     def _recall_at_k(self, y_pred, targets, k):
         return len(set(y_pred[:k]).intersection(set(targets))) / len(targets)
 
+    def dummy_output(self):
+        import random
+        pred = []
+        ids = [p['protein']['ID'] for p in self.proteins] 
+        for query in self.proteins[self.test_index]:
+            targets = self.target(query)
+            pred.append(random.sample(ids, len(targets)))
+        return pred
+
     def evaluate(self, y_pred, k=5):
         """ Retrieval metrics.
 
         Arguments
         -----------
         y_pred:
-            List of indices of items in the dataset for which predictions were made.
+            List of indices of items (hits) in the dataset for a query.
         """
         results = defaultdict(list)
         for query, preds in zip(self.proteins[self.test_index], y_pred):

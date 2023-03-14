@@ -16,8 +16,8 @@ class Task:
 
      .. code-block:: python
 
-        >>> from proteinshake.tasks import EnzymeCommissionTask
-        >>> task = EnzymeCommissionTask()
+        >>> from proteinshake.tasks import EnzymeClassTask
+        >>> task = EnzymeClassTask()
         >>> data = task.dataset.to_graph(eps=8).pyg()
         >>> y_pred = model(data[task.train])
         >>> task.evaluate(y_pred)
@@ -32,12 +32,6 @@ class Task:
         How to split the data. Can be 'random', 'sequence', or 'structure'.
     split_similarity_threshold: float
         Maximum similarity to allow between train and test samples.
-    train_ratio: float, default=0.80
-        Fraction of dataset to use for training.
-    val_ratio: float, default=0.10
-        Fraction of dataset to use for validation.
-    test_ratio: float, default=0.10
-        Fraction of dataset to use for testing.
     use_precomputed: bool, default=True
     """
 
@@ -47,9 +41,6 @@ class Task:
                  root                       = 'data',
                  split                      = 'random',
                  split_similarity_threshold = 0.7,
-                 train_ratio                = 0.80,
-                 val_ratio                  = 0.10,
-                 test_ratio                 = 0.10,
                  use_precomputed            = True,
                  **kwargs
                 ):
@@ -57,6 +48,8 @@ class Task:
         self.dataset = self.DatasetClass(root=root, use_precomputed=use_precomputed)
         proteins = self.dataset.proteins()
         self.size = len(proteins)
+        self.split_similarity_threshold = split_similarity_threshold
+        self.split = split
 
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
@@ -78,15 +71,23 @@ class Task:
         self.name = self.__class__.__name__
 
         # load split indices
-        split_name = f'{split}_split_{split_similarity_threshold}' if split in ['sequence','structure'] else f'{split}_split'
+        if not self.split == 'none':
+            self.compute_index()
+            self.compute_targets()
+
+    def compute_index(self):
+        split_name = f'{self.split}_split_{self.split_similarity_threshold}' if self.split in ['sequence','structure'] else f'{self.split}_split'
         if split_name in self.proteins[0]['protein']:
             self.train_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'train'])
-            self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
-            self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
+            self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
+            self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
         else:
-            self.train_index, self.val_index, self.test_index = self.compute_custom_split(split)
+            self.train_index, self.val_index, self.test_index = self.compute_custom_split(self.split)
 
-        self.compute_targets()
+        self.update_index()
+
+    def update_index(self):
+        pass
 
     def compute_targets(self):
         # compute targets (e.g. for scaling)
@@ -102,7 +103,7 @@ class Task:
         Arguments
         ------------
         split: str
-            Name of the custom split as passed to the task.
+            Name of the custom split as passed to the task. ('random', 'sequence', 'structure', 'none')
 
         Returns:
         --------
