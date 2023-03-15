@@ -16,6 +16,11 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install TMalign
+        run: |
+          wget https://zhanggroup.org/TM-align/TMalign.cpp
+          g++ -static -O3 -ffast-math -lm -o TMalign TMalign.cpp
+          export PATH=$(pwd):$PATH
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -26,12 +31,12 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
+          export PATH=$(pwd):$PATH
           pip install -r requirements.txt
           pip install coverage
           coverage run --source proteinshake -m pytest
           coverage report -m
           coverage xml
-
       - name: Upload Coverage
         uses: codecov/codecov-action@v2
         with:
