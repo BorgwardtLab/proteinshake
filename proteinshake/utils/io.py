@@ -230,12 +230,13 @@ def extract_tar(tar_path, out_path, extract_members=False, strip=0):
 
     out_path = Path(out_path)
     with tarfile.open(tar_path,'r') as file:
-        members = get_members()
+        len_members = len(file.getmembers())
+        members = get_members(file)
         if extract_members:
-            for member in tqdm(members, desc='Extracting', total=len(members)):
+            for member in tqdm(members, desc='Extracting', total=len_members):
                 file.extract(member, out_path)
         else:
-            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(members)))
+            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len_members))
 
 def protein_to_pdb(protein, path):
     """ Write coordinate list from atom dict to a PDB file.

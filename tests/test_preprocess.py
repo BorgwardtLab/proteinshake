@@ -46,9 +46,10 @@ class TestDownload(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ds = ProteinProteinInterfaceDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch.object(RCSBDataset, 'download', download_mock)
-    @mock.patch.object(RCSBDataset, 'get_raw_files', get_raw_files_mock)
-    def test_rcsb(self):
+    @mock.patch('proteinshake.datasets.RCSBDataset.limit', return_value=5)
+    #@mock.patch.object(RCSBDataset, 'download', download_mock)
+    #@mock.patch.object(RCSBDataset, 'get_raw_files', get_raw_files_mock)
+    def test_rcsb(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             ds = RCSBDataset(root=tmp, use_precomputed=False)
 
@@ -77,13 +78,14 @@ class TestDownload(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ds = TMAlignDataset(root=tmp, use_precomputed=False)
 
-    @mock.patch.object(AlphaFoldDataset, 'download', download_mock)
-    @mock.patch.object(AlphaFoldDataset, 'get_raw_files', get_raw_files_mock)
-    @mock.patch.object(AlphaFoldDataset, 'get_id_from_filename', get_id_from_filename_mock)
-    def test_af(self):
+    @mock.patch('proteinshake.datasets.AlphaFoldDataset.limit', return_value=5)
+    #@mock.patch.object(AlphaFoldDataset, 'download', download_mock)
+    #@mock.patch.object(AlphaFoldDataset, 'get_raw_files', get_raw_files_mock)
+    #@mock.patch.object(AlphaFoldDataset, 'get_id_from_filename', get_id_from_filename_mock)
+    def test_af(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             organism = 'methanocaldococcus jannaschii'
-            ds = AlphaFoldDataset(root=tmp, version='v4', organism=organism, use_precomputed=False)
+            ds = AlphaFoldDataset(root=tmp, organism=organism, use_precomputed=False)
 
     @mock.patch.object(SCOPDataset, 'download', scop_download_mock)
     @mock.patch.object(SCOPDataset, 'get_raw_files', get_raw_files_mock)
