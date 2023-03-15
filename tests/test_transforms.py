@@ -17,18 +17,13 @@ class TestTransforms(unittest.TestCase):
         self.tmpdir.cleanup()
 
     def test_identity(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            self.ds.to_voxel(transform=IdentityTransform())
+        self.ds.to_voxel(transform=IdentityTransform())
 
     def test_center(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            self.ds.to_voxel(transform=CenterTransform())
+        self.ds.to_voxel(transform=CenterTransform())
 
     def test_rotate(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            self.ds.to_voxel(transform=RandomRotateTransform())
+        self.ds.to_voxel(transform=RandomRotateTransform())
 
     def test_compose(self):
-        t = Compose([CenterTransform(), RandomRotateTransform()])
-        with tempfile.TemporaryDirectory() as tmp:
-            self.ds.to_voxel(transform=t)
+        self.ds.to_voxel(transform=Compose([CenterTransform(), RandomRotateTransform()]))
