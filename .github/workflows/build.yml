@@ -16,6 +16,13 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install TMalign
+        run: |
+          wget https://zhanggroup.org/TM-align/TMalign.cpp
+          g++ -static -O3 -ffast-math -lm -o TMalign TMalign.cpp
+          export PATH=$(pwd):$PATH
+          echo $PATH
+          TMalign -v
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -24,13 +31,6 @@ jobs:
           pip install tensorflow
           pip install dgl
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Install TMalign
-        run: |
-          wget https://zhanggroup.org/TM-align/TMalign.cpp
-          g++ -static -O3 -ffast-math -lm -o TMalign TMalign.cpp
-          export PATH=$(pwd):$PATH
-          echo $PATH
-          TMalign -v
       - name: Test with pytest
         run: |
           export PATH=$(pwd):$PATH
