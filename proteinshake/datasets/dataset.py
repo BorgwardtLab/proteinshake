@@ -177,6 +177,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
+        return 10
         return None
 
     @property
