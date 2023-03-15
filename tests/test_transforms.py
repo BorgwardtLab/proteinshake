@@ -1,6 +1,7 @@
 import unittest, tempfile
 
-from proteinshake.datasets import AlphaFoldDataset
+from proteinshake.datasets import ProteinLigandDecoysDataset
+
 from proteinshake.transforms import *
 
 
@@ -8,9 +9,8 @@ class TestTransforms(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        organism = 'methanocaldococcus jannaschii'
         self.tmpdir = tempfile.TemporaryDirectory()
-        self.ds = AlphaFoldDataset(root=self.tmpdir, organism=organism)
+        self.ds = ProteinLigandDecoysDataset(root=self.tmpdir)
 
     @classmethod
     def tearDownClass(self):
