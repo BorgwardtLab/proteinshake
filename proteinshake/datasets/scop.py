@@ -40,12 +40,10 @@ class SCOPDataset(RCSBDataset):
 
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     def _parse_scop(self, path):
         names = ['FA-DOMID', 'FA-PDBID', 'FA-PDBREG', 'FA-UNIID', 'FA-UNIREG', 'SF-DOMID', 'SF-PDBID', 'SF-PDBREG', 'SF-UNIID', 'SF-UNIREG', 'SCOPCLA']
-        return pd.read_csv(path, sep=' ', comment='#', names=names)
+        df = pd.read_csv(path, sep=' ', comment='#', names=names, dtype=str)
+        return {k: dict([cla.split("=") for cla in v.split(",")]) for k,v in zip(df['FA-PDBID'], df['SCOPCLA'])}
 
     def download(self):
         # get the annots
@@ -68,11 +66,8 @@ class SCOPDataset(RCSBDataset):
 
         SCOPCLA - SCOP domain classification. The abbreviations denote: TP=protein type, CL=protein class, CF=fold, SF=superfamily, FA=family
         """
-        try:
-            match = self.scop.loc[self.scop['FA-PDBID'] == protein['protein']['ID'].upper()].iloc[0]
-        except KeyError:
-            return None
-        scop_classes = dict([cla.split("=") for cla in match['SCOPCLA'].split(",")])
-        for cla, val in scop_classes.items():
+        protein_id = protein['protein']['ID'].upper()
+        if not protein_id in self.scop: return None
+        for cla, val in self.scop[protein_id].items():
             protein['protein']['SCOP-' + cla] = val
         return protein

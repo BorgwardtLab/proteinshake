@@ -1,0 +1,16 @@
+# ==============================================================================
+# List of the protein-ligand complexes in the PDBbind refined set v.2020
+# 5316 protein-ligand complexes in total, which are ranked by binding data
+# Latest update: July 2021
+# PDB code, resolution, release year, -logKd/Ki, Kd/Ki, reference, ligand name
+# ==============================================================================
+0000  1.80  2009   2.12  Ki=7.5mM      // 0000.pdf (GV9)
+0001  2.00  2007   2.00  Kd=10mM       // 0001.pdf (MLY)
+0002  2.35  2008   2.00  Kd=10.1mM     // 0002.pdf (PRP)
+0003  1.31  2009   2.00  Ki=10mM       // 0003.pdf (GF4)
+0004  2.06  1998   2.00  Ki=10mM       // 0004.pdf (3HP)
+0005  1.90  2014   2.00  Kd=10mM       // 0005.pdf (TDR)
+0006  1.90  2014   2.00  Kd=10mM       // 0006.pdf (THM)
+0007  2.41  2015   2.06  Kd=8.7mM      // 0007.pdf (3C5)
+0008  1.95  2011   2.07  Kd=8.5mM      // 0008.pdf (833)
+0009  2.01  2014   2.10  Kd=8mM        // 0009.pdf (AMP)

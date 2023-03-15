@@ -25,8 +25,6 @@ class ProteinFamilyDataset(RCSBDataset):
         - :code:`protein['protein']['Pfam']`
         - `['PF00102']`
 
-
-
     """
 
     def __init__(self, pfam_version='34.0', query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):

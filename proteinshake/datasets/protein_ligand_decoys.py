@@ -70,7 +70,7 @@ class ProteinLigandDecoysDataset(Dataset):
         return super().pdb2df(path)
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/*.pdb')[:self.limit]
+        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return filename.split(".")[0]
@@ -80,14 +80,14 @@ class ProteinLigandDecoysDataset(Dataset):
 
         for target_id in tqdm(targets, desc='Downloading'):
             # grab receptor
-            download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb", f"{self.root}/raw/", log=False)
-            os.rename(f'{self.root}/raw/rec.crg.pdb', f'{self.root}/raw/{target_id}.pdb')
+            download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb", f"{self.root}/raw/files/", log=False)
+            os.rename(f'{self.root}/raw/files/rec.crg.pdb', f'{self.root}/raw/files/{target_id}.pdb')
             # grab ligands
-            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/ligands.smi", f"{self.root}/raw/", log=False)
-            os.rename(f'{self.root}/raw/ligands.smi', f'{self.root}/raw/ligands_{target_id}.smi')
+            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/ligands.smi", f"{self.root}/raw/files/", log=False)
+            os.rename(f'{self.root}/raw/files/ligands.smi', f'{self.root}/raw/files/ligands_{target_id}.smi')
             # grab decoys
-            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/decoys.smi", f"{self.root}/raw/", log=False)
-            os.rename(f'{self.root}/raw/decoys.smi', f'{self.root}/raw/decoys_{target_id}.smi')
+            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/decoys.smi", f"{self.root}/raw/files/", log=False)
+            os.rename(f'{self.root}/raw/files/decoys.smi', f'{self.root}/raw/files/decoys_{target_id}.smi')
 
 
     def add_protein_attributes(self, protein):
@@ -96,7 +96,7 @@ class ProteinLigandDecoysDataset(Dataset):
         target = protein['protein']['ID']
         
         for mode in ['decoys', 'ligands']:
-            with open(f"{self.root}/raw/{mode}_{target}.smi", "r") as mols:
+            with open(f"{self.root}/raw/files/{mode}_{target}.smi", "r") as mols:
                 smiles, ids = [], []
                 for line in mols:
                     smile, mol_id = line.split()

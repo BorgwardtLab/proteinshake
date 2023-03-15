@@ -208,7 +208,7 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
     if log:
         bar.close()
 
-def extract_tar(tar_path, out_path, extract_members=False):
+def extract_tar(tar_path, out_path, extract_members=False, strip=0):
     """ Extracts a tar file.
 
     Parameters
@@ -219,15 +219,23 @@ def extract_tar(tar_path, out_path, extract_members=False):
         The directory to extract to.
     extract_members: bool, default False
         If `True`, the tar file member will be directly extracted to `out_path`, instead of creating a subdirectory.
+    strip: int, default 0
+        Remove `strip` folder hierarchies from the path of the extracted file.
     """
+    def get_members(file):
+        for member in file.getmembers():
+            parts = Path(member.path).parts
+            member.path = Path(*parts[min(strip, len(parts)-1):])
+            yield member
+
     out_path = Path(out_path)
-    if extract_members:
-        with tarfile.open(tar_path,'r') as file:
-            for member in tqdm(file.getmembers(), desc='Extracting', total=len(file.getmembers())):
+    with tarfile.open(tar_path,'r') as file:
+        members = get_members()
+        if extract_members:
+            for member in tqdm(members, desc='Extracting', total=len(members)):
                 file.extract(member, out_path)
-    else:
-        with tarfile.open(tar_path) as file:
-            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(file.getmembers())))
+        else:
+            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len(members)))
 
 def protein_to_pdb(protein, path):
     """ Write coordinate list from atom dict to a PDB file.

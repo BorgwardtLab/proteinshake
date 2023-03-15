@@ -52,12 +52,12 @@ class GeneOntologyDataset(RCSBDataset):
 
     def download(self):
         super().download()
-        if not os.path.exists(f'{self.root}/godag.obo'):
+        if not os.path.exists(f'{self.root}/{self.name}.godag.obo'):
             download_url(f'http://current.geneontology.org/ontology/go-basic.obo', f'{self.root}', log=False)
             os.rename(f'{self.root}/go-basic.obo', f'{self.root}/{self.name}.godag.obo')
 
     def add_protein_attributes(self, protein):
-        godag = GODag(f'{self.root}/{self.name}.godag.obo', prt=None)
+        godag = GODag(f'{self.root}/{self.name}.godag.obo', prt=None) # cannot use self.godag because the GODAG is not pickleable (for the release)
         with open(f'{self.root}/raw/files/{protein["protein"]["ID"]}.annot.json','r') as file:
             annot = json.load(file)
         go_terms = []
