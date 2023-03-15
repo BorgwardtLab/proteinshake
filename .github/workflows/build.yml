@@ -24,6 +24,11 @@ jobs:
           pip install tensorflow
           pip install dgl
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install TMalign
+        run: |
+          wget https://zhanggroup.org/TM-align/TMalign.cpp
+          g++ -static -O3 -ffast-math -lm -o TMalign TMalign.cpp
+          export PATH=$PATH:$(pwd)
       - name: Test with pytest
         run: |
           pip install -r requirements.txt
