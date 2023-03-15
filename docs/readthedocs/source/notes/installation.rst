@@ -18,11 +18,6 @@ To get the latest version:
         $ cd proteinshake
         $ pip install .
 
-Or install from TestPyPi::
-
-        $ pip install -i https://test.pypi.org/simple/ proteinshake
-
-
 
 Depending on which frameworks you choose to work with, you may be prompted to install any of:
 
