@@ -32,22 +32,6 @@
 We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level.
 We also provide an API for evaluating models on several biologically relevant prediction tasks.
 
-**Task Usage**
-
-
-<table>
-  <tr>
-    <th>Data</th>
-    <th>Tasks</th>
-  </tr>
-  <tr>
-    <td><img width="400" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg"></td>
-    <td><img width="400" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg"></td>
-  </tr>
-</table>
-
-
-
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
 
 <br/>
@@ -77,6 +61,20 @@ Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
 >>> protein_dict['protein']['sequence']
 'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
 ```
+
+**Data workflow**
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
+</p>
+</p>
+
+**Task workflow**
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
+</p>
+</p>
 
 ---
 
