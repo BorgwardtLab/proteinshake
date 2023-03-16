@@ -34,29 +34,6 @@ We also provide an API for evaluating models on several biologically relevant pr
 
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
 
-
-**Data workflow**
-
-In one line you can import large datasets of protein 3D structures, encode them as graphs/voxels/point clouds, and port them to your favorite learning framework.
-
-<p align="center">
-  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
-</p>
-</p>
-
-**Task workflow**
-
-The task API lets you easily access the underlying data for several tasks, get random/sequene/structure based splits and evaluate your predictions.
-
-<p align="center">
-  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
-</p>
-</p>
-
-
-
-<br/>
-
 **Installation:**
 ```diff
 - This is a pre-release version. There may be unannounced changes to the API and datasets. -
@@ -66,22 +43,27 @@ The task API lets you easily access the underlying data for several tasks, get r
 pip install proteinshake
 ```
 
+</br>
+
+**Data workflow:**
+
+In one line you can import large datasets of protein 3D structures, encode them as graphs/voxels/point clouds, and port them to your favorite learning framework.
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
+</p>
+</p>
+
+**Task workflow:**
+
+The task API lets you easily access the underlying data for several tasks, get random/sequene/structure based splits and evaluate your predictions.
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
+</p>
+</p>
+
 </div>
-
----
-
-**Example usage:**
-```python
->>> from proteinshake.datasets import AlphaFoldDataset
->>> data = AlphaFoldDataset(organism='escherichia_coli').to_graph(k=5).pyg()
->>> graph, protein_dict = data[0]
->>> graph
-Data(x=[196], edge_index=[2, 0], edge_attr=[0, 1])
->>> protein_dict['protein']['ID']
-'P0A9H5'
->>> protein_dict['protein']['sequence']
-'MSDERYQQRQQRVKEKVDARVAQAQDERGIIIVFTGNGK...'
-```
 
 ---
 
