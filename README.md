@@ -35,7 +35,7 @@ We also provide an API for evaluating models on several biologically relevant pr
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
 
 
-**Data workflow:**
+**Data workflow**
 
 In one line you can import large datasets of protein 3D structures, encode them as graphs/voxels/point clouds, and port them to your favorite learning framework.
 
@@ -44,7 +44,7 @@ In one line you can import large datasets of protein 3D structures, encode them 
 </p>
 </p>
 
-**Task workflow:**
+**Task workflow**
 
 The task API lets you easily access the underlying data for several tasks, get random/sequene/structure based splits and evaluate your predictions.
 
