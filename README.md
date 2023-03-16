@@ -35,13 +35,13 @@ We also provide an API for evaluating models on several biologically relevant pr
 **Task Usage**
 
 <p align="center">
-  <img width="600" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/tasks_animation.svg">
+  <img width="600" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
 </p>
 
 **Dataset Usage**
 
 <p align="center">
-  <img width="600" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/data_animation.svg">
+  <img width="600" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
 </p>
 
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
