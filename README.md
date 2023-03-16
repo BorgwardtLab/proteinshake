@@ -27,11 +27,33 @@
 
 <div align="center">
 
-### ProteinShake provides one-liner imports of large scale, preprocessed protein structure datasets for various model types and frameworks.
+### ProteinShake provides one-liner imports of large scale, preprocessed protein structure tasks and datasets for various model types and frameworks.
 
 We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, Tensorflow, Numpy, JAX, PyTorch-Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level.
+We also provide an API for evaluating models on several biologically relevant prediction tasks.
 
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
+
+
+**Data workflow**
+
+In one line you can import large datasets of protein 3D structures, encode them as graphs/voxels/point clouds, and port them to your favorite learning framework.
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
+</p>
+</p>
+
+**Task workflow**
+
+The task API lets you easily access the underlying data for several tasks, get random/sequene/structure based splits and evaluate your predictions.
+
+<p align="center">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
+</p>
+</p>
+
+
 
 <br/>
 
