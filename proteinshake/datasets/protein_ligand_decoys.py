@@ -62,9 +62,6 @@ class ProteinLigandDecoysDataset(Dataset):
 
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     @patch('proteinshake.datasets.dataset.AA_THREE_TO_ONE', EXTENDED_AA_THREE_TO_ONE)
     def pdb2df(self, path):
         return super().pdb2df(path)

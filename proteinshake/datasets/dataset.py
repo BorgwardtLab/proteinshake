@@ -4,6 +4,7 @@ Base dataset class for protein 3D structures.
 """
 import os, gzip, inspect, time, itertools, tarfile, io
 from collections import defaultdict
+from functools import cached_property
 import multiprocessing as mp
 
 import pandas as pd
@@ -112,11 +113,7 @@ class Dataset():
             n_jobs                         = 1,
             minimum_length                 = 10,
             maximum_length                 = 2048,
-            exclude_ids                    = None,
-            cluster_structure              = False,
-            cluster_sequence               = False,
-            similarity_threshold_structure = .9,
-            similarity_threshold_sequence  = .9
+            exclude_ids                    = [],
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -127,18 +124,42 @@ class Dataset():
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
-        self.exclude_ids = [] if exclude_ids is None else exclude_ids
-        self.cluster_structure = cluster_structure
-        self.cluster_sequence = cluster_sequence
-        self.similarity_threshold_sequence = similarity_threshold_sequence
-        self.similarity_threshold_structure = similarity_threshold_structure
+        self.exclude_ids = exclude_ids
         
-        os.makedirs(f'{self.root}', exist_ok=True)
+        # check arguments
+        if os.path.exists(f'{self.root}'):
+            with open(f'{self.root}/signature.txt','r') as file:
+                assert file.read() == self.signature, 'The Dataset is called with different arguments than were used to create it. Delete or change the root.'
+        else:
+            os.makedirs(f'{self.root}')
+            with open(f'{self.root}/signature.txt','w') as file:
+                file.write(self.signature)
+
         if not use_precomputed:
             self.start_download()
             self.parse()
         else:
-            self.check_arguments_same_as_hosted()
+            self.check_signature_same_as_hosted()
+
+    def compute_signature(self, use_defaults=False):
+        signature = dict(inspect.signature(self.__init__).parameters.items())
+        class_object = self.__class__
+        while True: # add base signatures to subclass signature
+            signature = {**dict(inspect.signature(class_object.__init__).parameters.items()), **signature}
+            if len(class_object.__bases__) == 0: break
+            class_object = class_object.__bases__[0]
+        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs']]
+        if use_defaults:
+            return self.name + ' | ' + ', '.join([k + '=' + str(signature[k].default) for k in arg_names])
+        return self.name + ' | ' + ', '.join([k + '=' + str(getattr(self, k)) for k in arg_names])
+
+    @cached_property
+    def default_signature(self):
+        return self.compute_signature(use_defaults=True)
+
+    @cached_property
+    def signature(self):
+        return self.compute_signature(use_defaults=False)
 
     def proteins(self, resolution='residue'):
         """ Returns a generator of proteins from the avro file.
@@ -177,35 +198,16 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
-        return 10
         return None
 
     @property
     def name(self):
         return self.__class__.__name__
 
-    def check_arguments_same_as_hosted(self):
+    def check_signature_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
         """
-        signature = inspect.signature(self.__init__)
-        default_args = {
-            k: v.default
-            for k, v in signature.parameters.items()
-            if v.default is not inspect.Parameter.empty
-            and (self.name != 'AlphaFoldDataset' or k != 'organism')
-            and (self.name != 'Atom3DDataset' or k != 'atom_dataset')
-        }
-        if self.__class__.__bases__[0].__name__ != 'Dataset':
-            signature = inspect.signature(self.__class__.__bases__[0].__init__)
-            super_args = {
-                k: v.default
-                for k, v in signature.parameters.items()
-                if v.default is not inspect.Parameter.empty
-            }
-            default_args = {**super_args, **default_args}
-        if self.use_precomputed and not all([v == getattr(self, k) for k,v in default_args.items()]):
-            print('Error: The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.')
-            exit()
+        assert self.signature == self.default_signature, 'The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.'
 
     def get_raw_files(self):
         """ Implement me in a subclass!
