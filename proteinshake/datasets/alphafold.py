@@ -83,11 +83,11 @@ class AlphaFoldDataset(Dataset):
         The organism name or 'swissprot'.
     """
 
-    def __init__(self, organism, version='v4', **kwargs):
+    def __init__(self, organism, version='v4', only_single_chain=True, **kwargs):
         self.organism = organism.lower().replace(' ','_')
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
         self.version = version
-        super().__init__(only_single_chain=True, **kwargs)
+        super().__init__(only_single_chain=only_single_chain, **kwargs)
 
     @property
     def name(self):

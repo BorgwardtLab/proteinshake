@@ -89,17 +89,12 @@ class Dataset():
         If `True`, will discard proteins whose primary sequence is not identical with the sequence of amino acids in the structure. This can happen if the structure is not complete (e.g. for parts that could not be crystallized).
     n_jobs: int, default 1
         The number of jobs for downloading and parsing files. It is recommended to increase the number of jobs with `use_precomputed=False`.
-    min_size: int, default 10
-        Proteins smaller than min_size residues will be skipped.
-    cluster_structure: bool, default False
-        Assign a cluster to each protein based on CD-hit clustering.
-    cluster_structure: bool, default False
-        Assign a cluster to each protein based on hierarchical clustering of TM-scores
-    distance_threshold_sequence: int or list, default 0.3
-        Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
-    distance_threshold_sequence: int or lits, default 0.3
-        Maximum dissimilarity to allow during clustering of sequences. Entities below distance threshold will belong to the same cluster and vice versa.
-
+    minimum_length: int, default 10
+        Proteins smaller than minimum_length residues will be skipped.
+    maximum_length: int, default 2048
+        Proteins larger than maximum_length residues will be skipped.
+    exclude_ids: list, default []
+        Exclude PDB IDs from the dataset.
     """
 
     additional_files = [] # indicates the additional file names that are to be included in the release
@@ -126,14 +121,8 @@ class Dataset():
         self.release = release
         self.exclude_ids = exclude_ids
         
-        # check arguments
-        if os.path.exists(f'{self.root}'):
-            with open(f'{self.root}/signature.txt','r') as file:
-                assert file.read() == self.signature, 'The Dataset is called with different arguments than were used to create it. Delete or change the root.'
-        else:
-            os.makedirs(f'{self.root}')
-            with open(f'{self.root}/signature.txt','w') as file:
-                file.write(self.signature)
+        os.makedirs(f'{self.root}', exist_ok=True)
+        self.check_signature()
 
         if not use_precomputed:
             self.start_download()
@@ -148,7 +137,7 @@ class Dataset():
             signature = {**dict(inspect.signature(class_object.__init__).parameters.items()), **signature}
             if len(class_object.__bases__) == 0: break
             class_object = class_object.__bases__[0]
-        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs']]
+        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs', 'root', 'organism']]
         if use_defaults:
             return self.name + ' | ' + ', '.join([k + '=' + str(signature[k].default) for k in arg_names])
         return self.name + ' | ' + ', '.join([k + '=' + str(getattr(self, k)) for k in arg_names])
@@ -160,6 +149,19 @@ class Dataset():
     @cached_property
     def signature(self):
         return self.compute_signature(use_defaults=False)
+
+    def check_signature(self):
+        if os.path.exists(f'{self.root}/signature.txt'):
+            with open(f'{self.root}/signature.txt','r') as file:
+                assert file.read() == self.signature, 'The Dataset is called with different arguments than were used to create it. Delete or change the root.'
+        else:
+            with open(f'{self.root}/signature.txt','w') as file:
+                file.write(self.signature)
+
+    def check_signature_same_as_hosted(self):
+        """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
+        """
+        assert self.signature == self.default_signature, 'The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.'
 
     def proteins(self, resolution='residue'):
         """ Returns a generator of proteins from the avro file.
@@ -203,11 +205,6 @@ class Dataset():
     @property
     def name(self):
         return self.__class__.__name__
-
-    def check_signature_same_as_hosted(self):
-        """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
-        """
-        assert self.signature == self.default_signature, 'The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.'
 
     def get_raw_files(self):
         """ Implement me in a subclass!
@@ -295,10 +292,6 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
-        if self.cluster_structure:
-            self.compute_clusters_structure(proteins)
-        if self.cluster_sequence:
-            self.compute_clusters_sequence(proteins)
         print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
