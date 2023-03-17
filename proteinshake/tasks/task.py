@@ -50,7 +50,7 @@ class Task:
         self.size = len(proteins)
         self.split_similarity_threshold = split_similarity_threshold
         self.split = split
-
+    
         class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
             def __init__(self, proteins):
                 self.proteins = list(proteins)

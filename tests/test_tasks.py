@@ -12,8 +12,12 @@ class TestTasks(unittest.TestCase):
     def task_check(self, task, skip_splits=False, pair=False):
         # check splits
         if not skip_splits:
-            self.assertIsNotNone(task.train_index)
-            self.assertIsNotNone(task.train_targets)
+            assert len(task.train_index) > 0
+            assert len(task.test_index) > 0
+            assert len(task.val_index) > 0
+            assert len(set(task.train_index).intersection(set(task.test_index))) == 0
+            assert len(set(task.train_index).intersection(set(task.val_index))) == 0
+            assert len(set(task.val_index).intersection(set(task.test_index))) == 0
 
         # check targets
         prots = task.dataset.proteins()
@@ -36,10 +40,10 @@ class TestTasks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             task = ProteinFamilyTask(split='structure', root=tmp)
 
-    # def test_go_task(self):
-        # with tempfile.TemporaryDirectory() as tmp:
-            # task = GeneOntologyTask(split='structure', root=tmp)
-            # self.task_check(task)
+    def test_go_task(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            task = GeneOntologyTask(split='structure', root=tmp)
+            self.task_check(task)
 
     def test_binding(self):
         with tempfile.TemporaryDirectory() as tmp:
