@@ -66,3 +66,9 @@ class FrameworkDataset():
             return self.transform((data, protein_dict))
         else:
             return data, protein_dict
+
+    def len(self):
+        pass
+
+    def get(self):
+        pass
