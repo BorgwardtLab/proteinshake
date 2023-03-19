@@ -47,7 +47,7 @@ pip install proteinshake
 
 **Data workflow:**
 
-In one line you can import large datasets of protein 3D structures, encode them as graphs/voxels/point clouds, and port them to your favorite learning framework.
+In one line you can import large datasets of protein 3D structures, encode them as graphs/voxel grids/point clouds, and port them to your favorite learning framework.
 
 <p align="center">
   <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
@@ -56,7 +56,7 @@ In one line you can import large datasets of protein 3D structures, encode them 
 
 **Task workflow:**
 
-The task API lets you easily access the underlying data for several tasks, get random/sequene/structure based splits and evaluate your predictions.
+The task API lets you easily access the underlying data for several tasks, get random/sequence/structure based splits, and evaluate your predictions.
 
 <p align="center">
   <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">

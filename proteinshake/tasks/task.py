@@ -114,7 +114,7 @@ class Task:
         test_index
             Numpy array with the index of proteins in the test split.
         """
-        raise NotImplementedError
+        raise Exception('The requested split is not available. Implement <compute_custom_split> to provide your own splitting logic.')
 
     @property
     def task_type(self):
