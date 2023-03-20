@@ -15,9 +15,9 @@ class TestTasks(unittest.TestCase):
             assert len(task.train_index) > 0
             assert len(task.test_index) > 0
             assert len(task.val_index) > 0
-            assert len(set(task.train_index).intersection(set(task.test_index))) == 0
-            assert len(set(task.train_index).intersection(set(task.val_index))) == 0
-            assert len(set(task.val_index).intersection(set(task.test_index))) == 0
+            assert len(set(task.train_index.flatten()).intersection(set(task.test_index.flatten()))) == 0
+            assert len(set(task.train_index.flatten()).intersection(set(task.val_index.flatten()))) == 0
+            assert len(set(task.val_index.flatten()).intersection(set(task.test_index.flatten()))) == 0
 
         # check targets
         prots = task.dataset.proteins()
@@ -32,53 +32,63 @@ class TestTasks(unittest.TestCase):
         pred = task.dummy_output()
         self.assertIsNotNone(task.evaluate(pred))
 
-    def test_ec_task(self):
+    def test_enzyme_class(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = EnzymeClassTask(split='structure', root=tmp)
+            self.task_check(EnzymeClassTask(split='random', root=tmp))
+            self.task_check(EnzymeClassTask(split='sequence', root=tmp))
+            self.task_check(EnzymeClassTask(split='structure', root=tmp))
 
-    def test_pfam_task(self):
+    def test_protein_family(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = ProteinFamilyTask(split='structure', root=tmp)
+            self.task_check(ProteinFamilyTask(split='random', root=tmp))
+            self.task_check(ProteinFamilyTask(split='sequence', root=tmp))
+            self.task_check(ProteinFamilyTask(split='structure', root=tmp))
 
-    def test_go_task(self):
+    def test_gene_ontology(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = GeneOntologyTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(GeneOntologyTask(split='random', root=tmp))
+            self.task_check(GeneOntologyTask(split='sequence', root=tmp))
+            self.task_check(GeneOntologyTask(split='structure', root=tmp))
 
-    def test_binding(self):
+    def test_binding_site_detection(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = BindingSiteDetectionTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(BindingSiteDetectionTask(split='random', root=tmp))
+            self.task_check(BindingSiteDetectionTask(split='sequence', root=tmp))
+            self.task_check(BindingSiteDetectionTask(split='structure', root=tmp))
 
-    def test_affinity(self):
+    def test_ligand_affinity(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = LigandAffinityTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(LigandAffinityTask(split='random', root=tmp))
+            self.task_check(LigandAffinityTask(split='sequence', root=tmp))
+            self.task_check(LigandAffinityTask(split='structure', root=tmp))
 
-    def test_ppi(self):
+    def test_protein_protein_interface(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = ProteinProteinInterfaceTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(ProteinProteinInterfaceTask(split='random', root=tmp))
+            self.task_check(ProteinProteinInterfaceTask(split='sequence', root=tmp))
+            self.task_check(ProteinProteinInterfaceTask(split='structure', root=tmp))
 
-    def test_scop(self):
+    def test_structural_class(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = StructuralClassTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(StructuralClassTask(split='random', root=tmp))
+            self.task_check(StructuralClassTask(split='sequence', root=tmp))
+            self.task_check(StructuralClassTask(split='structure', root=tmp))
 
-    def test_retrieve(self):
+    def test_structure_search(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = StructureSearchTask(split='structure', root=tmp)
-            self.task_check(task)
+            self.task_check(StructureSearchTask(split='random', root=tmp))
+            self.task_check(StructureSearchTask(split='sequence', root=tmp))
+            self.task_check(StructureSearchTask(split='structure', root=tmp))
 
-    def test_screen(self):
+    def test_virtual_screen(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = VirtualScreenTask(split='structure', root=tmp)
-            self.task_check(task, skip_splits=True)
+            self.task_check(VirtualScreenTask(root=tmp), skip_splits=True)
 
-    def test_sim(self):
+    def test_structure_similarity(self):
         with tempfile.TemporaryDirectory() as tmp:
-            task = StructureSimilarityTask(split='structure', root=tmp)
-            self.task_check(task, pair=True)
+            self.task_check(StructureSimilarityTask(split='random', root=tmp), pair=True)
+            self.task_check(StructureSimilarityTask(split='sequence', root=tmp), pair=True)
+            self.task_check(StructureSimilarityTask(split='structure', root=tmp), pair=True)
 
 if __name__ == '__main__':
     unittest.main()
