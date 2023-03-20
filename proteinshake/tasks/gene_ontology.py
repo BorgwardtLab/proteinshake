@@ -47,20 +47,19 @@ class GeneOntologyTask(Task):
         y_true = np.copy(self.test_targets)[y_pred.max(axis=1) >= threshold]
         y_pred = y_pred[y_pred.max(axis=1) >= threshold] >= threshold
         mt = y_pred.shape[0]
-        return 1/mt * (
-            np.logical_and(y_true, y_pred).sum(axis=1)
-            / y_pred.sum(axis=1)
-            ).sum()
-
+        if mt == 0: return 0
+        nom = np.logical_and(y_true, y_pred).sum(axis=1)
+        denom = y_pred.sum(axis=1)
+        return 1/mt * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
 
     def recall(self, y_pred, threshold):
         y_true = np.copy(self.test_targets)
         y_pred = y_pred >= threshold
         ne = y_true.shape[0]
-        return 1/ne * (
-            np.logical_and(y_true, y_pred).sum(axis=1)
-            / y_true.sum(axis=1)
-            ).sum()
+        if ne == 0: return 0
+        nom = np.logical_and(y_true, y_pred).sum(axis=1)
+        denom = y_true.sum(axis=1)
+        return 1/ne * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
     
     def remaining_uncertainty(self, y_pred, threshold):
         pass
@@ -69,11 +68,13 @@ class GeneOntologyTask(Task):
         pass
 
     def fmax(self, y_pred):
-        return max([
-            2 * self.precision(y_pred, t) * self.recall(y_pred, t)
-            / (self.precision(y_pred, t) + self.recall(y_pred, t))
-            for t in np.linspace(0,1,21)
-        ])
+        fmax = 0
+        for t in np.linspace(0,1,21):
+            prec, rec = self.precision(y_pred, t), self.recall(y_pred, t)
+            if prec+rec == 0: continue
+            f1 = (2 * prec * rec) / (prec + rec)
+            fmax = max(fmax, f1)
+        return fmax
     
     def smin(self, y_pred):
         return min([
@@ -89,7 +90,6 @@ class GeneOntologyTask(Task):
         return np.random.rand(len(self.test_index), len(self.token_map.keys()))
 
     def evaluate(self, y_pred):
-        print(y_pred)
         return {
             'Fmax': self.fmax(y_pred),
             #'Smin': self.smin(y_pred),
