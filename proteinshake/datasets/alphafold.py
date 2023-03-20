@@ -83,6 +83,8 @@ class AlphaFoldDataset(Dataset):
         The organism name or 'swissprot'.
     """
 
+    exlude_args_from_signature = ['organism']
+
     def __init__(self, organism, version='v4', only_single_chain=True, **kwargs):
         self.organism = organism.lower().replace(' ','_')
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'

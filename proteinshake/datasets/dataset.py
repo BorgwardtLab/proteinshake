@@ -98,6 +98,7 @@ class Dataset():
     """
 
     additional_files = [] # indicates the additional file names that are to be included in the release
+    exlude_args_from_signature = []
 
     def __init__(self,
             root                           = 'data',
@@ -137,7 +138,7 @@ class Dataset():
             signature = {**dict(inspect.signature(class_object.__init__).parameters.items()), **signature}
             if len(class_object.__bases__) == 0: break
             class_object = class_object.__bases__[0]
-        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs', 'root', 'organism']]
+        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs', 'root']+self.exlude_args_from_signature]
         if use_defaults:
             return self.name + ' | ' + ', '.join([k + '=' + str(signature[k].default) for k in arg_names])
         return self.name + ' | ' + ', '.join([k + '=' + str(getattr(self, k)) for k in arg_names])
