@@ -29,8 +29,7 @@ class TestTasks(unittest.TestCase):
             self.assertIsNotNone(task.target(protein))
 
         # check eval
-        pred = task.dummy_output()
-        self.assertIsNotNone(task.evaluate(pred))
+        self.assertIsNotNone(task.evaluate(task.test_targets, task.dummy_output()))
 
     def test_enzyme_class(self):
         with tempfile.TemporaryDirectory() as tmp:

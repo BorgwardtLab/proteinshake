@@ -41,6 +41,7 @@ class VirtualScreenTask(Task):
     def __init__(self, *args, **kwargs):
         kwargs['split'] = 'none'
         super().__init__(*args, **kwargs)
+        self.test_targets = [self.target(p) for p in self.proteins]
 
     @property
     def task_type(self):
@@ -62,7 +63,7 @@ class VirtualScreenTask(Task):
         import random
         return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
 
-    def evaluate(self, y_pred, cutoff_fraction=.2):
+    def evaluate(self, y_true, y_pred, cutoff_fraction=.2):
         """ Computing enrichment factor on the whole dataset.
         To compute the EF, for each active ligand we check if it is in the top
         ``cutoff_fraction`` of the scored ligands and if so, count it as a 1 and 0 otherwise.
@@ -86,8 +87,7 @@ class VirtualScreenTask(Task):
         """
         
         efs = []
-        for i, protein in enumerate(self.proteins):
-            lig_ids = self.target(protein)
+        for lig_ids, (i, protein) in zip(y_true, enumerate(self.proteins)):
             active_ids = lig_ids[:protein['protein']['num_ligands']]
 
             cutoff_index = int(len(lig_ids) * cutoff_fraction)
@@ -98,5 +98,5 @@ class VirtualScreenTask(Task):
             mean_active_rank = np.mean([ranks_dict[lig_id] for lig_id in active_ids])
             efs.append(mean_active_rank)
 
-        return {'enrichment_factor-@{self.cutoff_fraction}': np.mean(efs)}
+        return {f'enrichment_factor-@{cutoff_fraction}': np.mean(efs)}
 

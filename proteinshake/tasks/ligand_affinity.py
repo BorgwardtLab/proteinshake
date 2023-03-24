@@ -22,8 +22,8 @@ class LigandAffinityTask(Task):
     def target(self, protein):
         return protein['protein']['neglog_aff']
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         return {
-            'mse': metrics.mean_squared_error(self.test_targets, y_pred),
-            'r2': metrics.r2_score(self.test_targets, y_pred)
+            'mse': metrics.mean_squared_error(y_true, y_pred),
+            'r2': metrics.r2_score(y_true, y_pred)
         }

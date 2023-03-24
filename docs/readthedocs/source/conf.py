@@ -14,6 +14,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'myst_nb'
 ]
 html_static_path = ['_static']
 html_css_files = [
@@ -40,6 +41,8 @@ intersphinx_mapping = {
     'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
     'torch': ('https://pytorch.org/docs/master', None),
 }
+
+nb_execution_timeout = 60*10
 
 
 def setup(app):
