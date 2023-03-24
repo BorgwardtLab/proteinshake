@@ -34,6 +34,7 @@ We provide a collection of preprocessed and cleaned protein 3D structure dataset
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the <a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>.
 
 **Installation:**
+
 ```diff
 - This is a pre-release version. There may be unannounced changes to the API and datasets. -
 - We expect some bugs as well, please open an issue if you find one. -
@@ -42,27 +43,15 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 pip install proteinshake
 ```
 
-</br>
-
-**Data workflow:**
+**Data & Tasks Workflow:**
 
 In one line you can import large datasets of protein 3D structures, encode them as graphs/voxel grids/point clouds, and port them to your favorite learning framework.
-
-<p align="center">
-  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/data_animation.svg">
-</p>
-</p>
-
-**Task workflow:**
 
 The task API lets you easily access the underlying data for several tasks, get random/sequence/structure based splits, and evaluate your predictions.
 
 <p align="center">
-  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/tasks_animation.svg">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/fixes/docs/images/ps.svg">
 </p>
-</p>
-
-</div>
 
 ---
 
