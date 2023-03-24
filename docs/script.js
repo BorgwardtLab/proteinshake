@@ -83,7 +83,7 @@ for batch in ${lines.loader[framework]}:
 
 # Evaluation with the provided metrics
 prediction = model.inference(task.test)
-metrics = task.evaluate(prediction)
+metrics = task.evaluate(tas.test_targets, prediction)
 
 print(metrics)`;
     Prism.highlightAll();
