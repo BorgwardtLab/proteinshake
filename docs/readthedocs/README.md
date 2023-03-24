@@ -3,7 +3,7 @@
 Install:
 
 ```
-pip install sphinx sphinx-rtd-theme proteinshake
+pip install sphinx sphinx-rtd-theme myst-nb proteinshake
 ```
 Then run to build:
 ```

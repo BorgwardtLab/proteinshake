@@ -2,7 +2,7 @@
 ========================
 
 These classes define the various prediction task we support.
-See our :doc:`tasks tutorial <../notes/tutorial_tasks>` for a full example of the ``Task`` class, and :doc:`this tutorial <../notes/tutorial_custom>` to learn how to create your own tasks.
+See our :doc:`tasks tutorial <../notebooks/task>` for a full example of the ``Task`` class, and :doc:`this tutorial <../notebooks/custom>` to learn how to create your own tasks.
 
 This snippet highlights the most common usage for a ``Task`` object. :: 
 

@@ -43,21 +43,13 @@ class ProteinProteinInterfaceTask(Task):
     def target(self, protein):
         return protein['residue']['is_interface']
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         """ Evaluate performance of an interface classifier.
-
-        y_pred: list
-            One list for each protein in the test set with a probability for each residue in the protein.
-
         """
-        labels = [self.target(p) for p in \
-                  self.proteins[self.test_index]]
-        labels = np.hstack(labels)
-        y_pred = np.hstack(y_pred)
         return {
-                'auc-roc': metrics.roc_auc_score(labels, y_pred),
-                'average precision': metrics.average_precision_score(labels, y_pred),
-                }
+            'auc-roc': metrics.roc_auc_score(y_true, y_pred),
+            'average precision': metrics.average_precision_score(y_true, y_pred),
+        }
 
     def to_graph(self, *args, **kwargs):
         self.dataset = self.dataset.to_graph(*args, **kwargs, transform=Compose([CenterTransform(), RandomRotateTransform()]))

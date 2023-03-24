@@ -48,8 +48,8 @@ class StructureSimilarityTask(Task):
         import random
         return [random.random() for _ in range(len(self.test_targets))]
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         return {
-            'mse': metrics.mean_squared_error(self.test_targets, y_pred),
-            'r2':  spearmanr(self.test_targets, y_pred)
+            'mse': metrics.mean_squared_error(y_true, y_pred),
+            'r2':  spearmanr(y_true, y_pred)
         }
