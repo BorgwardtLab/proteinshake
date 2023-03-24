@@ -22,7 +22,7 @@
 <a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notes/contributing.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://github.com/BorgwardtLab/proteinshake/tree/main/examples">Tutorials</a>
+<a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>
 </p>
 
 <div align="center">
@@ -31,7 +31,7 @@
 
 We provide a collection of preprocessed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations. Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, TensorFlow, NumPy, JAX, PyTorch Geometric, DGL and NetworkX. The task API enables standardized benchmarking on a variety of tasks on protein and residue level.
 
-Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the [Tutorials](examples).
+Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the <a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>.
 
 **Installation:**
 ```diff
