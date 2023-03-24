@@ -41,6 +41,7 @@ class VirtualScreenTask(Task):
     def __init__(self, *args, **kwargs):
         kwargs['split'] = 'none'
         super().__init__(*args, **kwargs)
+        self.test_targets = [self.target(p) for p in self.proteins]
 
     @property
     def task_type(self):
@@ -97,5 +98,5 @@ class VirtualScreenTask(Task):
             mean_active_rank = np.mean([ranks_dict[lig_id] for lig_id in active_ids])
             efs.append(mean_active_rank)
 
-        return {'enrichment_factor-@{self.cutoff_fraction}': np.mean(efs)}
+        return {f'enrichment_factor-@{cutoff_fraction}': np.mean(efs)}
 
