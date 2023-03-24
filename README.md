@@ -50,7 +50,7 @@ In one line you can import large datasets of protein 3D structures, encode them 
 The task API lets you easily access the underlying data for several tasks, get random/sequence/structure based splits, and evaluate your predictions.
 
 <p align="center">
-  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/anim/docs/images/ps.svg">
+  <img width="700" src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/fixes/docs/images/ps.svg">
 </p>
 
 ---
