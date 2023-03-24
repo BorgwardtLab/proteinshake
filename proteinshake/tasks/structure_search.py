@@ -43,11 +43,11 @@ class StructureSearchTask(Task):
         """
         return self.targets[protein['protein']['ID']]
 
-    def _precision_at_k(self, y_pred, targets, k):
-        return len(set(y_pred[:k]).intersection(set(targets))) / len(y_pred)
+    def _precision_at_k(self, y_true, y_pred, k):
+        return len(set(y_pred[:k]).intersection(set(y_true))) / len(y_pred)
 
-    def _recall_at_k(self, y_pred, targets, k):
-        return len(set(y_pred[:k]).intersection(set(targets))) / len(targets)
+    def _recall_at_k(self, y_true, y_pred, k):
+        return len(set(y_pred[:k]).intersection(set(y_true))) / len(y_true)
 
     def dummy_output(self):
         import random
@@ -58,7 +58,7 @@ class StructureSearchTask(Task):
             pred.append(random.sample(ids, len(targets)))
         return pred
 
-    def evaluate(self, y_pred, k=5):
+    def evaluate(self, y_true, y_pred, k=5):
         """ Retrieval metrics.
 
         Arguments
@@ -67,9 +67,8 @@ class StructureSearchTask(Task):
             List of indices of items (hits) in the dataset for a query.
         """
         results = defaultdict(list)
-        for query, preds in zip(self.proteins[self.test_index], y_pred):
-            targets = self.target(query)
-            results['precision_at_k'].append(self._precision_at_k(preds, targets, k))
-            results['recall_at_k'].append(self._recall_at_k(preds, targets, k))
+        for yt, yp in zip(y_true, y_pred):
+            results['precision_at_k'].append(self._precision_at_k(yt, yp, k))
+            results['recall_at_k'].append(self._recall_at_k(yt, yp, k))
 
         return {k: np.mean(v) for k, v in results.items()}

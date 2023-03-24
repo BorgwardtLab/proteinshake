@@ -148,11 +148,13 @@ class Task:
         """
         raise NotImplementedError
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         """ Evaluates prediction quality.
 
         Arguments
         -----------
+        y_true: list
+            List of ground truth outputs, (e.g. task.test_targets).
         y_pred: list
             List of predicted outputs.
 

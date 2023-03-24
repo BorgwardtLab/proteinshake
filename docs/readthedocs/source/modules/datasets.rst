@@ -2,7 +2,7 @@
 ==========================
 
 
-These classes defin our currently supported datasets. See our :doc:`datasets <../notes/tutorial_data>` for a quick intro to datasets, and :doc:`this <../notes/tutorial_custom>` to learn how to create your own datasets.
+These classes define our currently supported datasets. See our :doc:`datasets tutorial<../notebooks/dataset>` for a quick intro to datasets, and :doc:`this tutorial<../notebooks/custom>` to learn how to create your own datasets.
 
 .. currentmodule:: proteinshake.datasets
 

@@ -40,11 +40,11 @@ class ProteinFamilyTask(Task):
     def target(self, protein):
         return self.token_map[protein['protein']['Pfam'][0]]
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         return {
-            'precision': metrics.precision_score(list(self.test_targets), y_pred, average='macro', zero_division=0),
-            'recall': metrics.recall_score(list(self.test_targets), y_pred, average='macro', zero_division=0),
-            'accuracy': metrics.accuracy_score(list(self.test_targets), y_pred),
+            'precision': metrics.precision_score(y_true, y_pred, average='macro', zero_division=0),
+            'recall': metrics.recall_score(y_true, y_pred, average='macro', zero_division=0),
+            'accuracy': metrics.accuracy_score(y_true, y_pred),
             #'AUROC': metrics.roc_auc_score(y_true, y_pred, average='macro', multi_class='ovo'),
         }

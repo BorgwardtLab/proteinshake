@@ -43,7 +43,7 @@ class GeneOntologyTask(Task):
     def target(self, protein):
         return [term in protein['protein'][self.branch] for term in self.classes]
 
-    def precision(self, y_pred, threshold):
+    def precision(self, y_true, y_pred, threshold):
         y_true = np.copy(self.test_targets)[y_pred.max(axis=1) >= threshold]
         y_pred = y_pred[y_pred.max(axis=1) >= threshold] >= threshold
         mt = y_pred.shape[0]
@@ -52,7 +52,7 @@ class GeneOntologyTask(Task):
         denom = y_pred.sum(axis=1)
         return 1/mt * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
 
-    def recall(self, y_pred, threshold):
+    def recall(self, y_true, y_pred, threshold):
         y_true = np.copy(self.test_targets)
         y_pred = y_pred >= threshold
         ne = y_true.shape[0]
@@ -61,16 +61,16 @@ class GeneOntologyTask(Task):
         denom = y_true.sum(axis=1)
         return 1/ne * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
     
-    def remaining_uncertainty(self, y_pred, threshold):
+    def remaining_uncertainty(self, y_true, y_pred, threshold):
         pass
 
-    def missing_information(self, y_pred, threshold):
+    def missing_information(self, y_true, y_pred, threshold):
         pass
 
-    def fmax(self, y_pred):
+    def fmax(self, y_true, y_pred):
         fmax = 0
         for t in np.linspace(0,1,21):
-            prec, rec = self.precision(y_pred, t), self.recall(y_pred, t)
+            prec, rec = self.precision(y_true, y_pred, t), self.recall(y_true, y_pred, t)
             if prec+rec == 0: continue
             f1 = (2 * prec * rec) / (prec + rec)
             fmax = max(fmax, f1)
@@ -89,8 +89,8 @@ class GeneOntologyTask(Task):
         import numpy as np
         return np.random.rand(len(self.test_index), len(self.token_map.keys()))
 
-    def evaluate(self, y_pred):
+    def evaluate(self, y_true, y_pred):
         return {
-            'Fmax': self.fmax(y_pred),
-            #'Smin': self.smin(y_pred),
+            'Fmax': self.fmax(y_true, y_pred),
+            #'Smin': self.smin(y_true, y_pred),
         }
