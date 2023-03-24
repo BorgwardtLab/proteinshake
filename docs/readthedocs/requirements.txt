@@ -1,1 +1,2 @@
 git+https://github.com/BorgwardtLab/proteinshake.git
+myst-nb
