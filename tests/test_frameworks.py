@@ -1,16 +1,17 @@
 '''
 Tests loading a dataset into different frameworks and the specific data loaders.
 '''
-
+import os
 import unittest, tempfile
 from proteinshake.datasets import ProteinLigandDecoysDataset
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 class TestFrameworks(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
         self.tmpdir = tempfile.TemporaryDirectory()
-        self.ds = ProteinLigandDecoysDataset(root=self.tmpdir)
+        self.ds = ProteinLigandDecoysDataset(root=self.tmpdir, verbosity=0)
 
     @classmethod
     def tearDownClass(self):

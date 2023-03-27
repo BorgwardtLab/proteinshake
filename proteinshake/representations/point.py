@@ -40,19 +40,20 @@ class PointDataset():
 
     """
 
-    def __init__(self, proteins, root, name, resolution='residue'):
+    def __init__(self, proteins, root, name, resolution='residue', verbosity=2):
+        self.verbosity = verbosity
         self.path = f'{root}/processed/point/{name}_{resolution}'
         self.points = (Point(protein) for protein in proteins)
         self.size = len(proteins)
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchPointDataset
-        return TorchPointDataset(self.points, self.size, self.path+'.torch', *args, **kwargs)
+        return TorchPointDataset(self.points, self.size, self.path+'.torch', verbosity=self.verbosity, *args, **kwargs)
 
     def tf(self, *args, **kwargs):
         from proteinshake.frameworks.tf import TensorflowPointDataset
-        return TensorflowPointDataset(self.points, self.size, self.path+'.tf', *args, **kwargs)
+        return TensorflowPointDataset(self.points, self.size, self.path+'.tf', verbosity=self.verbosity, *args, **kwargs)
 
     def np(self, *args, **kwargs):
         from proteinshake.frameworks.np import NumpyPointDataset
-        return NumpyPointDataset(self.points, self.size, self.path+".np", *args, **kwargs)
+        return NumpyPointDataset(self.points, self.size, self.path+'.np', verbosity=self.verbosity, *args, **kwargs)

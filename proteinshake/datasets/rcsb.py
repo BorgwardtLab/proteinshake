@@ -1,10 +1,9 @@
 import requests, glob, json, os, random
 import pandas as pd
-from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import download_url, unzip_file
+from proteinshake.utils import download_url, unzip_file, error, warning, progressbar
 
 class RCSBDataset(Dataset):
     """ Non-redundant structures taken from RCSB Protein Databank.
@@ -39,7 +38,7 @@ class RCSBDataset(Dataset):
         """
 
         if self.n_jobs == 1:
-            print('Warning: Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
+            warning('Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.', verbosity=self.verbosity)
         total = None
         i = 0
         batch_size = 5000
@@ -87,9 +86,7 @@ class RCSBDataset(Dataset):
                     response_dict = json.loads(r.text)
                     ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
                 except:
-                    print('An error occured when querying RCSB.')
-                    print(r.text)
-                    exit()
+                    error('An error occured when querying RCSB:\n'+r.text, verbosity=self.verbosity)
                 if total is None:
                     total = response_dict['group_by_count']
                 i += batch_size
@@ -103,9 +100,9 @@ class RCSBDataset(Dataset):
         if n_jobs < 1:
             n_jobs = self.max_requests
 
-        failed = Parallel(n_jobs=n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        failed = Parallel(n_jobs=n_jobs)(delayed(self.download_from_rcsb)(id) for id in progressbar(ids, desc='Downloading PDBs', verbosity=self.verbosity))
         failed = [f for f in failed if not f is True]
-        if len(failed)>0:
+        if len(failed) > 0 and self.verbosity > 0:
             print(f'Failed to download {len(failed)} PDB files.')
 
 
@@ -113,7 +110,7 @@ class RCSBDataset(Dataset):
         try:
             r = requests.get(f'https://data.rcsb.org/rest/v1/core/polymer_entity/{id}/1')
             obj = json.loads(r.text)
-            download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', log=False)
+            download_url(f'https://files.rcsb.org/download/{id}.pdb.gz', f'{self.root}/raw/files', verbosity=0)
             unzip_file(f'{self.root}/raw/files/{id}.pdb.gz')
             with open(f'{self.root}/raw/files/{id}.annot.json', 'w') as file:
                 json.dump(obj, file)

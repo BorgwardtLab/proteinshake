@@ -10,6 +10,7 @@ import gzip
 import shutil
 import requests
 import re
+import warnings
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -18,6 +19,21 @@ from fastavro import writer as avro_writer, reader as avro_reader, parse_schema 
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
+
+def progressbar(iterable=None, desc='', total=None, verbosity=2, **kwargs):
+    total = len(iterable) if total is None else total
+    disable = verbosity < 2
+    if verbosity == 1: print(desc+'...')
+    if verbosity == 2 and len(desc) > 20:
+        print(desc)
+        desc = None
+    return tqdm(iterable, desc=desc, total=total, disable=disable, **kwargs)
+
+def warning(message, verbosity=2):
+    if verbosity > -1: warnings.warn(message)
+
+def error(message, verbosity=2):
+    if verbosity > -2: raise Exception(message)
 
 class Generator(object):
     def __init__(self, generator, length):
@@ -175,7 +191,7 @@ def unzip_file(path, remove=True):
 
 
 
-def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
+def download_url(url, out_path, verbosity=2, chunk_size=10*1024*1024):
     """ Downloads a file from an url. If `out_path` is a directory, the file will be saved under the url basename.
 
     Parameters
@@ -195,20 +211,22 @@ def download_url(url, out_path, log=True, chunk_size=10*1024*1024):
         out_path += '/'+file_name
     r = requests.get(url, stream=True)
     r.raise_for_status()
-    total = int(r.headers.get('content-length', 0))
-    if log:
-        print(f'Downloading {file_name}:')
-        bar = tqdm(total=total, unit='iB', unit_scale=True, unit_divisor=chunk_size)
+    bar = progressbar(
+        desc = f'Downloading {file_name}',
+        unit = 'iB',
+        unit_scale = True,
+        unit_divisor = chunk_size,
+        total = int(r.headers.get('content-length', 0)),
+        verbosity = verbosity
+    )
     out_path = Path(out_path)
     with open(out_path, 'wb') as file:
         for data in r.iter_content(chunk_size=chunk_size):
             size = file.write(data)
-            if log:
-                bar.update(size)
-    if log:
-        bar.close()
+            bar.update(size)
+    bar.close()
 
-def extract_tar(tar_path, out_path, extract_members=False, strip=0):
+def extract_tar(tar_path, out_path, extract_members=False, strip=0, verbosity=2):
     """ Extracts a tar file.
 
     Parameters
@@ -233,10 +251,10 @@ def extract_tar(tar_path, out_path, extract_members=False, strip=0):
         len_members = len(file.getmembers())
         members = get_members(file)
         if extract_members:
-            for member in tqdm(members, desc='Extracting', total=len_members):
+            for member in progressbar(members, desc='Extracting', total=len_members, verbosity=verbosity):
                 file.extract(member, out_path)
         else:
-            file.extractall(out_path, members=tqdm(file, desc='Extracting', total=len_members))
+            file.extractall(out_path, members=progressbar(file, desc='Extracting', total=len_members, verbosity=verbosity))
 
 def protein_to_pdb(protein, path):
     """ Write coordinate list from atom dict to a PDB file.

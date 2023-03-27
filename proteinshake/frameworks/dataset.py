@@ -1,6 +1,5 @@
 import os
-from tqdm import tqdm
-from proteinshake.utils import save, load, fx2str
+from proteinshake.utils import save, load, fx2str, progressbar, error
 
 class FrameworkDataset():
     """ Dataset base class for different frameworks.
@@ -21,8 +20,9 @@ class FrameworkDataset():
         A filter function to be applied before writing the data. Signature: transform(data, protein_dict) -> bool
     """
 
-    def __init__(self, data_list, size, path, transform=None, pre_transform=None, pre_filter=None):
+    def __init__(self, data_list, size, path, transform=None, pre_transform=None, pre_filter=None, verbosity=2):
         os.makedirs(path, exist_ok=True)
+        self.verbosity = verbosity
         self.path = path
         self.transform = transform
         self.pre_transform = pre_transform
@@ -30,7 +30,7 @@ class FrameworkDataset():
         transforms_repr = fx2str(pre_transform) + fx2str(pre_filter)
         if not os.path.exists(f'{path}/{size-1}.pkl'):
             i = 0
-            for data_item in tqdm(data_list, desc='Converting', total=size):
+            for data_item in progressbar(data_list, desc='Converting', total=size, verbosity=self.verbosity):
                 data = self.convert_to_framework(data_item)
                 protein_dict = data_item.protein_dict
                 if not self.pre_filter is None and not self.pre_filter(data, protein_dict):
@@ -43,7 +43,7 @@ class FrameworkDataset():
             save(transforms_repr,f'{path}/transforms.pkl')
         self.size = load(f'{path}/size.pkl')
         original_repr = load(f'{path}/transforms.pkl')
-        assert original_repr == transforms_repr, f'The pre_transform and/or pre_filter are not the same as when the dataset was created. If you want to change them, delete the folder at {path}'
+        if not original_repr == transforms_repr: error(f'The pre_transform and/or pre_filter are not the same as when the dataset was created. If you want to change them, delete the folder at {path}', verbosity=self.verbosity)
 
     def convert_to_framework(self, data_item):
         return data_item.data

@@ -54,7 +54,7 @@ class GeneOntologyDataset(RCSBDataset):
     def download(self):
         super().download()
         if not os.path.exists(f'{self.root}/{self.name}.godag.obo'):
-            download_url(f'http://current.geneontology.org/ontology/go-basic.obo', f'{self.root}', log=False)
+            download_url(f'http://current.geneontology.org/ontology/go-basic.obo', f'{self.root}', verbosity=0)
             os.rename(f'{self.root}/go-basic.obo', f'{self.root}/{self.name}.godag.obo')
 
     def add_protein_attributes(self, protein):
