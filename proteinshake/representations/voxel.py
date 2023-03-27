@@ -74,7 +74,8 @@ class VoxelDataset():
 
     """
 
-    def __init__(self, proteins, root, name, resolution='residue', gridsize=None, voxelsize=10, aggregation='mean'):
+    def __init__(self, proteins, root, name, resolution='residue', gridsize=None, voxelsize=10, aggregation='mean', verbosity=2):
+        self.verbosity = verbosity
         self.size = len(proteins)
         if gridsize is None:
             proteins, proteins_copy = itertools.tee(proteins)
@@ -92,12 +93,12 @@ class VoxelDataset():
 
     def torch(self, *args, **kwargs):
         from proteinshake.frameworks.torch import TorchVoxelDataset
-        return TorchVoxelDataset(self.voxels, self.size, self.path+'.torch', *args, **kwargs)
+        return TorchVoxelDataset(self.voxels, self.size, self.path+'.torch', verbosity=self.verbosity, *args, **kwargs)
 
     def tf(self, *args, **kwargs):
         from proteinshake.frameworks.tf import TensorflowVoxelDataset
-        return TensorflowVoxelDataset(self.voxels, self.size, self.path+'.tf', *args, **kwargs)
+        return TensorflowVoxelDataset(self.voxels, self.size, self.path+'.tf', verbosity=self.verbosity, *args, **kwargs)
 
     def np(self, *args, **kwargs):
         from proteinshake.frameworks.np import NumpyVoxelDataset
-        return NumpyVoxelDataset(self.voxels, self.size, self.path+".np", *args, **kwargs)
+        return NumpyVoxelDataset(self.voxels, self.size, self.path+'.np', verbosity=self.verbosity, *args, **kwargs)

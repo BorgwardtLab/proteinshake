@@ -38,45 +38,45 @@ class TestDownload(unittest.TestCase):
     @mock.patch.object(ProteinLigandInterfaceDataset, 'get_raw_files', get_raw_files_mock)
     def test_protein_ligand(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ProteinLigandInterfaceDataset(root=tmp, use_precomputed=False)
+            ds = ProteinLigandInterfaceDataset(root=tmp, use_precomputed=False, verbosity=0)
     
     @mock.patch.object(ProteinProteinInterfaceDataset, 'download', download_mock)
     @mock.patch.object(ProteinProteinInterfaceDataset, 'get_raw_files', get_raw_files_mock)
     def test_protein_protein(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ProteinProteinInterfaceDataset(root=tmp, use_precomputed=False)
+            ds = ProteinProteinInterfaceDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch('proteinshake.datasets.RCSBDataset.limit', return_value=5)
     #@mock.patch.object(RCSBDataset, 'download', download_mock)
     #@mock.patch.object(RCSBDataset, 'get_raw_files', get_raw_files_mock)
     def test_rcsb(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = RCSBDataset(root=tmp, use_precomputed=False)
+            ds = RCSBDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(GeneOntologyDataset, 'download', download_mock)
     @mock.patch.object(GeneOntologyDataset, 'get_raw_files', get_raw_files_mock)
     @mock.patch('proteinshake.datasets.gene_ontology.GODag', GODag_mock)
     def test_go(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = GeneOntologyDataset(root=tmp, use_precomputed=False)
+            ds = GeneOntologyDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(EnzymeCommissionDataset, 'download', download_mock)
     @mock.patch.object(EnzymeCommissionDataset, 'get_raw_files', get_raw_files_mock)
     def test_ec(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = EnzymeCommissionDataset(root=tmp, use_precomputed=False)
+            ds = EnzymeCommissionDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(ProteinFamilyDataset, 'download', download_mock)
     @mock.patch.object(ProteinFamilyDataset, 'get_raw_files', get_raw_files_mock)
     def test_pfam(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ProteinFamilyDataset(root=tmp, use_precomputed=False)
+            ds = ProteinFamilyDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(TMAlignDataset, 'download', download_mock)
     @mock.patch.object(TMAlignDataset, 'get_raw_files', get_raw_files_mock)
     def test_tm(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = TMAlignDataset(root=tmp, use_precomputed=False)
+            ds = TMAlignDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch('proteinshake.datasets.AlphaFoldDataset.limit', return_value=5)
     #@mock.patch.object(AlphaFoldDataset, 'download', download_mock)
@@ -85,19 +85,19 @@ class TestDownload(unittest.TestCase):
     def test_af(self, mock):
         with tempfile.TemporaryDirectory() as tmp:
             organism = 'methanocaldococcus jannaschii'
-            ds = AlphaFoldDataset(root=tmp, organism=organism, use_precomputed=False)
+            ds = AlphaFoldDataset(root=tmp, organism=organism, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(SCOPDataset, 'download', scop_download_mock)
     @mock.patch.object(SCOPDataset, 'get_raw_files', get_raw_files_mock)
     def test_scop(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = SCOPDataset(root=tmp, use_precomputed=False)
+            ds = SCOPDataset(root=tmp, use_precomputed=False, verbosity=0)
 
     @mock.patch.object(ProteinLigandDecoysDataset, 'download', download_mock)
     @mock.patch.object(ProteinLigandDecoysDataset, 'get_raw_files', get_raw_files_mock)
     def test_decoys(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ds = ProteinLigandDecoysDataset(root=tmp, use_precomputed=False)
+            ds = ProteinLigandDecoysDataset(root=tmp, use_precomputed=False, verbosity=0)
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,7 +4,7 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from proteinshake.datasets import RCSBDataset
-from proteinshake.utils import download_url
+from proteinshake.utils import download_url, progressbar
 
 class SCOPDataset(RCSBDataset):
     """ Proteins for which the SCOP classification is known.
@@ -56,7 +56,7 @@ class SCOPDataset(RCSBDataset):
             print('Warning: Downloading an RCSB dataset with use_precompute = False is very slow. Consider increasing n_jobs.')
         ids = ids[:self.limit] # for testing
 
-        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in tqdm(ids, desc='Downloading PDBs'))
+        failed = Parallel(n_jobs=self.n_jobs)(delayed(self.download_from_rcsb)(id) for id in progressbar(ids, desc='Downloading PDBs', verbosity=verbosity))
         failed = [f for f in failed if not f is True]
         if len(failed)>0:
             print(f'Failed to download {len(failed)} PDB files.')

@@ -3,7 +3,7 @@ from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from tqdm import tqdm
 import numpy as np
 
-from proteinshake.utils import tokenize
+from proteinshake.utils import tokenize, error
 
 class Graph():
     """ Graph representation of a protein.
@@ -64,8 +64,9 @@ class GraphDataset():
 
     """
 
-    def __init__(self, proteins, root, name, resolution='residue', eps=None, k=None, weighted_edges=False):
-        assert not (eps is None and k is None), 'You must specify eps or k in the graph construction.'
+    def __init__(self, proteins, root, name, resolution='residue', eps=None, k=None, weighted_edges=False, verbosity=2):
+        self.verbosity = verbosity
+        if (eps is None and k is None): error('You must specify eps or k in the graph construction.', verbosity=self.verbosity)
         construction = 'knn' if not k is None else 'eps'
         param = k if construction == 'knn' else eps
         weighted = '_weighted' if weighted_edges else ''
@@ -76,12 +77,12 @@ class GraphDataset():
 
     def pyg(self, *args, **kwargs):
         from proteinshake.frameworks.pyg import PygGraphDataset
-        return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', *args, **kwargs)
+        return PygGraphDataset(self.graphs, self.size, self.path+'.pyg', verbosity=self.verbosity, *args, **kwargs)
 
     def dgl(self, *args, **kwargs):
         from proteinshake.frameworks.dgl import DGLGraphDataset
-        return DGLGraphDataset(self.graphs, self.size, self.path+'.dgl', *args, **kwargs)
+        return DGLGraphDataset(self.graphs, self.size, self.path+'.dgl', verbosity=self.verbosity, *args, **kwargs)
 
     def nx(self, *args, **kwargs):
         from proteinshake.frameworks.nx import NetworkxGraphDataset
-        return NetworkxGraphDataset(self.graphs, self.size, self.path+'.nx', *args, **kwargs)
+        return NetworkxGraphDataset(self.graphs, self.size, self.path+'.nx', verbosity=self.verbosity, *args, **kwargs)

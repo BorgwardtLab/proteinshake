@@ -11,13 +11,12 @@ import pandas as pd
 import numpy as np
 import freesasa
 from biopandas.pdb import PandasPdb
-from tqdm import tqdm
 from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
 from proteinshake.transforms import IdentityTransform
-from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator
+from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator, progressbar, warning, error
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
@@ -95,6 +94,8 @@ class Dataset():
         Proteins larger than maximum_length residues will be skipped.
     exclude_ids: list, default []
         Exclude PDB IDs from the dataset.
+    verbosity: int, default 2
+        Verbosity level of output logging. 2: full output, 1: no progress bars, 0: only warnings and errors, -1: only errors, -2: no output.
     """
 
     additional_files = [] # indicates the additional file names that are to be included in the release
@@ -110,6 +111,7 @@ class Dataset():
             minimum_length                 = 10,
             maximum_length                 = 2048,
             exclude_ids                    = [],
+            verbosity                      = 2,
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
@@ -121,6 +123,7 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
+        self.verbosity = verbosity
         
         os.makedirs(f'{self.root}', exist_ok=True)
         self.check_signature()
@@ -138,7 +141,7 @@ class Dataset():
             signature = {**dict(inspect.signature(class_object.__init__).parameters.items()), **signature}
             if len(class_object.__bases__) == 0: break
             class_object = class_object.__bases__[0]
-        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs', 'root']+self.exlude_args_from_signature]
+        arg_names = [n for n in signature.keys() if not n in ['self', 'args', 'kwargs', 'n_jobs', 'root', 'verbosity']+self.exlude_args_from_signature]
         if use_defaults:
             return self.name + ' | ' + ', '.join([k + '=' + str(signature[k].default) for k in arg_names])
         return self.name + ' | ' + ', '.join([k + '=' + str(getattr(self, k)) for k in arg_names])
@@ -154,7 +157,7 @@ class Dataset():
     def check_signature(self):
         if os.path.exists(f'{self.root}/signature.txt'):
             with open(f'{self.root}/signature.txt','r') as file:
-                assert file.read() == self.signature, 'The Dataset is called with different arguments than were used to create it. Delete or change the root.'
+                if not file.read() == self.signature: error('The Dataset is called with different arguments than were used to create it. Delete or change the root.', verbosity=self.verbosity)
         else:
             with open(f'{self.root}/signature.txt','w') as file:
                 file.write(self.signature)
@@ -162,7 +165,7 @@ class Dataset():
     def check_signature_same_as_hosted(self):
         """ Safety check to ensure the provided dataset arguments are the same as were used to precompute the datasets. Only relevant with `use_precomputed=True`.
         """
-        assert self.signature == self.default_signature, 'The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.'
+        if not self.signature == self.default_signature: error('The dataset arguments do not match the precomputed dataset arguments (the default settings). Set use_precomputed to False if you wish to generate a new dataset.', verbosity=self.verbosity)
 
     def proteins(self, resolution='residue'):
         """ Returns a generator of proteins from the avro file.
@@ -279,8 +282,8 @@ class Dataset():
         """ Downloads the precomputed dataset from the ProteinShake repository.
         """
         if not os.path.exists(f'{self.root}/{self.name}.{resolution}.avro'):
-            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}')
-            print('Unzipping...')
+            download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}', verbosity=self.verbosity)
+            if self.verbosity > 0: print('Unzipping...')
             unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
 
     def parse(self):
@@ -290,10 +293,10 @@ class Dataset():
             return
         # parse and filter
         paths = self.get_raw_files()[:self.limit]
-        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in tqdm(paths, desc='Parsing'))
+        proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing', verbosity=self.verbosity))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
-        print(f'Filtered {before-len(proteins)} proteins.')
+        if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
         write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
@@ -466,7 +469,7 @@ class Dataset():
                }
         return data
     
-    def to_graph(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_graph(self, resolution='residue', transform=IdentityTransform(), **kwargs):
         """ Converts the raw dataset to a graph dataset. See :meth:`proteinshake.representations.GraphDataset` for arguments.
 
         Returns
@@ -480,10 +483,10 @@ class Dataset():
                             self.root,
                             self.name,
                             resolution,
-                            *args,
+                            verbosity = self.verbosity,
                             **kwargs)
 
-    def to_point(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_point(self, resolution='residue', transform=IdentityTransform(), **kwargs):
         """ Converts the raw dataset to a point cloud dataset. See :meth:`proteinshake.representations.PointDataset` for arguments.
 
         Returns
@@ -497,10 +500,10 @@ class Dataset():
                             self.root,
                             self.name,
                             resolution,
-                            *args,
+                            verbosity = self.verbosity,
                             **kwargs)
 
-    def to_voxel(self, resolution='residue', transform=IdentityTransform(), *args, **kwargs):
+    def to_voxel(self, resolution='residue', transform=IdentityTransform(), **kwargs):
         """ Converts the raw dataset to a voxel dataset. See :meth:`proteinshake.representations.VoxelDataset` for arguments.
 
         Returns
@@ -514,5 +517,5 @@ class Dataset():
                             self.root,
                             self.name,
                             resolution,
-                            *args,
+                            verbosity = self.verbosity,
                             **kwargs)

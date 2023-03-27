@@ -4,10 +4,9 @@ import os
 
 from biopandas.pdb import PandasPdb
 from unittest.mock import patch
-from tqdm import tqdm
 
 from proteinshake.datasets.dataset import Dataset, AA_THREE_TO_ONE
-from proteinshake.utils import download_url
+from proteinshake.utils import download_url, progressbar
 
 EXTENDED_AA_THREE_TO_ONE = {
     **AA_THREE_TO_ONE,
@@ -75,15 +74,15 @@ class ProteinLigandDecoysDataset(Dataset):
     def download(self):
         targets  = ['AA2AR', 'ABL1', 'ACES', 'ADA', 'ADRB2', 'AMPC', 'ANDR', 'CSF1R', 'CXCR4', 'DEF', 'DRD4', 'EGFR', 'FA7', 'FA10', 'FABP4', 'FGFR1', 'FKB1A', 'GLCM', 'HDAC8', 'HIVPR', 'HMDH', 'HS90A', 'ITAL', 'KITH', 'KIT', 'LCK', 'MAPK2', 'MK01', 'MT1', 'NRAM', 'PARP1', 'PLK1', 'PPARA', 'PTN1', 'PUR2', 'RENI', 'ROCK1', 'SRC', 'THRB', 'TRY1', 'TRYB1', 'UROK', 'XIAP']
 
-        for target_id in tqdm(targets, desc='Downloading'):
+        for target_id in progressbar(targets, desc='Downloading', verbosity=self.verbosity):
             # grab receptor
-            download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb", f"{self.root}/raw/files/", log=False)
+            download_url(f"https://dudez.docking.org/DOCKING_GRIDS_AND_POSES/{target_id}/rec.crg.pdb", f"{self.root}/raw/files/", verbosity=0)
             os.rename(f'{self.root}/raw/files/rec.crg.pdb', f'{self.root}/raw/files/{target_id}.pdb')
             # grab ligands
-            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/ligands.smi", f"{self.root}/raw/files/", log=False)
+            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/ligands.smi", f"{self.root}/raw/files/", verbosity=0)
             os.rename(f'{self.root}/raw/files/ligands.smi', f'{self.root}/raw/files/ligands_{target_id}.smi')
             # grab decoys
-            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/decoys.smi", f"{self.root}/raw/files/", log=False)
+            download_url(f"https://dudez.docking.org/property_matched/{target_id}_new_DUDE_1/decoys.smi", f"{self.root}/raw/files/", verbosity=0)
             os.rename(f'{self.root}/raw/files/decoys.smi', f'{self.root}/raw/files/decoys_{target_id}.smi')
 
 

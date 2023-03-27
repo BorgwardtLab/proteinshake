@@ -3,10 +3,8 @@ import re
 import tarfile
 import glob
 
-from tqdm import tqdm
-
 from proteinshake.datasets import Dataset
-from proteinshake.utils import download_url, extract_tar, load, save, unzip_file
+from proteinshake.utils import download_url, extract_tar, load, save, unzip_file, progressbar
 
 # A map of organism names to their download file names. See https://alphafold.ebi.ac.uk/download
 AF_DATASET_NAMES = {
@@ -103,6 +101,6 @@ class AlphaFoldDataset(Dataset):
 
     def download(self):
         os.makedirs(f'{self.root}/raw/{self.organism}', exist_ok=True)
-        download_url(self.base_url+AF_DATASET_NAMES[self.organism]+f'_{self.version}.tar', f'{self.root}/raw/{self.organism}')
-        extract_tar(f'{self.root}/raw/{self.organism}/{AF_DATASET_NAMES[self.organism]}_{self.version}.tar', f'{self.root}/raw/{self.organism}')
-        [unzip_file(f) for f in tqdm(glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit], desc='Unzipping')]
+        download_url(self.base_url+AF_DATASET_NAMES[self.organism]+f'_{self.version}.tar', f'{self.root}/raw/{self.organism}', verbosity=self.verbosity)
+        extract_tar(f'{self.root}/raw/{self.organism}/{AF_DATASET_NAMES[self.organism]}_{self.version}.tar', f'{self.root}/raw/{self.organism}', verbosity=self.verbosity)
+        [unzip_file(f) for f in progressbar(glob.glob(f'{self.root}/raw/*/*.pdb.gz')[:self.limit], desc='Unzipping', verbosity=self.verbosity)]

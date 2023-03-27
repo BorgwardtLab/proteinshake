@@ -14,7 +14,6 @@ import numpy as np
 from biopandas.pdb import PandasPdb
 from collections import defaultdict
 from joblib import Parallel, delayed
-from tqdm import tqdm
 from functools import cached_property
 
 from proteinshake.datasets import RCSBDataset
@@ -24,7 +23,8 @@ from proteinshake.utils import (extract_tar,
                                 load,
                                 unzip_file,
                                 global_distance_test,
-                                local_distance_difference_test
+                                local_distance_difference_test,
+                                progressbar
                                 )
 
 
@@ -73,7 +73,7 @@ class TMAlignDataset(RCSBDataset):
 
         def download_file(filename):
             if not os.path.exists(f'{self.root}/{filename}'):
-                download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', log=False)
+                download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
                 unzip_file(f'{self.root}/{filename}.gz')
             return load(f'{self.root}/{filename}')
 
@@ -97,7 +97,7 @@ class TMAlignDataset(RCSBDataset):
         combinations = np.array(list(itertools.combinations(range(num_proteins), 2)))
         TM, RMSD, GDT, LDDT = [np.ones((num_proteins,num_proteins), dtype=np.float16) * np.nan for _ in ['tm','rmsd','gdt','lddt']]
         np.fill_diagonal(TM, 1.0), np.fill_diagonal(RMSD, 0.0), np.fill_diagonal(GDT, 1.0), np.fill_diagonal(LDDT, 1.0)
-        d = Parallel(n_jobs=self.n_jobs)(delayed(tmalign_wrapper)(paths[i], paths[j]) for i,j in tqdm(combinations, desc='Aligning'))
+        d = Parallel(n_jobs=self.n_jobs)(delayed(tmalign_wrapper)(paths[i], paths[j]) for i,j in progressbar(combinations, desc='Aligning', verbosity=self.verbosity))
         x,y = tuple(combinations[:,0]), tuple(combinations[:,1])
         TM[x,y] = [x['TM1'] for x in d]
         TM[y,x] = [x['TM2'] for x in d]

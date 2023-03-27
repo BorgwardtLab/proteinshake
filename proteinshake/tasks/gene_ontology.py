@@ -41,7 +41,10 @@ class GeneOntologyTask(Task):
         return 20
 
     def target(self, protein):
-        return [term in protein['protein'][self.branch] for term in self.classes]
+        tokens = [self.token_map[i] for i in protein['protein'][self.branch]]
+        target = np.zeros_like(self.classes, dtype=bool)
+        target[tokens] = True
+        return target
 
     def precision(self, y_true, y_pred, threshold):
         y_true = np.copy(self.test_targets)[y_pred.max(axis=1) >= threshold]
@@ -90,6 +93,8 @@ class GeneOntologyTask(Task):
         return np.random.rand(len(self.test_index), len(self.token_map.keys()))
 
     def evaluate(self, y_true, y_pred):
+        print(y_true)
+        print(y_pred)
         return {
             'Fmax': self.fmax(y_true, y_pred),
             #'Smin': self.smin(y_true, y_pred),

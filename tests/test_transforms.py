@@ -10,7 +10,7 @@ class TestTransforms(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.tmpdir = tempfile.TemporaryDirectory()
-        self.ds = ProteinLigandDecoysDataset(root=self.tmpdir)
+        self.ds = ProteinLigandDecoysDataset(root=self.tmpdir, verbosity=0)
 
     @classmethod
     def tearDownClass(self):

@@ -32,7 +32,6 @@ class Task:
         How to split the data. Can be 'random', 'sequence', or 'structure'.
     split_similarity_threshold: float
         Maximum similarity to allow between train and test samples.
-    use_precomputed: bool, default=True
     """
 
     DatasetClass = None
@@ -41,11 +40,10 @@ class Task:
                  root                       = 'data',
                  split                      = 'random',
                  split_similarity_threshold = 0.7,
-                 use_precomputed            = True,
                  **kwargs
                 ):
         self.root = root
-        self.dataset = self.DatasetClass(root=root, use_precomputed=use_precomputed)
+        self.dataset = self.DatasetClass(root=root, **kwargs)
         proteins = self.dataset.proteins()
         self.size = len(proteins)
         self.split_similarity_threshold = split_similarity_threshold
