@@ -33,6 +33,8 @@ We provide a collection of preprocessed and cleaned protein 3D structure dataset
 
 Find more information on the <a href="https://borgwardtlab.github.io/proteinshake">Website</a> and the <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>, or check out the <a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>.
 
+</br>
+
 **Installation:**
 
 ```diff
@@ -42,6 +44,8 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 ```
 pip install proteinshake
 ```
+
+</br>
 
 **Data & Tasks Workflow:**
 
