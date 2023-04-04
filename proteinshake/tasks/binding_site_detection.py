@@ -37,7 +37,7 @@ class BindingSiteDetectionTask(Task):
 
     @property
     def default_metric(self):
-        pass return 'mcc'
+        return 'mcc'
 
     def evaluate(self, y_true, y_pred):
         return {

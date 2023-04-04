@@ -58,10 +58,10 @@ class StructureSimilarityTask(Task):
 
     @property
     def default_metric(self):
-        return 'r2'
+        return 'spearman'
 
     def evaluate(self, y_true, y_pred):
         return {
             'mse': metrics.mean_squared_error(y_true, y_pred),
-            'r2':  spearmanr(y_true, y_pred)
+            'spearman':  spearmanr(y_true, y_pred)[0]
         }
