@@ -44,8 +44,16 @@ class VirtualScreenTask(Task):
         self.test_targets = [self.target(p) for p in self.proteins]
 
     @property
-    def task_type(self):
-        return ('protein', 'virtual_screen')
+    def task_in(self):
+        return ('protein', 'molecule')
+
+    @property
+    def task_out(self):
+        return ('regression')
+
+    @property
+    def target_dim(self):
+        return (1)
 
     def target(self, protein):
         """ The target here is a sorted list of smiles where the true ligands

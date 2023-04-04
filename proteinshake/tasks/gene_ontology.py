@@ -33,8 +33,16 @@ class GeneOntologyTask(Task):
         return list(self.token_map.keys())
 
     @property
-    def task_type(self):
-        return ('protein', 'multi_label')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self):
+        return ('multi_label')
+
+    @property
+    def target_dim(self):
+        return (len(self.token_map.values()))
 
     @property
     def num_features(self):

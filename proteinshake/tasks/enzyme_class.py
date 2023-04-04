@@ -31,8 +31,16 @@ class EnzymeClassTask(Task):
         return len(self.token_map)
 
     @property
-    def task_type(self):
-        return ('protein', 'multi_class')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self)
+        return ('multi_class')
+
+    @property
+    def target_dim(self)
+        return (len(self.token_map.values()))
 
     @property
     def num_features(self):

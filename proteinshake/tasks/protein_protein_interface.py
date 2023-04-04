@@ -27,8 +27,16 @@ class ProteinProteinInterfaceTask(Task):
     DatasetClass = ProteinProteinInterfaceDataset
 
     @property
-    def task_type(self):
-        return ('residue', 'binary') 
+    def task_in(self):
+        return ('residue', 'residue')
+
+    @property
+    def task_out(self):
+        return ('binary')
+
+    @property
+    def out_dim(self):
+        return (1)
 
     def dummy_output(self):
         import random

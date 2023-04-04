@@ -32,8 +32,16 @@ class StructureSimilarityTask(Task):
         self.test_targets = np.array([self.target(*self.proteins[i]) for i in self.test_index])
 
     @property
-    def task_type(self):
-        return ('protein_pair', 'regression')
+    def task_in(self):
+        return ('protein', 'protein')
+
+    @property
+    def task_out(self):
+        return ('regression')
+
+    @property
+    def target_dim(self):
+        return (1)
 
     def compute_pairs(self, index):
         combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)

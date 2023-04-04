@@ -22,7 +22,7 @@ class StructuralClassTask(Task):
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 
     @property
-    def num_classes(self):
+    def target_dim(self):
         return len(self.token_map)
 
     def dummy_output(self):
@@ -31,8 +31,12 @@ class StructuralClassTask(Task):
         return [random.choice(tokens) for _ in range(len(self.test_targets))]
 
     @property
-    def task_type(self):
-        return ('protein', 'multi-class')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self):
+        return ('multi_class')
 
     @property
     def num_features(self):

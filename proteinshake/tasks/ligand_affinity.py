@@ -12,8 +12,16 @@ class LigandAffinityTask(Task):
     DatasetClass = ProteinLigandInterfaceDataset
 
     @property
-    def task_type(self):
-        return ('protein', 'regression')
+    def task_in(self):
+        return ('protein', 'molecule')
+
+    @property
+    def task_out(self):
+        return ('regression')
+
+    @property
+    def out_dim(self):
+        return (1)
 
     def dummy_output(self):
         import random

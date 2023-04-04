@@ -11,8 +11,16 @@ class BindingSiteDetectionTask(Task):
     DatasetClass = ProteinLigandInterfaceDataset
 
     @property
-    def task_type(self):
-        return ('residue', 'binary')
+    def task_in(self):
+        return ('residue')
+
+    @property
+    def task_out(self):
+        return ('binary')
+    
+    @property
+    def target_dim(self):
+        return (1)
 
     def dummy_output(self):
         import random
