@@ -62,6 +62,10 @@ class StructureSearchTask(Task):
             pred.append(random.sample(ids, len(targets)))
         return pred
 
+    @property
+    def default_metric(self):
+        return 'precision_at_k'
+
     def evaluate(self, y_true, y_pred, k=5):
         """ Retrieval metrics.
 

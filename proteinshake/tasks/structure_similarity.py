@@ -56,6 +56,10 @@ class StructureSimilarityTask(Task):
         import random
         return [random.random() for _ in range(len(self.test_targets))]
 
+    @property
+    def default_metric(self):
+        return 'r2'
+
     def evaluate(self, y_true, y_pred):
         return {
             'mse': metrics.mean_squared_error(y_true, y_pred),

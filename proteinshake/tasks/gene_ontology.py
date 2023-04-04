@@ -100,6 +100,10 @@ class GeneOntologyTask(Task):
         import numpy as np
         return np.random.rand(len(self.test_index), len(self.token_map.keys()))
 
+    @property
+    def default_metric(self):
+        return 'Fmax'
+
     def evaluate(self, y_true, y_pred):
         print(y_true)
         print(y_pred)

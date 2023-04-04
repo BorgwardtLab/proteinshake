@@ -71,6 +71,11 @@ class VirtualScreenTask(Task):
         import random
         return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
 
+    @property
+    def default_metric(self):
+        return 'enrichment_factor'
+        pass
+
     def evaluate(self, y_true, y_pred, cutoff_fraction=.2):
         """ Computing enrichment factor on the whole dataset.
         To compute the EF, for each active ligand we check if it is in the top
@@ -106,5 +111,5 @@ class VirtualScreenTask(Task):
             mean_active_rank = np.mean([ranks_dict[lig_id] for lig_id in active_ids])
             efs.append(mean_active_rank)
 
-        return {f'enrichment_factor-@{cutoff_fraction}': np.mean(efs)}
+        return {f'enrichment_factor': np.mean(efs)}
 

@@ -30,6 +30,10 @@ class LigandAffinityTask(Task):
     def target(self, protein):
         return protein['protein']['neglog_aff']
 
+    @property
+    def default_metric(self):
+        return 'r2'
+
     def evaluate(self, y_true, y_pred):
         return {
             'mse': metrics.mean_squared_error(y_true, y_pred),

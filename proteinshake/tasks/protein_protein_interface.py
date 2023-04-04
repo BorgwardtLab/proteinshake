@@ -51,12 +51,16 @@ class ProteinProteinInterfaceTask(Task):
     def target(self, protein):
         return protein['residue']['is_interface']
 
+    @property
+    def default_metric(self):
+        return 'average_precision'
+
     def evaluate(self, y_true, y_pred):
         """ Evaluate performance of an interface classifier.
         """
         return {
-            'auc-roc': metrics.roc_auc_score(y_true, y_pred),
-            'average precision': metrics.average_precision_score(y_true, y_pred),
+            'auc_roc': metrics.roc_auc_score(y_true, y_pred),
+            'average_precision': metrics.average_precision_score(y_true, y_pred),
         }
 
     def to_graph(self, *args, **kwargs):

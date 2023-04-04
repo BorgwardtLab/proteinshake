@@ -49,6 +49,10 @@ class EnzymeClassTask(Task):
     def target(self, protein):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
 
+    @property
+    def default_metric(self):
+        return 'precision'
+
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         y_true = np.array(y_true, dtype=int)

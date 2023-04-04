@@ -35,6 +35,10 @@ class BindingSiteDetectionTask(Task):
         self.val_targets = [p for i in self.val_index for p in self.target(self.proteins[i])]
         self.test_targets = [p for i in self.test_index for p in self.target(self.proteins[i])]
 
+    @property
+    def default_metric(self):
+        pass return 'mcc'
+
     def evaluate(self, y_true, y_pred):
         return {
             'accuracy': metrics.accuracy_score(y_true, y_pred),
