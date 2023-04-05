@@ -105,8 +105,6 @@ class GeneOntologyTask(Task):
         return 'Fmax'
 
     def evaluate(self, y_true, y_pred):
-        print(y_true)
-        print(y_pred)
         return {
             'Fmax': self.fmax(y_true, y_pred),
             #'Smin': self.smin(y_true, y_pred),
