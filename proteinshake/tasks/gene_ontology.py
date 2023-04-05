@@ -55,7 +55,6 @@ class GeneOntologyTask(Task):
         return target
 
     def precision(self, y_true, y_pred, threshold):
-        y_true = np.copy(self.test_targets)[y_pred.max(axis=1) >= threshold]
         y_pred = y_pred[y_pred.max(axis=1) >= threshold] >= threshold
         mt = y_pred.shape[0]
         if mt == 0: return 0
@@ -64,7 +63,6 @@ class GeneOntologyTask(Task):
         return 1/mt * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
 
     def recall(self, y_true, y_pred, threshold):
-        y_true = np.copy(self.test_targets)
         y_pred = y_pred >= threshold
         ne = y_true.shape[0]
         if ne == 0: return 0
