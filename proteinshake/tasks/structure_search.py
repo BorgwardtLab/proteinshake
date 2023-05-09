@@ -26,8 +26,12 @@ class StructureSearchTask(Task):
         super().__init__(*args, **kwargs)
 
     @property
-    def task_type(self):
-        return ('protein', 'retrieval')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self):
+        return ('retrieval')
 
     @cached_property
     def targets(self):
@@ -57,6 +61,10 @@ class StructureSearchTask(Task):
             targets = self.target(query)
             pred.append(random.sample(ids, len(targets)))
         return pred
+
+    @property
+    def default_metric(self):
+        return 'precision_at_k'
 
     def evaluate(self, y_true, y_pred, k=5):
         """ Retrieval metrics.

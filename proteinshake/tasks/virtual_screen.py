@@ -44,8 +44,16 @@ class VirtualScreenTask(Task):
         self.test_targets = [self.target(p) for p in self.proteins]
 
     @property
-    def task_type(self):
-        return ('protein', 'virtual_screen')
+    def task_in(self):
+        return ('protein', 'molecule')
+
+    @property
+    def task_out(self):
+        return ('regression')
+
+    @property
+    def target_dim(self):
+        return (1)
 
     def target(self, protein):
         """ The target here is a sorted list of smiles where the true ligands
@@ -62,6 +70,11 @@ class VirtualScreenTask(Task):
     def dummy_output(self):
         import random
         return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
+
+    @property
+    def default_metric(self):
+        return 'enrichment_factor'
+        pass
 
     def evaluate(self, y_true, y_pred, cutoff_fraction=.2):
         """ Computing enrichment factor on the whole dataset.
@@ -98,5 +111,5 @@ class VirtualScreenTask(Task):
             mean_active_rank = np.mean([ranks_dict[lig_id] for lig_id in active_ids])
             efs.append(mean_active_rank)
 
-        return {f'enrichment_factor-@{cutoff_fraction}': np.mean(efs)}
+        return {f'enrichment_factor': np.mean(efs)}
 

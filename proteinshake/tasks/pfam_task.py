@@ -21,18 +21,22 @@ class ProteinFamilyTask(Task):
         labels = {p['protein']['Pfam'][0] for p in self.proteins}
         return {label: i for i, label in enumerate(sorted(list(labels)))}
 
-    @property
-    def num_classes(self):
-        return len(self.token_map)
-
     def dummy_output(self):
         import random
         tokens = list(self.token_map.values())
         return [random.choice(tokens) for _ in range(len(self.test_targets))]
 
     @property
-    def task_type(self):
-        return ('protein', 'multi_class')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self):
+        return ('multi_class')
+
+    @property
+    def out_dim(self):
+        return len(self.token_map)
 
     @property
     def num_features(self):
@@ -40,6 +44,10 @@ class ProteinFamilyTask(Task):
 
     def target(self, protein):
         return self.token_map[protein['protein']['Pfam'][0]]
+
+    @property
+    def default_metric(self):
+        return 'precision'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """

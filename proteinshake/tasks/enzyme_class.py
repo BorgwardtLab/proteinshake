@@ -31,8 +31,16 @@ class EnzymeClassTask(Task):
         return len(self.token_map)
 
     @property
-    def task_type(self):
-        return ('protein', 'multi_class')
+    def task_in(self):
+        return ('protein')
+
+    @property
+    def task_out(self):
+        return ('multi_class')
+
+    @property
+    def target_dim(self):
+        return (len(self.token_map.values()))
 
     @property
     def num_features(self):
@@ -40,6 +48,10 @@ class EnzymeClassTask(Task):
 
     def target(self, protein):
         return self.token_map[protein['protein']['EC'].split(".")[0]]
+
+    @property
+    def default_metric(self):
+        return 'precision'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
