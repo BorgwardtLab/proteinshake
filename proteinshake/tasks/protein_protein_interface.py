@@ -31,6 +31,10 @@ class ProteinProteinInterfaceTask(Task):
         return ('residue', 'residue')
 
     @property
+    def task_type(self):
+        return ('residue', 'binary')
+
+    @property
     def task_out(self):
         return ('binary')
 

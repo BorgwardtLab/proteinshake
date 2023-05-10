@@ -37,6 +37,10 @@ class GeneOntologyTask(Task):
         return ('protein')
 
     @property
+    def task_type(self):
+        return ('protein', 'multi_label')
+
+    @property
     def task_out(self):
         return ('multi_label')
 

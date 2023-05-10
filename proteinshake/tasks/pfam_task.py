@@ -31,6 +31,10 @@ class ProteinFamilyTask(Task):
         return ('protein')
 
     @property
+    def task_type(self):
+        return ('protein', 'multi_class')
+
+    @property
     def task_out(self):
         return ('multi_class')
 

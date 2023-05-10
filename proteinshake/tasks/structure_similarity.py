@@ -36,6 +36,10 @@ class StructureSimilarityTask(Task):
         return ('protein', 'protein')
 
     @property
+    def task_type(self):
+        return ('protein_pair', 'regression')
+
+    @property
     def task_out(self):
         return ('regression')
 

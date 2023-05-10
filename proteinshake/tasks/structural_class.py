@@ -35,6 +35,10 @@ class StructuralClassTask(Task):
         return ('protein')
 
     @property
+    def task_type(self):
+        return ('protein', 'multi-class')
+
+    @property
     def task_out(self):
         return ('multi_class')
 

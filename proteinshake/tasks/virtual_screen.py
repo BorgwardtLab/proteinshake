@@ -48,8 +48,12 @@ class VirtualScreenTask(Task):
         return ('protein', 'molecule')
 
     @property
+    def task_type(self):
+        return ('protein', 'virtual_screen')
+
+    @property
     def task_out(self):
-        return ('regression')
+        return ('virtual_screen')
 
     @property
     def target_dim(self):

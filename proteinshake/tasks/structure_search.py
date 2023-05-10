@@ -26,6 +26,11 @@ class StructureSearchTask(Task):
         super().__init__(*args, **kwargs)
 
     @property
+    def task_type(self):
+        return ('protein', 'retrieval')
+
+
+    @property
     def task_in(self):
         return ('protein')
 

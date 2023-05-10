@@ -31,6 +31,10 @@ class EnzymeClassTask(Task):
         return len(self.token_map)
 
     @property
+    def task_type(self):
+        return ('protein', 'multi_class')
+
+    @property
     def task_in(self):
         return ('protein')
 
