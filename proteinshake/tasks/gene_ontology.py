@@ -54,24 +54,24 @@ class GeneOntologyTask(Task):
 
     def target(self, protein):
         tokens = [self.token_map[i] for i in protein['protein'][self.branch]]
-        target = np.zeros_like(self.classes, dtype=bool)
-        target[tokens] = True
+        target = np.zeros_like(self.classes, dtype=np.float32)
+        target[tokens] = 1.0
         return target
 
     def precision(self, y_true, y_pred, threshold):
         y_pred = y_pred[y_pred.max(axis=1) >= threshold] >= threshold
         mt = y_pred.shape[0]
-        if mt == 0: return 0
-        nom = np.logical_and(y_true, y_pred).sum(axis=1)
-        denom = y_pred.sum(axis=1)
+        if mt == 0: return 0.0
+        nom = np.logical_and(y_true, y_pred).sum(axis=1).astype(np.float32)
+        denom = y_pred.sum(axis=1).astype(np.float32)
         return 1/mt * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
 
     def recall(self, y_true, y_pred, threshold):
         y_pred = y_pred >= threshold
         ne = y_true.shape[0]
-        if ne == 0: return 0
-        nom = np.logical_and(y_true, y_pred).sum(axis=1)
-        denom = y_true.sum(axis=1)
+        if ne == 0: return 0.0
+        nom = np.logical_and(y_true, y_pred).sum(axis=1).astype(np.float32)
+        denom = y_true.sum(axis=1).astype(np.float32)
         return 1/ne * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
     
     def remaining_uncertainty(self, y_true, y_pred, threshold):
@@ -99,7 +99,6 @@ class GeneOntologyTask(Task):
         ])
 
     def dummy_output(self):
-        import numpy as np
         return np.random.rand(len(self.test_index), len(self.token_map.keys()))
 
     @property
