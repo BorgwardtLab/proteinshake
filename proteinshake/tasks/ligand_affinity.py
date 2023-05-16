@@ -15,6 +15,7 @@ class LigandAffinityTask(Task):
     def task_in(self):
         return ('protein', 'molecule')
 
+    @property
     def task_type(self):
         return ('protein', 'regression')
 
