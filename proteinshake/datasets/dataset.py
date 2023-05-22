@@ -108,6 +108,7 @@ class Dataset():
             only_single_chain              = False,
             check_sequence                 = False,
             n_jobs                         = 1,
+            split_chains                   = False,
             minimum_length                 = 10,
             maximum_length                 = 2048,
             exclude_ids                    = [],
@@ -115,6 +116,7 @@ class Dataset():
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
+        self.split_chains = split_chains
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
@@ -286,17 +288,33 @@ class Dataset():
             if self.verbosity > 0: print('Unzipping...')
             unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
 
+    def chain_split(self, proteins):
+        """ Split proteins into individual chains """
+        new_proteins = []
+        for p in proteins:
+            for _, chain_df in p.groupby('chain_id'):
+                print(chain_df)
+                new_proteins.append(chain_df)
+        return new_proteins
+
     def parse(self):
         """ Parses all PDB files returned from :meth:`proteinshake.datasets.Dataset.get_raw_files()` and saves them to disk. Can run in parallel.
         """
         if os.path.exists(f'{self.root}/{self.name}.residue.avro'):
             return
         # parse and filter
+        print("HIII")
         paths = self.get_raw_files()[:self.limit]
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing', verbosity=self.verbosity))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
+
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
+
+        if self.split_chains:
+            proteins = self.chain_split(proteins)
+        if self.verbosity > 0: print(f'Split by chain into {len(proteins)} separate items.')
+
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
         write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
@@ -338,7 +356,6 @@ class Dataset():
             except:
                 residue_sasa.append(-1)
                 residue_rsa.append(-1)
-            
 
         # create protein_dict
         protein = {

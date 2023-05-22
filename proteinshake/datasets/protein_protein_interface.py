@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import glob
+from joblib import Parallel, delayed
 import pandas as pd
 from biopandas.pdb import PandasPdb
 from sklearn.neighbors import KDTree
@@ -52,20 +53,33 @@ class ProteinProteinInterfaceDataset(Dataset):
 
 
     """
+    additional_files = [
+        'ProteinProteinInterfaceDataset.interfaces.npy',
+    ]
 
-
-    def __init__(self, cutoff=6, version='2020', **kwargs):
+    def __init__(self, cutoff=6, version='2020', split_chains=True, **kwargs):
         self.version = version
         self.cutoff = cutoff
+        kwargs['split_chains'] = split_chains
         super().__init__(**kwargs)
 
+        if not self.use_precomputed: self.parse_interfaces()
+
+        def download_file(filename):
+            if not os.path.exists(f'{self.root}/{filename}'):
+                download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
+                unzip_file(f'{self.root}/{filename}.gz')
+            return load(f'{self.root}/{filename}')
+
+        self._interfaces = download_file(f'{self.name}.interfaces.npy')
+
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
+        return glob.glob(f'{self.root}/raw/files/PP/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return filename[:4]
 
-    def get_interfaces(self, protein, cutoff=6, resolution='residue'):
+    def get_contacts(self, protein, resolution='residue', cutoff=6):
         """Obtain interfacing residues within a single structure of polymers. Uses
         KDTree data structure for vector search.
 
@@ -76,52 +90,53 @@ class ProteinProteinInterfaceDataset(Dataset):
 
         Returns
         --------
-            `list`: indicator list for each residue with 0 if not in interface and 1 else.
+            `dict`: 2-level dictionary mapping a pair of chains to the list of interfacing residue positions (e.g `interfaces['A']['B'] = {(1, 3), (2, 4)}`
+                    says that residues 1 and 2 of chain A are in contact with 3 and 4 in chain B. The positions are _indices_ in the residue/atom list.
         """
 
-        #3-D KD tree
-        df = pd.DataFrame({
-            'x': protein[resolution]['x'],
-            'y': protein[resolution]['y'],
-            'z': protein[resolution]['z'],
-            'chain': protein[resolution]['chain_id'],
-            'residue_index':protein[resolution]['residue_number']
-        })
-        resi_df = df.groupby(['residue_index', 'chain']).mean().reset_index()
-        resi_coords = np.array([resi_df['x'].tolist(), resi_df['y'].tolist(), resi_df['z'].tolist()]).T
-        kdt = KDTree(resi_coords, leaf_size=1)
+        def get_coords(p):
+            return np.array([[c for i, c in p[resolution]['x']],
+                             [c for i, c in p[resolution]['y']],
+                             [c for i, c in p[resolution]['z']]]).T
 
-        query = kdt.query_radius(resi_coords, cutoff)
+        interfaces = defaultdict(lambda: defaultdict(set))
+        coords, original_inds = get_coords(protein)
+        kdt = KDTree(coords, leaf_size=1)
+
+        seq_inds = [0]
+        current_chain = protein[self.resolution]['chain_id'][0]
+
+        # get a vector of sequence positions
+        ind = 0
+        for chain_id in protein[self.resolution]['chain_id'][1:]:
+            if chain_id != current_chain:
+                ind = -1
+            ind += 1
+            seq_inds.append(ind)
+
+        query = kdt.query_radius(coords, cutoff)
         interface = set()
         for i,result in enumerate(query):
-            res_index = resi_df.iloc[i].name
-            this_chain = resi_df.iloc[i].chain
+            this_chain = protein[resolution]['chain_id'][i]
+            this_pos = seq_inds[i]
             for r in result:
-                that_resi = resi_df.iloc[r].name
-                that_chain = resi_df.iloc[r].chain
+                that_chain = protein[resolution]['chain_id'][r]
+                that_pos = seq_inds[r]
                 if this_chain != that_chain:
-                    interface.add(res_index)
-                    interface.add(that_resi)
+                    # ugly , I know
+                    interfaces[this_chain][that_chain].add((this_pos, that_pos))
+                    interfaces[that_chain][this_chain].add((that_pos, this_pos))
 
-        resi_interface = []
-        for r in protein[resolution]['residue_number']:
-            resi_interface.append(r in interface)
-        return resi_interface
+        return dict(interfaces)
+
+    def parse_interfaces(self):
+        """ Get all interfaces and store in dict"""
+        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing'))
+        return {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff, resolution=self.resolution) for p in protein_dfs}
 
     def download(self):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
         extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
-
-    def add_protein_attributes(self, protein):
-        interface_atoms = self.get_interfaces(protein, self.cutoff, resolution='atom')
-        protein['atom']['is_interface'] = interface_atoms
-        protein['residue']['is_interface'] = [
-            val
-            for val, atom_type in \
-            zip(interface_atoms, protein['atom']['atom_type']) \
-            if atom_type == 'CA'
-        ]
-        return protein
 
     def describe(self):
         desc = super().describe()
