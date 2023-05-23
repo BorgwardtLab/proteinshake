@@ -2,13 +2,15 @@
 import os
 import glob
 from joblib import Parallel, delayed
+from collections import defaultdict
+
 import pandas as pd
 from biopandas.pdb import PandasPdb
 from sklearn.neighbors import KDTree
 import numpy as np
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import extract_tar, download_url
+from proteinshake.utils import extract_tar, download_url, progressbar
 
 class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes from PDBBind with annotated interfaces. Residues
@@ -63,15 +65,17 @@ class ProteinProteinInterfaceDataset(Dataset):
         kwargs['split_chains'] = split_chains
         super().__init__(**kwargs)
 
-        if not self.use_precomputed: self.parse_interfaces()
-
         def download_file(filename):
             if not os.path.exists(f'{self.root}/{filename}'):
                 download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
                 unzip_file(f'{self.root}/{filename}.gz')
             return load(f'{self.root}/{filename}')
 
-        self._interfaces = download_file(f'{self.name}.interfaces.npy')
+
+        if not self.use_precomputed:
+            self.parse_interfaces()
+        else:
+            self._interfaces = download_file(f'{self.name}.interfaces.npy')
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/PP/*.pdb')[:self.limit]
@@ -79,7 +83,7 @@ class ProteinProteinInterfaceDataset(Dataset):
     def get_id_from_filename(self, filename):
         return filename[:4]
 
-    def get_contacts(self, protein, resolution='residue', cutoff=6):
+    def get_contacts(self, protein, cutoff=6):
         """Obtain interfacing residues within a single structure of polymers. Uses
         KDTree data structure for vector search.
 
@@ -95,44 +99,55 @@ class ProteinProteinInterfaceDataset(Dataset):
         """
 
         def get_coords(p):
-            return np.array([[c for i, c in p[resolution]['x']],
-                             [c for i, c in p[resolution]['y']],
-                             [c for i, c in p[resolution]['z']]]).T
+            return np.array([p['residue']['x'],
+                             p['residue']['y'],
+                             p['residue']['z']]).T
+
+
+        def defaultdict_to_dict(default_dict):
+            if isinstance(default_dict, defaultdict):
+                default_dict = {k: defaultdict_to_dict(v) for k, v in default_dict.items()}
+            elif isinstance(default_dict, dict):
+                default_dict = {k: defaultdict_to_dict(v) for k, v in default_dict.items()}
+            return default_dict
 
         interfaces = defaultdict(lambda: defaultdict(set))
-        coords, original_inds = get_coords(protein)
+        coords = get_coords(protein)
         kdt = KDTree(coords, leaf_size=1)
 
         seq_inds = [0]
-        current_chain = protein[self.resolution]['chain_id'][0]
+        current_chain = protein['residue']['chain_id'][0]
 
         # get a vector of sequence positions
         ind = 0
-        for chain_id in protein[self.resolution]['chain_id'][1:]:
+        for chain_id in protein['residue']['chain_id'][1:]:
             if chain_id != current_chain:
                 ind = -1
+                current_chain = chain_id
             ind += 1
             seq_inds.append(ind)
 
         query = kdt.query_radius(coords, cutoff)
         interface = set()
         for i,result in enumerate(query):
-            this_chain = protein[resolution]['chain_id'][i]
+            this_chain = protein['residue']['chain_id'][i]
             this_pos = seq_inds[i]
             for r in result:
-                that_chain = protein[resolution]['chain_id'][r]
+                that_chain = protein['residue']['chain_id'][r]
                 that_pos = seq_inds[r]
                 if this_chain != that_chain:
                     # ugly , I know
                     interfaces[this_chain][that_chain].add((this_pos, that_pos))
                     interfaces[that_chain][this_chain].add((that_pos, this_pos))
 
-        return dict(interfaces)
+        return defaultdit_to_dict(interfaces)
 
     def parse_interfaces(self):
         """ Get all interfaces and store in dict"""
-        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing'))
-        return {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff, resolution=self.resolution) for p in protein_dfs}
+        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(self.get_raw_files(), desc='Parsing'))
+        interfaces = {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff) for p in protein_dfs}
+        print(interfaces)
+        np.save(f'{self.root}/{self.name}.interfaces.npy', interfaces)
 
     def download(self):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')

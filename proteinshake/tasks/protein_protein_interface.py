@@ -52,8 +52,14 @@ class ProteinProteinInterfaceTask(Task):
         self.val_targets = [p for i in self.val_index for p in self.target(self.proteins[i])]
         self.test_targets = [p for i in self.test_index for p in self.target(self.proteins[i])]
 
-    def target(self, protein):
-        return protein['residue']['is_interface']
+    def target(self, protein_1, protein_2):
+        chain_1 = protein_1['residue']['chain_id'][0]
+        chain_2 = protein_2['residue']['chain_id'][0]
+
+        contacts = np.zeros((len(protein_1['protein']['sequence']), len(protein_2['protein']['sequence'])))
+        inds = self._interfaces[pdbid][chain_1][chain_2]
+        np.put(contacts, np.ravel_multi_index(np.transpose(inds), contacts.shape), 1)
+        return contacts
 
     @property
     def default_metric(self):
