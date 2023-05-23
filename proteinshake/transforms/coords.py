@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from proteinshake.transforms import Transform
 
@@ -79,14 +80,10 @@ class RandomRotateTransform(Transform):
 
     def __call__(self, protein):
         coords = _get_coords_array(protein, resolution=self.resolution)
+        rotation = Rotation.random()
+        rotated_coordinates = rotation.apply(coords)
+        rotation_matrix = rotation.as_matrix()
 
-        # choose an angle and axis along which to rotate
-        rnd = int(np.random.randint(0,2+1,(1,)))
-        rot = int(np.random.randint(1,3+1,(1,)))
-        rotation_plane = {0:[0,1],1:[1,2],2:[0,2]}[rnd]
-        N = len(protein[self.resolution]['x'])
-        coords_rot = np.rot90(coords,k=rot, axes=rotation_plane).reshape(N, 3)
-
-        _set_coords(protein, coords_rot, resolution=self.resolution)
+        _set_coords(protein, rotated_coordinates, resolution=self.resolution)
 
         return protein

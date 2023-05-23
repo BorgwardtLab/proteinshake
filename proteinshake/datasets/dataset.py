@@ -16,7 +16,7 @@ from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.transforms import IdentityTransform
+from proteinshake.transforms import IdentityTransform, RandomRotateTransform, CenterTransform
 from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator, progressbar, warning, error
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -114,10 +114,14 @@ class Dataset():
             maximum_length                 = 2048,
             exclude_ids                    = [],
             verbosity                      = 2,
+            center                         = True,
+            random_rotate                  = True
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
         self.split_chains = split_chains
+        self.random_rotate = random_rotate
+        self.center = center
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
@@ -314,6 +318,7 @@ class Dataset():
         new_proteins = {chain: {'protein': {}, 'residue': {}, 'atom': {}} for chain in inds['residue'].keys()}
         for chain, new_protein in new_proteins.items():
             new_protein['protein'] = copy.deepcopy(protein['protein'])
+            new_protein['protein']['sequence'] = "".join([protein['protein']['sequence'][i] for i in inds['residue'][chain]])
             for resolution in ['residue', 'atom']:
                 for k in protein[resolution].keys():
                     new_protein[resolution][k] = [val for i, val in enumerate(protein[resolution][k]) if i in inds[resolution][chain]]
@@ -338,8 +343,13 @@ class Dataset():
             for p in proteins:
                 split_proteins.extend(self.chain_split(p))
             proteins = split_proteins
-
         if self.verbosity > 0: print(f'Split by chain into {len(proteins)} separate items.')
+
+        if self.center:
+            proteins = (CenterTransform()(p) for p in proteins)
+        if self.random_rotate:
+            proteins = (RandomRotateTransform(seed=abs(hash(p['protein']['sequence'])))(p) for p in proteins)
+
 
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
