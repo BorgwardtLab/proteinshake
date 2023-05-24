@@ -8,20 +8,10 @@ from proteinshake.transforms import CenterTransform, RandomRotateTransform, Comp
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
 
-    NOTE: To make this an interesting task, the loader has to
-    split the protein into its chains so that the model only sees
-    one chain at a time. You should also pass the following transforms to the dataset
-    :meth:`proteinshake.transforms.CenterTransform` and :meth:`proteinshake.transforms.RandomRotateTransform` when using representations that are aware of the atomic coordinates.
-
-    NOTE: This task is currently in beta.
-
-
     .. code-block:: python
 
         >>> from proteinshake.tasks import ProteinProteinInterfaceTask
-        >>> from proteinshake.transforms import CenterTransform, RandomRotateTransform
         >>> ta = ProteinProteinInterfaceTask()
-        >>> data = ta.dataset.to_voxel(transforms=[CenterTransform(), RandomRotateTransform()).torch()
     """
 
     DatasetClass = ProteinProteinInterfaceDataset
@@ -46,19 +36,50 @@ class ProteinProteinInterfaceTask(Task):
         import random
         return [random.randint(0, 1) for p in self.test_targets]
 
+    def update_index(self):
+        """ Transform to pairwise indexing """
+        self.train_index = self.compute_pairs(self.train_index)
+        self.val_index = self.compute_pairs(self.val_index)
+        self.test_index = self.compute_pairs(self.test_index)
+        
     def compute_targets(self):
-        # compute targets (e.g. for scaling)
-        self.train_targets = [p for i in self.train_index for p in self.target(self.proteins[i])]
-        self.val_targets = [p for i in self.val_index for p in self.target(self.proteins[i])]
-        self.test_targets = [p for i in self.test_index for p in self.target(self.proteins[i])]
+        self.train_targets = [self.target(self.proteins[i], self.proteins[j]) for i,j in self.train_index]
+        self.val_targets = [self.target(self.proteins[i], self.proteins[j]) for i,j in self.val_index]
+        self.test_targets = [self.target(self.proteins[i], self.proteins[j]) for i,j in self.test_index]
+
+    def compute_pairs(self, index):
+        """ Grab all pairs of chains that share an interface"""
+        def find_index(pdbid, chain):
+            for i, p in enumerate(self.dataset.proteins()):
+                if pdbid == p['protein']['ID'] and chain == p['residue']['chain_id'][0]:
+                    return i
+            raise IndexError
+
+        proteins = self.dataset.proteins()
+        chain_pairs = []
+        for i, protein in enumerate(proteins):
+            if i not in index:
+                continue
+            chain = protein['residue']['chain_id'][0]
+            pdbid = protein['protein']['ID']
+            try:
+                chain_pairs.extend([(i, find_index(pdbid, partner)) for partner in self.dataset._interfaces[pdbid][chain]])
+            # if chain is not in any interface, we skip
+            except (KeyError, IndexError):
+                continue
+        return chain_pairs
+
 
     def target(self, protein_1, protein_2):
         chain_1 = protein_1['residue']['chain_id'][0]
         chain_2 = protein_2['residue']['chain_id'][0]
+        chain_1_length = len(protein_1['residue']['chain_id'])
+        chain_2_length = len(protein_2['residue']['chain_id'])
+        pdbid = protein_1['protein']['ID']
 
-        contacts = np.zeros((len(protein_1['protein']['sequence']), len(protein_2['protein']['sequence'])))
-        inds = self._interfaces[pdbid][chain_1][chain_2]
-        np.put(contacts, np.ravel_multi_index(np.transpose(inds), contacts.shape), 1)
+        contacts = np.zeros((chain_1_length, chain_2_length))
+        inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])
+        contacts[inds[:,0], inds[:,1]] = 1.0
         return contacts
 
     @property

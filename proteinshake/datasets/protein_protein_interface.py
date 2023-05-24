@@ -2,7 +2,7 @@
 import os
 import glob
 from joblib import Parallel, delayed
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 import pandas as pd
 from biopandas.pdb import PandasPdb
@@ -10,7 +10,7 @@ from sklearn.neighbors import KDTree
 import numpy as np
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import extract_tar, download_url, progressbar
+from proteinshake.utils import extract_tar, download_url, progressbar, load, save
 
 class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes from PDBBind with annotated interfaces. Residues
@@ -56,7 +56,7 @@ class ProteinProteinInterfaceDataset(Dataset):
 
     """
     additional_files = [
-        'ProteinProteinInterfaceDataset.interfaces.npy',
+        'ProteinProteinInterfaceDataset.interfaces.json',
     ]
 
     def __init__(self, cutoff=6, version='2020', split_chains=True, **kwargs):
@@ -74,8 +74,8 @@ class ProteinProteinInterfaceDataset(Dataset):
 
         if not self.use_precomputed:
             self.parse_interfaces()
-        else:
-            self._interfaces = download_file(f'{self.name}.interfaces.npy')
+
+        self._interfaces = download_file(f'{self.name}.interfaces.json')
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/PP/*.pdb')[:self.limit]
@@ -111,7 +111,7 @@ class ProteinProteinInterfaceDataset(Dataset):
                 default_dict = {k: defaultdict_to_dict(v) for k, v in default_dict.items()}
             return default_dict
 
-        interfaces = defaultdict(lambda: defaultdict(set))
+        interfaces = defaultdict(lambda: defaultdict(list))
         coords = get_coords(protein)
         kdt = KDTree(coords, leaf_size=1)
 
@@ -127,8 +127,11 @@ class ProteinProteinInterfaceDataset(Dataset):
             ind += 1
             seq_inds.append(ind)
 
+        # if protein['protein']['ID'] == '2xns':
+        print(protein['protein']['ID'], Counter(protein['residue']['chain_id']))
+
         query = kdt.query_radius(coords, cutoff)
-        interface = set()
+        interface = []
         for i,result in enumerate(query):
             this_chain = protein['residue']['chain_id'][i]
             this_pos = seq_inds[i]
@@ -137,17 +140,16 @@ class ProteinProteinInterfaceDataset(Dataset):
                 that_pos = seq_inds[r]
                 if this_chain != that_chain:
                     # ugly , I know
-                    interfaces[this_chain][that_chain].add((this_pos, that_pos))
-                    interfaces[that_chain][this_chain].add((that_pos, this_pos))
+                    interfaces[this_chain][that_chain].append((this_pos, that_pos))
+                    interfaces[that_chain][this_chain].append((that_pos, this_pos))
 
-        return defaultdit_to_dict(interfaces)
+        return defaultdict_to_dict(interfaces)
 
     def parse_interfaces(self):
         """ Get all interfaces and store in dict"""
         protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(self.get_raw_files(), desc='Parsing'))
         interfaces = {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff) for p in protein_dfs}
-        print(interfaces)
-        np.save(f'{self.root}/{self.name}.interfaces.npy', interfaces)
+        save(interfaces, f'{self.root}/{self.name}.interfaces.json')
 
     def download(self):
         download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')

@@ -4,7 +4,7 @@ Base dataset class for protein 3D structures.
 """
 import os, gzip, inspect, time, itertools, tarfile, io
 import copy
-from collections import defaultdict
+from collections import defaultdict, Counter
 from functools import cached_property
 import multiprocessing as mp
 
@@ -211,6 +211,7 @@ class Dataset():
         int
             The limit to be applied to the number of downloaded/parsed files.
         """
+        return 20
         return None
 
     @property
@@ -298,27 +299,30 @@ class Dataset():
 
         def get_chain_inds(resolution):
             chain_inds = {}
-            current_inds = set()
+            current_inds = []
 
             current_chain = protein[resolution]['chain_id'][0]
 
             for i, chain_id in enumerate(protein[resolution]['chain_id']):
                 if chain_id != current_chain:
-                    chain_inds[current_chain] = current_inds
+                    chain_inds[current_chain] = sorted(current_inds)
                     current_chain = chain_id
-                    current_inds = set()
-                else:
-                    current_inds.add(i)
+                    current_inds = []
+
+                current_inds.append(i)
                 pass
 
             return chain_inds
 
         inds = {'residue': get_chain_inds('residue'), 'atom': get_chain_inds('atom')}
+        counts = Counter(protein['residue']['chain_id'])
 
         new_proteins = {chain: {'protein': {}, 'residue': {}, 'atom': {}} for chain in inds['residue'].keys()}
         for chain, new_protein in new_proteins.items():
             new_protein['protein'] = copy.deepcopy(protein['protein'])
             new_protein['protein']['sequence'] = "".join([protein['protein']['sequence'][i] for i in inds['residue'][chain]])
+            if protein['protein']['ID'] == '2xns':
+            assert len(new_protein['protein']['sequence']) == counts[chain]
             for resolution in ['residue', 'atom']:
                 for k in protein[resolution].keys():
                     new_protein[resolution][k] = [val for i, val in enumerate(protein[resolution][k]) if i in inds[resolution][chain]]
@@ -346,9 +350,10 @@ class Dataset():
         if self.verbosity > 0: print(f'Split by chain into {len(proteins)} separate items.')
 
         if self.center:
-            proteins = (CenterTransform()(p) for p in proteins)
+            proteins = [CenterTransform()(p) for p in proteins]
         if self.random_rotate:
-            proteins = (RandomRotateTransform(seed=abs(hash(p['protein']['sequence'])))(p) for p in proteins)
+            seed = abs(hash(p['protein']['sequence'])) % 2**28
+            proteins = [RandomRotateTransform(seed=seed)(p) for p in proteins]
 
 
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]

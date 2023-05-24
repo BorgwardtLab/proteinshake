@@ -29,7 +29,7 @@ def _get_coords_array(protein, resolution='residue'):
                      protein[resolution]['y'],
                      protein[resolution]['z']
                      ]
-                   ).T.reshape((N, 3, 1))
+                   ).T.reshape((N, 3))
 
 def _set_coords(protein, coord_array, resolution='residue', in_place=True):
     """ Given an Nx3 array of coordinates, set them to the
@@ -46,9 +46,9 @@ def _set_coords(protein, coord_array, resolution='residue', in_place=True):
 
     """
 
-    protein[resolution]['x'] = list(coord_array[:,0])
-    protein[resolution]['y'] = list(coord_array[:,1])
-    protein[resolution]['z'] = list(coord_array[:,2])
+    protein[resolution]['x'] = list(map(float,coord_array[:,0]))
+    protein[resolution]['y'] = list(map(float,coord_array[:,1]))
+    protein[resolution]['z'] = list(map(float,coord_array[:,2]))
 
 class CenterTransform(Transform):
     """ Center the coordinates of a protein at atom and residue level.
