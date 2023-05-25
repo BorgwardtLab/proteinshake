@@ -321,7 +321,6 @@ class Dataset():
         for chain, new_protein in new_proteins.items():
             new_protein['protein'] = copy.deepcopy(protein['protein'])
             new_protein['protein']['sequence'] = "".join([protein['protein']['sequence'][i] for i in inds['residue'][chain]])
-            if protein['protein']['ID'] == '2xns':
             assert len(new_protein['protein']['sequence']) == counts[chain]
             for resolution in ['residue', 'atom']:
                 for k in protein[resolution].keys():

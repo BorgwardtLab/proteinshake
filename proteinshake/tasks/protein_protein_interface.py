@@ -80,7 +80,7 @@ class ProteinProteinInterfaceTask(Task):
         contacts = np.zeros((chain_1_length, chain_2_length))
         inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])
         contacts[inds[:,0], inds[:,1]] = 1.0
-        return contacts
+        return np.array(contacts)
 
     @property
     def default_metric(self):

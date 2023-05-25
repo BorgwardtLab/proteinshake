@@ -75,14 +75,11 @@ class Task:
 
     def compute_index(self):
         split_name = f'{self.split}_split_{self.split_similarity_threshold}' if self.split in ['sequence','structure'] else f'{self.split}_split'
-        print(self.proteins[0]['protein'])
         if split_name in self.proteins[0]['protein']:
-            print("reading splits")
             self.train_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'train'])
             self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
             self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
         else:
-            print("computing splits")
             self.train_index, self.val_index, self.test_index = self.compute_custom_split(self.split)
 
         self.update_index()

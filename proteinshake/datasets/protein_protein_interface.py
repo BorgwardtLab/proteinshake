@@ -16,7 +16,7 @@ class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes from PDBBind with annotated interfaces. Residues
     and atoms in each protein are marked with a boolean `is_interface` to indicate
     residues/atoms defined to belong to the interface of two protein chains.
-    The default threshold for determining interface residues is 6 Angstroms.
+    The default threshold for determining interface residues is 6 Angstroms (used by DIPS).
     See :meth:`proteinshake.utils.get_interfaces` for details.
 
     Parameters
@@ -126,9 +126,6 @@ class ProteinProteinInterfaceDataset(Dataset):
                 current_chain = chain_id
             ind += 1
             seq_inds.append(ind)
-
-        # if protein['protein']['ID'] == '2xns':
-        print(protein['protein']['ID'], Counter(protein['residue']['chain_id']))
 
         query = kdt.query_radius(coords, cutoff)
         interface = []
