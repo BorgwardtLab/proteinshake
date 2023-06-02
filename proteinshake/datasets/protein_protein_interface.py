@@ -2,6 +2,7 @@
 import os
 import glob
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from collections import defaultdict, Counter
 
 import pandas as pd
@@ -78,7 +79,7 @@ class ProteinProteinInterfaceDataset(Dataset):
         self._interfaces = download_file(f'{self.name}.interfaces.json')
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/PP/*.pdb')[:self.limit]
+        return glob.glob(f'{self.root}/raw/files/chains/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         return filename[:4]
@@ -142,15 +143,38 @@ class ProteinProteinInterfaceDataset(Dataset):
 
         return defaultdict_to_dict(interfaces)
 
+    def get_complexes_files(self):
+        return glob.glob(f"{self.root}/raw/files/PP/*.pdb")
+
     def parse_interfaces(self):
         """ Get all interfaces and store in dict"""
-        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(self.get_raw_files(), desc='Parsing'))
-        interfaces = {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff) for p in protein_dfs}
+        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(self.get_complexes_files(), desc='Loading complexes'))
+        print("Computing interfaces")
+        interfaces = {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff) for p in tqdm(protein_dfs, total=len(protein_dfs)) if not p is None}
         save(interfaces, f'{self.root}/{self.name}.interfaces.json')
 
     def download(self):
-        download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
+        # download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
+        # extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
+        os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
+        print("Chain splitting")
+        #self.chain_split(f'{self.root}/raw/files/chains')
+
+    def chain_split(self, dest):
+        """ Split all the raw PDBs in path to individual ones by chain.
+        Replaces original PDB file in place.
+        """
+        for p in tqdm(self.get_complexes_files()):
+            ppdb = PandasPdb().read_pdb(p).df['ATOM']
+            pdbid = os.path.basename(p).split(".")[0]
+            for chain, chain_df  in ppdb.groupby('chain_id'):
+                new_df = PandasPdb()
+                new_df._df = {'ATOM': chain_df}
+                new_df.to_pdb(os.path.join(dest, f"{pdbid}_{chain}.pdb"))
+        pass
+
+    def get_id_from_filename(self, filename):
+        return filename.split(".")[0]
 
     def describe(self):
         desc = super().describe()

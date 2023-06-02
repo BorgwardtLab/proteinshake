@@ -293,40 +293,6 @@ class Dataset():
             if self.verbosity > 0: print('Unzipping...')
             unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
 
-    def chain_split(self, protein):
-        """ Split protein into list of single chain dicts"""
-
-        def get_chain_inds(resolution):
-            chain_inds = {}
-            current_inds = []
-
-            current_chain = protein[resolution]['chain_id'][0]
-
-            for i, chain_id in enumerate(protein[resolution]['chain_id']):
-                if chain_id != current_chain:
-                    chain_inds[current_chain] = sorted(current_inds)
-                    current_chain = chain_id
-                    current_inds = []
-
-                current_inds.append(i)
-                pass
-
-            return chain_inds
-
-        inds = {'residue': get_chain_inds('residue'), 'atom': get_chain_inds('atom')}
-        counts = Counter(protein['residue']['chain_id'])
-
-        new_proteins = {chain: {'protein': {}, 'residue': {}, 'atom': {}} for chain in inds['residue'].keys()}
-        for chain, new_protein in new_proteins.items():
-            new_protein['protein'] = copy.deepcopy(protein['protein'])
-            new_protein['protein']['sequence'] = "".join([protein['protein']['sequence'][i] for i in inds['residue'][chain]])
-            assert len(new_protein['protein']['sequence']) == counts[chain]
-            for resolution in ['residue', 'atom']:
-                for k in protein[resolution].keys():
-                    new_protein[resolution][k] = [val for i, val in enumerate(protein[resolution][k]) if i in inds[resolution][chain]]
-
-        return list(new_proteins.values())
-
     def parse(self):
         """ Parses all PDB files returned from :meth:`proteinshake.datasets.Dataset.get_raw_files()` and saves them to disk. Can run in parallel.
         """
@@ -340,18 +306,14 @@ class Dataset():
 
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
 
-        if self.split_chains:
-            split_proteins = []
-            for p in proteins:
-                split_proteins.extend(self.chain_split(p))
-            proteins = split_proteins
-        if self.verbosity > 0: print(f'Split by chain into {len(proteins)} separate items.')
 
         if self.center:
+            print("Centering")
             proteins = [CenterTransform()(p) for p in proteins]
         if self.random_rotate:
-            seed = abs(hash(p['protein']['sequence'])) % 2**28
-            proteins = [RandomRotateTransform(seed=seed)(p) for p in proteins]
+            print("Rotating")
+            seeds = (abs(hash(p['protein']['sequence'])) % 2**28 for p in proteins)
+            proteins = [RandomRotateTransform(seed=seed)(p) for seed, p in zip(seeds, proteins)]
 
 
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
