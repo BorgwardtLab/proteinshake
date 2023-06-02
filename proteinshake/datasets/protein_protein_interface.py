@@ -154,11 +154,11 @@ class ProteinProteinInterfaceDataset(Dataset):
         save(interfaces, f'{self.root}/{self.name}.interfaces.json')
 
     def download(self):
-        # download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        # extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
+        download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
+        extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
         os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
         print("Chain splitting")
-        #self.chain_split(f'{self.root}/raw/files/chains')
+        self.chain_split(f'{self.root}/raw/files/chains')
 
     def chain_split(self, dest):
         """ Split all the raw PDBs in path to individual ones by chain.
