@@ -68,13 +68,12 @@ class ProteinProteinInterfaceDataset(Dataset):
 
         def download_file(filename):
             if not os.path.exists(f'{self.root}/{filename}'):
-                download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
-                unzip_file(f'{self.root}/{filename}.gz')
+                if not self.use_precomputed:
+                    self.parse_interfaces()
+                else:
+                    download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
+                    unzip_file(f'{self.root}/{filename}.gz')
             return load(f'{self.root}/{filename}')
-
-
-        if not self.use_precomputed:
-            self.parse_interfaces()
 
         self._interfaces = download_file(f'{self.name}.interfaces.json')
 
@@ -154,11 +153,11 @@ class ProteinProteinInterfaceDataset(Dataset):
         save(interfaces, f'{self.root}/{self.name}.interfaces.json')
 
     def download(self):
-        # download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        # extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
+        download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
+        extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
         os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
         print("Chain splitting")
-        #self.chain_split(f'{self.root}/raw/files/chains')
+        self.chain_split(f'{self.root}/raw/files/chains')
 
     def chain_split(self, dest):
         """ Split all the raw PDBs in path to individual ones by chain.
