@@ -49,24 +49,23 @@ class ProteinProteinInterfaceTask(Task):
 
     def compute_pairs(self, index):
         """ Grab all pairs of chains that share an interface"""
+        protein_to_index = {p['protein']['ID']: i for i, p in enumerate(self.dataset.proteins())}
         def find_index(pdbid, chain):
-            for i, p in enumerate(self.dataset.proteins()):
-                if pdbid == p['protein']['ID'] and chain == p['residue']['chain_id'][0]:
-                    return i
-            raise IndexError
+            return protein_to_index[f'{pdbid}_{chain}']
 
         proteins = self.dataset.proteins()
         chain_pairs = []
         for i, protein in enumerate(proteins):
             if i not in index:
                 continue
-            chain = protein['residue']['chain_id'][0]
-            pdbid = protein['protein']['ID']
+            #chain = protein['residue']['chain_id'][0]
+            pdbid, chain = protein['protein']['ID'].split('_')
             try:
                 chain_pairs.extend([(i, find_index(pdbid, partner)) for partner in self.dataset._interfaces[pdbid][chain]])
             # if chain is not in any interface, we skip
             except (KeyError, IndexError):
                 continue
+        chain_pairs = [(i,j) for i,j in chain_pairs if i in index and j in index] # @carlos please check
         return chain_pairs
 
 
@@ -75,7 +74,7 @@ class ProteinProteinInterfaceTask(Task):
         chain_2 = protein_2['residue']['chain_id'][0]
         chain_1_length = len(protein_1['residue']['chain_id'])
         chain_2_length = len(protein_2['residue']['chain_id'])
-        pdbid = protein_1['protein']['ID']
+        pdbid = protein_1['protein']['ID'].split('_')[0]
 
         contacts = np.zeros((chain_1_length, chain_2_length))
         inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])

@@ -11,7 +11,7 @@ from sklearn.neighbors import KDTree
 import numpy as np
 
 from proteinshake.datasets import Dataset
-from proteinshake.utils import extract_tar, download_url, progressbar, load, save
+from proteinshake.utils import extract_tar, download_url, progressbar, load, save, unzip_file
 
 class ProteinProteinInterfaceDataset(Dataset):
     """Protein-protein complexes from PDBBind with annotated interfaces. Residues

@@ -115,7 +115,7 @@ class Task:
         """
         inds = list(range(len(self.dataset.proteins())))
         train, test = train_test_split(inds, test_size=0.2)
-        val, test = train_test_split(test, test_size=0.1)
+        val, test = train_test_split(test, test_size=0.5)
 
         return train, val, test
 
