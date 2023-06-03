@@ -79,7 +79,7 @@ class ProteinProteinInterfaceDataset(Dataset):
         self._interfaces = download_file(f'{self.name}.interfaces.json')
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/chains/*.pdb')[:self.limit]
+        return glob.glob(f'{self.root}/raw/files/chains/*.pdb')
 
     def get_id_from_filename(self, filename):
         return filename[:4]
@@ -156,9 +156,9 @@ class ProteinProteinInterfaceDataset(Dataset):
     def download(self):
         # download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
         # extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
-        os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
+        # os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
         print("Chain splitting")
-        #self.chain_split(f'{self.root}/raw/files/chains')
+        self.chain_split(f'{self.root}/raw/files/chains')
 
     def chain_split(self, dest):
         """ Split all the raw PDBs in path to individual ones by chain.
@@ -171,6 +171,7 @@ class ProteinProteinInterfaceDataset(Dataset):
                 new_df = PandasPdb()
                 new_df._df = {'ATOM': chain_df}
                 new_df.to_pdb(os.path.join(dest, f"{pdbid}_{chain}.pdb"))
+                # assert not chain_df.isnull().values.any(), f"NULL in {p}"
         pass
 
     def get_id_from_filename(self, filename):

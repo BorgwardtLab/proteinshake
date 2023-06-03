@@ -306,7 +306,6 @@ class Dataset():
 
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
 
-
         if self.center:
             print("Centering")
             proteins = [CenterTransform()(p) for p in proteins]
@@ -314,7 +313,6 @@ class Dataset():
             print("Rotating")
             seeds = (abs(hash(p['protein']['sequence'])) % 2**28 for p in proteins)
             proteins = [RandomRotateTransform(seed=seed)(p) for seed, p in zip(seeds, proteins)]
-
 
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
@@ -347,11 +345,15 @@ class Dataset():
         atom_sasa, residue_sasa, residue_rsa = [], [], []
         for i in atom_df['atom_number']:
             try:
+                assert not np.isnan(result.atomArea(i)), "nan sasa"
                 atom_sasa.append(result.atomArea(i))
             except:
                 atom_sasa.append(-1)
         for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
             try:
+                assert not np.isnan(residue_result[chain][str(i)].total), "nan sasa"
+                assert not np.isnan(residue_result[chain][str(i)].relativeTotal), "nan sasa"
+
                 residue_sasa.append(residue_result[chain][str(i)].total)
                 residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
             except:
