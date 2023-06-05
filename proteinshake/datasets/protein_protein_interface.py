@@ -60,10 +60,9 @@ class ProteinProteinInterfaceDataset(Dataset):
         'ProteinProteinInterfaceDataset.interfaces.json',
     ]
 
-    def __init__(self, cutoff=6, version='2020', split_chains=True, **kwargs):
+    def __init__(self, cutoff=6, version='2020', **kwargs):
         self.version = version
         self.cutoff = cutoff
-        kwargs['split_chains'] = split_chains
         super().__init__(**kwargs)
 
         def download_file(filename):
