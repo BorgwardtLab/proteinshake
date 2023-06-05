@@ -33,7 +33,7 @@ class ProteinProteinInterfaceTask(Task):
 
     def dummy_output(self):
         import random
-        return [random.randint(0, 1) for p in self.test_targets]
+        return [np.where(np.random.randint(0, 2, p.shape) == 0, 0, 1) for p in self.test_targets]
 
     def update_index(self):
         """ Transform to pairwise indexing """
@@ -65,7 +65,7 @@ class ProteinProteinInterfaceTask(Task):
             except (KeyError, IndexError):
                 continue
         chain_pairs = [(i,j) for i,j in chain_pairs if i in index and j in index] # @carlos please check
-        return chain_pairs
+        return np.array(chain_pairs, dtype=int)
 
 
     def target(self, protein_1, protein_2):
@@ -76,8 +76,11 @@ class ProteinProteinInterfaceTask(Task):
         pdbid = protein_1['protein']['ID'].split('_')[0]
 
         contacts = np.zeros((chain_1_length, chain_2_length))
-        inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])
-        contacts[inds[:,0], inds[:,1]] = 1.0
+        try:
+            inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])
+            contacts[inds[:,0], inds[:,1]] = 1.0
+        except KeyError: # raised if there are no interactions between query chains
+            pass
         return np.array(contacts)
 
     @property
@@ -87,10 +90,24 @@ class ProteinProteinInterfaceTask(Task):
     def evaluate(self, y_true, y_pred):
         """ Evaluate performance of an interface classifier.
         """
-        return {
-            'auc_roc': metrics.roc_auc_score(y_true, y_pred),
-            'average_precision': metrics.average_precision_score(y_true, y_pred),
-        }
+        result = {'auroc': np.zeros(len(y_true)),
+                  'auprc': np.zeros(len(y_true)),
+                  'sizes':np.zeros(len(y_true))
+                   }
+
+        for i, (y, y_pred) in enumerate(zip(y_true, y_pred)):
+            y = y.flatten()
+            y_pred = y_pred.flatten()
+            result['auroc'][i] = metrics.roc_auc_score(y, y_pred)
+            result['auprc'][i] = metrics.average_precision_score(y, y_pred)
+            result['sizes'][i] = len(y)
+
+        tot = np.sum(result['sizes'])
+        norm = result['sizes'] / tot
+        result['auroc'] *= norm
+        result['auprc'] *= norm
+
+        return result
 
     def to_graph(self, *args, **kwargs):
         self.dataset = self.dataset.to_graph(*args, **kwargs, transform=Compose([CenterTransform(), RandomRotateTransform()]))

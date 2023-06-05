@@ -63,9 +63,9 @@ class TestTasks(unittest.TestCase):
 
     def test_protein_protein_interface(self):
         with tempfile.TemporaryDirectory() as tmp:
-            self.task_check(ProteinProteinInterfaceTask(split='random', root=tmp, verbosity=0))
-            self.task_check(ProteinProteinInterfaceTask(split='sequence', root=tmp, verbosity=0))
-            self.task_check(ProteinProteinInterfaceTask(split='structure', root=tmp, verbosity=0))
+            self.task_check(ProteinProteinInterfaceTask(split='random', root=tmp, verbosity=0), pair=True)
+            self.task_check(ProteinProteinInterfaceTask(split='sequence', root=tmp, verbosity=0), pair=True)
+            self.task_check(ProteinProteinInterfaceTask(split='structure', root=tmp,verbosity=0), pair=True)
 
     def test_structural_class(self):
         with tempfile.TemporaryDirectory() as tmp:
