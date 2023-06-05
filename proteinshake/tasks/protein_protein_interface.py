@@ -90,7 +90,7 @@ class ProteinProteinInterfaceTask(Task):
     def evaluate(self, y_true, y_pred):
         """ Evaluate performance of an interface classifier.
         """
-        result = {'auroc': np.zeros(len(y_true)),
+        raw_values = {'auroc': np.zeros(len(y_true)),
                   'auprc': np.zeros(len(y_true)),
                   'sizes':np.zeros(len(y_true))
                    }
@@ -98,9 +98,19 @@ class ProteinProteinInterfaceTask(Task):
         for i, (y, y_pred) in enumerate(zip(y_true, y_pred)):
             y = y.flatten()
             y_pred = y_pred.flatten()
-            result['auroc'][i] = metrics.roc_auc_score(y, y_pred)
-            result['auprc'][i] = metrics.average_precision_score(y, y_pred)
-            result['sizes'][i] = len(y)
+            raw_values['auroc'][i] = metrics.roc_auc_score(y, y_pred)
+            raw_values['auprc'][i] = metrics.average_precision_score(y, y_pred)
+            raw_values['sizes'][i] = len(y)
+
+        result = {}
+        tot = np.sum(raw_values['sizes'])
+        norm = raw_values['sizes'] / tot
+        result['auroc_weighted'] = np.mean(raw_values['auroc'] * norm)
+        result['auprc_weighted'] = np.mean(raw_values['auprc'] * norm)
+        result['auroc_median'] = np.median(raw_values['auroc'])
+        result['auprc_median'] = np.median(raw_values['auprc'])
+        result['auroc_mean'] = np.mean(raw_values['auroc'])
+        result['auprc_mean'] = np.mean(raw_values['auprc'])
 
         return result
 
