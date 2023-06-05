@@ -109,19 +109,17 @@ class Dataset():
             only_single_chain              = False,
             check_sequence                 = False,
             n_jobs                         = 1,
-            split_chains                   = False,
             minimum_length                 = 10,
             maximum_length                 = 2048,
             exclude_ids                    = [],
             verbosity                      = 2,
-            center                         = True,
-            random_rotate                  = True
+            # center                         = True, Put back after submission
+            # random_rotate                  = True
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
-        self.split_chains = split_chains
-        self.random_rotate = random_rotate
-        self.center = center
+        # self.random_rotate = random_rotate
+        # self.center = center
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
@@ -306,10 +304,12 @@ class Dataset():
 
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
 
-        if self.center:
+        # if self.center:
+        # if True:
+        # if self.random_rotate:
+        if self.name == 'ProteinProteinInteractionDataset':
             print("Centering")
             proteins = [CenterTransform()(p) for p in proteins]
-        if self.random_rotate:
             print("Rotating")
             seeds = (abs(hash(p['protein']['sequence'])) % 2**28 for p in proteins)
             proteins = [RandomRotateTransform(seed=seed)(p) for seed, p in zip(seeds, proteins)]
