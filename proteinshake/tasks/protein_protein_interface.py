@@ -102,11 +102,6 @@ class ProteinProteinInterfaceTask(Task):
             result['auprc'][i] = metrics.average_precision_score(y, y_pred)
             result['sizes'][i] = len(y)
 
-        tot = np.sum(result['sizes'])
-        norm = result['sizes'] / tot
-        result['auroc'] *= norm
-        result['auprc'] *= norm
-
         return result
 
     def to_graph(self, *args, **kwargs):
