@@ -7,7 +7,7 @@
         "Representation": "Point",
         "Random Split": 0.2,
         "Sequence Split": 0.2,
-        "Structure Split": 0.2,
+        "Structure Split": 0.2
     },
     {
         "Name":"ProteinShake Baseline",
@@ -17,7 +17,7 @@
         "Representation": "Voxel",
         "Random Split": 0.2,
         "Sequence Split": 0.2,
-        "Structure Split": 0.2,
+        "Structure Split": 0.2
     },
     {
         "Name":"ProteinShake Baseline",
@@ -27,6 +27,6 @@
         "Representation": "Graph",
         "Random Split": 0.2,
         "Sequence Split": 0.2,
-        "Structure Split": 0.2,
+        "Structure Split": 0.2
     }
 ]
