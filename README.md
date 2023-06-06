@@ -20,7 +20,7 @@
 <a href="https://borgwardtlab.github.io/proteinshake">Website</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://proteinshake.readthedocs.io/en/latest/notes/contributing.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://proteinshake.readthedocs.io/en/latest/notes/contribution.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>
 </p>
