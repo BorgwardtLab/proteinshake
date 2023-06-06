@@ -5,9 +5,9 @@
         "Paper": "https://github.com/BorgwardtLab/proteinshake",
         "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
         "Representation": "Graph",
-        "Random Split": "0.598",
-        "Sequence Split": "0.663",
-        "Structure Split": "0.518"
+        "Random Split": "0.728",
+        "Sequence Split": "0.635",
+        "Structure Split": "0.411"
     },
     {
         "Name": "ProteinShake Baseline",
@@ -15,9 +15,9 @@
         "Paper": "https://github.com/BorgwardtLab/proteinshake",
         "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
         "Representation": "Point",
-        "Random Split": "0.627",
-        "Sequence Split": "0.667",
-        "Structure Split": "0.564"
+        "Random Split": "0.609",
+        "Sequence Split": "0.500",
+        "Structure Split": "0.269"
     },
     {
         "Name": "ProteinShake Baseline",
@@ -25,8 +25,8 @@
         "Paper": "https://github.com/BorgwardtLab/proteinshake",
         "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
         "Representation": "Voxel",
-        "Random Split": "0.620",
-        "Sequence Split": "0.644",
-        "Structure Split": "0.573"
+        "Random Split": "0.543",
+        "Sequence Split": "0.422",
+        "Structure Split": "0.187"
     }
 ]

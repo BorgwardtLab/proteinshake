@@ -1,32 +1,32 @@
 [
     {
-        "Name":"ProteinShake Baseline",
-        "Author": "Kucera et al. 2023",
-        "Paper": "https://github.com/BorgwardtLab/proteinshake",
-        "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
-        "Representation": "Point",
-        "Random Split": 0.2,
-        "Sequence Split": 0.2,
-        "Structure Split": 0.2
-    },
-    {
-        "Name":"ProteinShake Baseline",
-        "Author": "Kucera et al. 2023",
-        "Paper": "https://github.com/BorgwardtLab/proteinshake",
-        "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
-        "Representation": "Voxel",
-        "Random Split": 0.2,
-        "Sequence Split": 0.2,
-        "Structure Split": 0.2
-    },
-    {
-        "Name":"ProteinShake Baseline",
+        "Name": "ProteinShake Baseline",
         "Author": "Kucera et al. 2023",
         "Paper": "https://github.com/BorgwardtLab/proteinshake",
         "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
         "Representation": "Graph",
-        "Random Split": 0.2,
-        "Sequence Split": 0.2,
-        "Structure Split": 0.2
+        "Random Split": "0.790",
+        "Sequence Split": "0.737",
+        "Structure Split": "0.621"
+    },
+    {
+        "Name": "ProteinShake Baseline",
+        "Author": "Kucera et al. 2023",
+        "Paper": "https://github.com/BorgwardtLab/proteinshake",
+        "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
+        "Representation": "Point",
+        "Random Split": "0.712",
+        "Sequence Split": "0.635",
+        "Structure Split": "0.600"
+    },
+    {
+        "Name": "ProteinShake Baseline",
+        "Author": "Kucera et al. 2023",
+        "Paper": "https://github.com/BorgwardtLab/proteinshake",
+        "Code": "https://github.com/BorgwardtLab/ProteinShake_eval",
+        "Representation": "Voxel",
+        "Random Split": "0.656",
+        "Sequence Split": "0.598",
+        "Structure Split": "0.550"
     }
 ]

@@ -89,10 +89,21 @@ print(metrics)`;
     Prism.highlightAll();
 }
 
+metric_names = {
+    'gene_ontology': 'Fmax',
+    'enzyme_class': 'Accuracy',
+    'protein_family': 'Accuracy',
+    'binding_site_detection': 'Matthew\'s correlation coefficient',
+    'ligand_affinity': 'Spearman R',
+    'protein_protein_interface': 'AUROC (median)',
+    'structural_class': 'Accuracy',
+    'structure_similarity': 'Spearman R',
+};
 
-var task = 'gene_ontology';
-function leaderboard() {
+
+function leaderboard(task) {
     hideDropdown();
+    document.getElementById('metric_name').innerHTML = '* Metric: '+metric_names[task];
     document.getElementById('dropdownLabel').innerHTML = task.split('_').map(capitalize).join(' ');
     var board = document.getElementById('leaderboard_table');
     fetch('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/leaderboard/'+task+'.json')
@@ -108,7 +119,7 @@ function leaderboard() {
             thead.appendChild(tr);
             columns.forEach(x => {
                 var th = document.createElement('th');
-                th.innerHTML = x;
+                th.innerHTML = ['Random Split','Sequence Split','Structure Split'].includes(x) ? x+'*' : x;
                 tr.appendChild(th);
             });
             var tbody = document.createElement('tbody');
@@ -142,4 +153,4 @@ const capitalize = x => x.charAt(0).toUpperCase() + x.slice(1);
 
 
 window.addEventListener('load', quickstart);
-window.addEventListener('load', leaderboard);
+window.addEventListener('load', ()=>leaderboard('gene_ontology'));

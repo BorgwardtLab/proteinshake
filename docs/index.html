@@ -116,19 +116,20 @@
                     <div class="dropdown" onmouseleave="hideDropdown();">
                         <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
                         <div class='dropdown-content' id='dropdownContent'>
-                            <div class='dropdown-item' onclick='task="gene_ontology";leaderboard();'>Gene Ontology</div>
-                            <div class='dropdown-item' onclick='task="enzyme_class";leaderboard();'>Enyme Class</div>
-                            <div class='dropdown-item' onclick='task="protein_family";leaderboard();'>Protein Family</div>
-                            <div class='dropdown-item' onclick='task="binding_site";leaderboard();'>Binding Site</div>
-                            <div class='dropdown-item' onclick='task="ligand_affinity";leaderboard();'>Ligand Affinity</div>
-                            <div class='dropdown-item' onclick='task="protein_protein_interface";leaderboard();'>Protein-Protein Interface</div>
-                            <div class='dropdown-item' onclick='task="structural_class";leaderboard();'>Structural Class</div>
-                            <div class='dropdown-item' onclick='task="structure_similarity";leaderboard();'>Structure Similarity</div>
+                            <div class='dropdown-item' onclick='leaderboard("gene_ontology");'>Gene Ontology</div>
+                            <div class='dropdown-item' onclick='leaderboard("enzyme_class");'>Enyme Class</div>
+                            <div class='dropdown-item' onclick='leaderboard("protein_family");'>Protein Family</div>
+                            <div class='dropdown-item' onclick='leaderboard("binding_site_detection");'>Binding Site Detection</div>
+                            <div class='dropdown-item' onclick='leaderboard("ligand_affinity");'>Ligand Affinity</div>
+                            <div class='dropdown-item' onclick='leaderboard("protein_protein_interface");'>Protein-Protein Interface</div>
+                            <div class='dropdown-item' onclick='leaderboard("structural_class");'>Structural Class</div>
+                            <div class='dropdown-item' onclick='leaderboard("structure_similarity");'>Structure Similarity</div>
                         </div>
                     </div>
                     <div style='width:80px;padding-left:20px;'></div>
                 </div>
                 <table id='leaderboard_table'></table>
+                <div id='metric_name' style='font-size:16px;width:100%;text-align:left;'></div>
             </div>
             <div class='block'>
                 <h3>Beat the baselines?</h3>
@@ -144,6 +145,6 @@
                 <span>Please let us know by <a href='https://github.com/BorgwardtLab/proteinshake/issues'>opening an issue</a> on GitHub. We are eager to improve ProteinShake and provide you with a great user experience. Feature requests are also welcome.</span>
             </div>
         </div>
-        <div class='footer'></div>
+        <div class='footer'>ProteinShake. Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt.</div>
     </body>
 </html>
