@@ -4,17 +4,15 @@
         "Author": "Someone et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Precision": 0.2,
-        "Recall": 0.3,
-        "Accuracy": 0.8
+        "Accuracy": 0.5,
+        "MCC": 0.4
     },
     {
         "Name":"Model 2",
         "Author": "Who et al. 2023",
         "Paper": "arxiv.com/paper",
         "Code": "github.com/code",
-        "Precision": 0.1,
-        "Recall": 0.3,
-        "Accuracy": 0.6
+        "Accuracy": 0.8,
+        "MCC": 0.8
     }
 ]

@@ -93,7 +93,7 @@ print(metrics)`;
 var task = 'gene_ontology';
 function leaderboard() {
     hideDropdown();
-    document.getElementById('dropdownLabel').innerHTML = task == 'scop' ? 'SCOP' : task.split('_').map(capitalize).join(' ');
+    document.getElementById('dropdownLabel').innerHTML = task.split('_').map(capitalize).join(' ');
     var board = document.getElementById('leaderboard_table');
     fetch('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/leaderboard/'+task+'.json')
         .then((response) => response.json())
@@ -113,6 +113,7 @@ function leaderboard() {
             });
             var tbody = document.createElement('tbody');
             board.appendChild(tbody);
+            json.sort((a, b) => a['Structure Split'].localeCompare(b['Structure Split']));
             json.forEach(row => {
                 var tr = document.createElement('tr');
                 tbody.appendChild(tr);
