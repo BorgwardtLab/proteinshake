@@ -113,7 +113,7 @@ function leaderboard() {
             });
             var tbody = document.createElement('tbody');
             board.appendChild(tbody);
-            json.sort((a, b) => a['Structure Split'].localeCompare(b['Structure Split']));
+            json.sort((a, b) => b['Structure Split'] - a['Structure Split']);
             json.forEach(row => {
                 var tr = document.createElement('tr');
                 tbody.appendChild(tr);

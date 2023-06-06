@@ -216,6 +216,7 @@ table {
   min-width: 100%;
   margin-top:20px;
   border: 2px solid var(--darkgrey);
+  font-size: 12px;
 }
 
 thead, tbody, tr {
