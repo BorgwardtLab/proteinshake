@@ -1,5 +1,5 @@
 Quickstart
-============
+==========
 
 First, make sure you have :doc:`installed proteinshake<installation>`. 
 

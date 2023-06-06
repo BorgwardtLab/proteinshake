@@ -29,6 +29,7 @@ We put emphasis on extendability, aiming to eliminate boilerplate code for data 
    notes/installation
    notes/quickstart
    notes/contribution
+   notes/submission
    notes/citation
 
 .. toctree::

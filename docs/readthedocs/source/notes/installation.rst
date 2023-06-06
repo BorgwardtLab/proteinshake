@@ -1,5 +1,5 @@
 Installation
-=============
+============
 
 ProteinShake can be installed through PyPi.
 

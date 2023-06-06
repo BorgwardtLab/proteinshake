@@ -1,6 +1,6 @@
 Citation
-============
+========
 
-If you use this tool in your work, we thank you for citing:
+This work is currently under review at NeurIPS 2023 Datasets and Benchmarks.
 
 
