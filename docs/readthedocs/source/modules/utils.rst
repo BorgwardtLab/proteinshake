@@ -1,4 +1,4 @@
-``proteinshake.utils``
+``utils``
 ========================
 
 .. currentmodule:: proteinshake.utils

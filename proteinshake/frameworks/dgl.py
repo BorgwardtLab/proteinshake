@@ -5,6 +5,8 @@ from proteinshake.frameworks.dataset import FrameworkDataset
 
 
 class DGLGraphDataset(FrameworkDataset, DGLDataset):
+    """ Graph dataset for Deep Graph Library (DGL).
+    """
 
     def convert_to_framework(self, data_item):
         nodes, adj = data_item.data

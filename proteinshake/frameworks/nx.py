@@ -3,6 +3,8 @@ from proteinshake.frameworks.dataset import FrameworkDataset
 
 
 class NetworkxGraphDataset(FrameworkDataset):
+    """ Graph dataset for NetworkX.
+    """
 
     def convert_to_framework(self, data_item):
         nodes, adj = data_item.data

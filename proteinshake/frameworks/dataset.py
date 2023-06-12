@@ -46,9 +46,13 @@ class FrameworkDataset():
         if not original_repr == transforms_repr: error(f'The pre_transform and/or pre_filter are not the same as when the dataset was created. If you want to change them, delete the folder at {path}', verbosity=self.verbosity)
 
     def convert_to_framework(self, data_item):
+        """ Converts data_item to a data object of the framework.
+        """
         return data_item.data
 
     def load_transform(self, data, protein_dict):
+        """ Applies a transform after loading, for example if the data has been stored in sparse format and needs to be converted to dense.
+        """
         return data, protein_dict
 
     def __len__(self):

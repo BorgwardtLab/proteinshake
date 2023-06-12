@@ -22,7 +22,7 @@ test_requires = [
 setup(
     name='proteinshake',
     version=__version__,
-    description='Deep learning ready datasets of 3D protein structures.',
+    description='Protein structure datasets for machine learning.',
     author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt",
     author_email = "kucera@biochem.mpg.de",
     url=URL,

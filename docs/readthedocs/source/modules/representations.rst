@@ -1,4 +1,4 @@
-``proteinshake.representations``
+``representations``
 ===================================
 
 Protein representations take a parsed protein structure file and convert it to a data structure which can be used by deep learning models.
@@ -7,9 +7,10 @@ These classes are called inside the dataset objects and you should not need to a
 
 
 .. code-block:: python
+  :emphasize-text: .to_graph(eps=8)
 
-   >>> from proteinshake.datasets import RCSBDataset
-   >>> da = RCSBDataset().to_graph(eps=8)
+   from proteinshake.datasets import RCSBDataset
+   dataset = RCSBDataset().to_graph(eps=8)
 
 .. currentmodule:: proteinshake.representations
 

@@ -1,7 +1,7 @@
 Leaderboard Submission
 ======================
 
-If you would like to publish your results on the ProteinShake tasks you can open a pull request in the `GitHub repository <https://github.com/BorgwardtLab/proteinshake>`_.
+If you would like to publish your results on the `ProteinShake Leaderboard <https://borgwardtlab.github.io/proteinshake/#leaderboard>`_ you can open a pull request in the `GitHub repository <https://github.com/BorgwardtLab/proteinshake>`_.
 
 Please add your results to the corresponding JSON file in the :code:`leaderboard` folder, following the template of other submissions. Results should be provided to the third decimal, preferrably on all data splits.
 

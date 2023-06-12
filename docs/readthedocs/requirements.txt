@@ -2,3 +2,7 @@ git+https://github.com/BorgwardtLab/proteinshake.git
 myst-nb
 torch
 torch_geometric
+dgl
+tensorflow
+networkx
+sphinxawesome-theme==5.0.0b2

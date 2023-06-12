@@ -10,6 +10,9 @@ from proteinshake.utils import load, save
 from proteinshake.frameworks.dataset import FrameworkDataset
 
 class NumpyVoxelDataset(FrameworkDataset):
+    """ Voxel dataset for NumPy.
+    """
+
     def convert_to_framework(self, data_item):
         return sparse.csr_array(data_item.data)
 
@@ -18,8 +21,8 @@ class NumpyVoxelDataset(FrameworkDataset):
 
 
 class NumpyPointDataset(FrameworkDataset):
+    """ Point dataset for NumPy.
+    """
+
     def convert_to_framework(self, data_item):
         return data_item.data
-
-    def load_transform(self, data, protein_dict):
-        return data, protein_dict

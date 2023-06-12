@@ -1,4 +1,4 @@
-``proteinshake.Dataset``
+``datasets``
 ==========================
 
 

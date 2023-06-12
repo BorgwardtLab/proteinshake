@@ -2,6 +2,8 @@ import tensorflow as tf
 from proteinshake.frameworks.dataset import FrameworkDataset
 
 class TensorflowVoxelDataset(FrameworkDataset):
+    """ Voxel dataset for TensorFlow.
+    """
 
     def convert_to_framework(self, data_item):
         return tf.sparse.from_dense(tf.convert_to_tensor(data_item.data, dtype=tf.float32))
@@ -11,6 +13,8 @@ class TensorflowVoxelDataset(FrameworkDataset):
 
 
 class TensorflowPointDataset(FrameworkDataset):
+    """ Point dataset for TensorFlow.
+    """
 
     def convert_to_framework(self, data_item):
         return tf.convert_to_tensor(data_item.data, dtype=tf.float32)

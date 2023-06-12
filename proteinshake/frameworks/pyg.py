@@ -5,6 +5,8 @@ from proteinshake.frameworks.dataset import FrameworkDataset
 
 
 class PygGraphDataset(FrameworkDataset, PygDataset):
+    """ Graph dataset for PyG.
+    """
 
     def convert_to_framework(self, data_item):
         nodes, adj = data_item.data

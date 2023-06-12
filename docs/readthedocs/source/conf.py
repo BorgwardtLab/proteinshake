@@ -1,9 +1,9 @@
 import datetime
-
 import proteinshake
+from sphinxawesome_theme import ThemeOptions
 
 author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt"
-project = 'proteinshake'
+project = 'ProteinShake'
 version = "0.0.1"
 copyright = f'{datetime.datetime.now().year}, {author}'
 
@@ -14,22 +14,17 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'myst_nb'
+    'myst_nb',
+    'sphinxawesome_theme.highlighting'
 ]
+html_permalinks = False
 html_static_path = ['_static']
 html_css_files = [
     'style.css',
 ]
-html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
-}
 
-# logos
-
-# html_theme = 'pyg_sphinx_theme'
-html_theme = 'sphinx_rtd_theme'
-html_logo = ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_docs.png')
+html_theme = "sphinxawesome_theme"
+#html_logo = ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_docs.png')
 html_favicon= ('https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/favicon.ico')
 
 add_module_names = False

@@ -1,4 +1,4 @@
-``proteinshake.transforms``
+``transforms``
 =============================
 
 Transforms are applied during the representation stage and you can pass them as a list to the conversion function. For example, this code snippet creates a dataset from RCSB and centers the coordinates of all the proteins::

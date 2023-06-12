@@ -1,4 +1,4 @@
-``proteinshake.Task``
+``tasks``
 ========================
 
 These classes define the various prediction task we support.

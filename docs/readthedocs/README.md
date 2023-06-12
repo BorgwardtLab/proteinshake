@@ -3,8 +3,7 @@
 Install:
 
 ```
-pip install sphinx sphinx-rtd-theme myst-nb torch torch_geometric
-pip install git+https://github.com/BorgwardtLab/proteinshake.git
+pip install -r requirements.txt
 ```
 Then run to build:
 ```
