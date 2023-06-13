@@ -14,24 +14,24 @@ body {
     color: var(--darkgrey);
     font-family: NTR;
     font-size: 25px;
-    line-height:28px;
+    line-height:1.2em;
 }
 a {
     text-decoration: none;
     color: var(--blue);
 }
 h1 {
-    font-size: 50px;
-    line-height: 50px;
+    font-size: 2em;
+    line-height: 1.1em;
     font-weight: bold;
 }
 h2 {
-    font-size: 30px;
-    line-height: 35px;
+    font-size: 1.1em;
+    line-height: 1.15em;
 }
 h3 {
-    font-size: 30px;
-    line-height: 35px;
+    font-size: 1.1em;
+    line-height: 1.15em;
 }
 div.header {
     position: fixed;
@@ -51,9 +51,9 @@ a.header-item {
     align-items: center;
     padding:5px;
     margin: 10px;
-    height:30px;
+    height:1.1em;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 0.8em;
     color: var(--blue);
     box-sizing: border-box;
     border-bottom: 2px solid transparent;
@@ -63,12 +63,13 @@ a.header-item:hover {
 }
 div.footer {
     width:100%;
-    height: 150px;
+    height: 100px;
     background-color: var(--darkgrey);
     display:flex;
     justify-content: center;
     align-items: center;
     color: white;
+    font-size: 0.8em;
 }
 div.main {
     width:100%;
@@ -96,7 +97,7 @@ div.block {
 div.install {
     background-color: var(--lightgrey);
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
-    font-size: 18px;
+    font-size: 0.7em;
     width:400px;
     height:50px;
     display: flex;
@@ -109,7 +110,8 @@ div.install {
 div.feature {
     border-radius: 5px;
     width:200px;
-    font-size: 20px;
+    font-size: 0.8em;
+    line-height: 1.2em;
     margin:20px;
     padding: 10px;
 }
@@ -135,29 +137,36 @@ div.line {
 }
 div.table {
     width:100%;
-    min-width: 700px;
+    min-width: 670px;
     max-width: 1000px;
 }
 div.tabs {
     display: flex;
     flex-direction: row;
     width:100%;
+    font-size: 0.9em;
+    border: 3px solid #333;
+    border-bottom-width:0;
+    box-sizing:border-box;
 }
 div.tab-item {
     display: flex;
     flex: 1;
-    background-color: var(--lightgrey);
+    background-color: #fff;
     color: var(--darkgrey);
     height:45px;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border: 3px solid #333;
+    border-bottom-width:0;
+    box-sizing:border-box;
 }
 div.tab-item.selected {
     color: var(--blue);
 }
 div.tab-item:hover {
-    background-color: #ddd;
+    background-color: #eee;
 }
 a.anchor {
     display: block;
@@ -178,15 +187,17 @@ div.dropdown-content {
   border: 2px solid var(--darkgrey);
   border-top:none;
   box-sizing: border-box;
+  padding:10px 0px;
+  background-color: var(--lightgrey);
 }
 div.dropdown-item {
     cursor: pointer;
-    height:1.05em;
+    height:1.1em;
     width:300px;
     background-color: var(--lightgrey);
-    line-height: 1.05em;
+    line-height: 1.1em;
     user-select: none;
-    font-size: 0.9em;
+    font-size: 0.85em;
     text-align: center;
 }
 div.dropdown-label {
@@ -222,7 +233,7 @@ table {
   min-width: 100%;
   margin-top:20px;
   border: 2px solid var(--darkgrey);
-  font-size: 16px;
+  font-size: 0.7em;
 }
 
 thead, tbody, tr {
