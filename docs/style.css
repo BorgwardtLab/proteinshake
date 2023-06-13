@@ -181,11 +181,13 @@ div.dropdown-content {
 }
 div.dropdown-item {
     cursor: pointer;
-    height:40px;
+    height:1.05em;
     width:300px;
     background-color: var(--lightgrey);
-    line-height: 40px;
+    line-height: 1.05em;
     user-select: none;
+    font-size: 0.9em;
+    text-align: center;
 }
 div.dropdown-label {
     height:40px;

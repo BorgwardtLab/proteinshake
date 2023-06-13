@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+    <head>
+        <link rel='stylesheet' href='style.css'>
+        <script src='leaderboard.js'></script>
+    </head>
+    <body>
+        <div style='display:flex;flex-direction:row;'>
+            <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
+            <div class="dropdown" onmouseleave="hideDropdown();">
+                <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
+                <div class='dropdown-content' id='dropdownContent'>
+                    <div class='dropdown-item' onclick='leaderboard("gene_ontology");'>Gene Ontology</div>
+                    <div class='dropdown-item' onclick='leaderboard("enzyme_class");'>Enyme Class</div>
+                    <div class='dropdown-item' onclick='leaderboard("protein_family");'>Protein Family</div>
+                    <div class='dropdown-item' onclick='leaderboard("binding_site_detection");'>Binding Site Detection</div>
+                    <div class='dropdown-item' onclick='leaderboard("ligand_affinity");'>Ligand Affinity</div>
+                    <div class='dropdown-item' onclick='leaderboard("protein_protein_interface");'>Protein-Protein Interface</div>
+                    <div class='dropdown-item' onclick='leaderboard("structural_class");'>Structural Class</div>
+                    <div class='dropdown-item' onclick='leaderboard("structure_similarity");'>Structure Similarity</div>
+                </div>
+            </div>
+            <div style='width:80px;padding-left:20px;'></div>
+        </div>
+        <table id='leaderboard_table'></table>
+        <div id='metric_name' style='font-size:16px;width:100%;text-align:left;'></div>
+</body>
+</html>

@@ -1,5 +1,5 @@
-Contributing a new dataset or task
-==================================
+How to contribute
+=================
 
 .. tip::
     See the :doc:`Tutorial<../notebooks/custom>` for an example on how to build a custom ``Dataset`` and ``Task``.

@@ -5,10 +5,15 @@
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="icon" href="images/favicon.ico" type="image/x-icon">
         <title>ProteinShake</title>
-        <link rel='stylesheet' href='prism.css'>
-        <script src='prism.js'></script>
         <link rel='stylesheet' href='style.css'>
-        <script src='script.js'></script>
+        <script type='text/javascript'>
+            function copyToClipboard() {
+                navigator.clipboard.writeText('pip install proteinshake');
+                var copy = document.getElementById('copy');
+                copy.src = 'images/done.svg';
+                setTimeout(x=>copy.src = 'images/copy.svg', 1000);
+            }
+        </script>
     </head>
     <body>
         <div class='header'>
@@ -90,46 +95,13 @@
             <a class='anchor' id='quickstart'></a>
             <div class='block'>
                 <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Quickstart</h1><div class='line'></div></span>
-                <div class='table'>
-                    <div class='tabs' id='representations'>
-                        <div class='tab-item' id='graph' onclick='representation="graph";quickstart();'>Graphs</div>
-                        <div class='tab-item' id='voxel' onclick='representation="voxel";quickstart();'>Voxels</div>
-                        <div class='tab-item' id='point' onclick='representation="point";quickstart();'>Point Clouds</div>
-                    </div>
-                    <div class='tabs' id='frameworks'>
-                        <div class='tab-item' id='torch' onclick='framework="torch";quickstart();'>PyTorch</div>
-                        <div class='tab-item' id='tf' onclick='framework="tf";quickstart();'>Tensorflow</div>
-                        <div class='tab-item' id='np' onclick='framework="np";quickstart();'>Numpy/JAX</div>
-                        <div class='tab-item' id='pyg' onclick='framework="pyg";quickstart();' style='display:none;'>PyTorch Geometric</div>
-                        <div class='tab-item' id='dgl' onclick='framework="dgl";quickstart();' style='display:none;'>DGL</div>
-                        <div class='tab-item' id='nx' onclick='framework="nx";quickstart();' style='display:none;'>NetworkX</div>
-                    </div>
-                    <pre><code class='language-python' id='code'></code></pre>
-                </div>
+                <object type="text/html" data="quickstart.html" width="700px" height="600px"></object>
             </div>
             
             <a class='anchor' id='leaderboard'></a>
             <div class='block'>
                 <span style='display:flex;align-items:center;'><div class='line'></div><h1 style='display:inline;'>Leaderboard</h1><div class='line'></div></span>
-                <div style='display:flex;flex-direction:row;'>
-                    <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
-                    <div class="dropdown" onmouseleave="hideDropdown();">
-                        <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
-                        <div class='dropdown-content' id='dropdownContent'>
-                            <div class='dropdown-item' onclick='leaderboard("gene_ontology");'>Gene Ontology</div>
-                            <div class='dropdown-item' onclick='leaderboard("enzyme_class");'>Enyme Class</div>
-                            <div class='dropdown-item' onclick='leaderboard("protein_family");'>Protein Family</div>
-                            <div class='dropdown-item' onclick='leaderboard("binding_site_detection");'>Binding Site Detection</div>
-                            <div class='dropdown-item' onclick='leaderboard("ligand_affinity");'>Ligand Affinity</div>
-                            <div class='dropdown-item' onclick='leaderboard("protein_protein_interface");'>Protein-Protein Interface</div>
-                            <div class='dropdown-item' onclick='leaderboard("structural_class");'>Structural Class</div>
-                            <div class='dropdown-item' onclick='leaderboard("structure_similarity");'>Structure Similarity</div>
-                        </div>
-                    </div>
-                    <div style='width:80px;padding-left:20px;'></div>
-                </div>
-                <table id='leaderboard_table'></table>
-                <div id='metric_name' style='font-size:16px;width:100%;text-align:left;'></div>
+                <object type="text/html" data="leaderboard.html" width="1000px" height="300px"></object>
             </div>
             <div class='block'>
                 <h3>Beat the baselines?</h3>

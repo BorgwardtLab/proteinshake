@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+    <head>
+        <link rel='stylesheet' href='prism.css'>
+        <script src='prism.js'></script>
+        <link rel='stylesheet' href='style.css'>
+        <script src='quickstart.js'></script>
+    </head>
+    <body>
+        <div class='table'>
+            <div class='tabs' id='representations'>
+                <div class='tab-item' id='graph' onclick='representation="graph";quickstart();'>Graphs</div>
+                <div class='tab-item' id='voxel' onclick='representation="voxel";quickstart();'>Voxels</div>
+                <div class='tab-item' id='point' onclick='representation="point";quickstart();'>Point Clouds</div>
+            </div>
+            <div class='tabs' id='frameworks'>
+                <div class='tab-item' id='torch' onclick='framework="torch";quickstart();'>PyTorch</div>
+                <div class='tab-item' id='tf' onclick='framework="tf";quickstart();'>Tensorflow</div>
+                <div class='tab-item' id='np' onclick='framework="np";quickstart();'>Numpy/JAX</div>
+                <div class='tab-item' id='pyg' onclick='framework="pyg";quickstart();' style='display:none;'>PyTorch Geometric</div>
+                <div class='tab-item' id='dgl' onclick='framework="dgl";quickstart();' style='display:none;'>DGL</div>
+                <div class='tab-item' id='nx' onclick='framework="nx";quickstart();' style='display:none;'>NetworkX</div>
+            </div>
+            <pre><code class='language-python' id='code'></code></pre>
+        </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-Leaderboard Submission
+Leaderboard submission
 ======================
 
 If you would like to publish your results on the `ProteinShake Leaderboard <https://borgwardtlab.github.io/proteinshake/#leaderboard>`_ you can open a pull request in the `GitHub repository <https://github.com/BorgwardtLab/proteinshake>`_.
