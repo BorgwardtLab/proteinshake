@@ -7,7 +7,7 @@ Built on the datasets, we provide evaluation tasks, which provide data splits an
 
 .. tip::
 
-  Click on your favorite representation/framework below to see how to use ProteinShake data with your model.
+  Click on your favorite representation/framework below to see how to use ProteinShake with your model.
 
 .. raw:: html
 

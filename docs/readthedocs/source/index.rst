@@ -24,7 +24,7 @@ ProteinShake is intended for computational biologists and machine learning resea
 
 We put emphasis on extendability, aiming to eliminate boilerplate code for data preparation and model evaluation across machine learning disciplines.
 ProteinShake therefore also serves as a general framework for processing protein structure data, and we hope it will serve the community as a platform to share their datasets and evaluation tasks.
-New datasets and tasks can be created with just a few lines of code (see the :doc:`Tutorial<notebooks/custom>`) and we will integrate your contributions through pull requests on GitHub (see the :doc:`Contribution Guide<notes/contribution>`). 
+New datasets and tasks can be created with just a few lines of code (see the :doc:`Tutorial<notes/custom>`) and we will integrate your contributions through pull requests on GitHub (see the :doc:`Contribution Guide<notes/contribution>`). 
 
 .. toctree::
    :glob:

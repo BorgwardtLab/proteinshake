@@ -1,7 +1,7 @@
 Installation
 ============
 
-ProteinShake can be installed through PyPi.
+ProteinShake can be installed through PyPi:
 
 .. code-block:: bash
 

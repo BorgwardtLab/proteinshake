@@ -43,35 +43,35 @@ class Dataset():
         - Key
         - Sample value
       * - Protein identifier
-        - :code:`protein['protein']['ID']`
+        - :code:`['protein']['ID']`
         - ``'1JC8'``
       * - Sequence
-        - :code:`protein['protein']['sequence']`
-        - ``'IWGDSGKLITTA'``
+        - :code:`['protein']['sequence']`
+        - ``'MIWGDSGKL...'``
       * - Assigned train/val/test split
-        - :code:`protein['protein']['sequence_split_<CUTOFF>']`, :code:`protein['protein']['structure_split_<CUTOFF>']`
+        - :code:`['protein']['sequence_split_<CUTOFF>']`, :code:`protein['protein']['structure_split_<CUTOFF>']`
         - ``'train'``
       * - Residue position on chain
-        - :code:`protein['residue']['residue_number']`
-        - ``[2, 3, 4, 5, 6, 7, 8, 9, 10, ...,]``
+        - :code:`['residue']['residue_number']`
+        - ``[1, 2, 3, ...]``
       * - Amino acid type (single letter)
-        - :code:`protein['residue']['residue_type']`
-        - :code:`['I', 'W', 'G', 'D', 'S',..]`
+        - :code:`['residue']['residue_type']`
+        - :code:`['M', 'I', ...]`
       * - 3D coordinates
-        - :code:`protein[{'residue' | 'atom'}][{'x'|'y'|'z'}]`
-        - ``[5.191999912261963, 3.9860000610351562,..]``
+        - :code:`[{'residue' | 'atom'}][{'x'|'y'|'z'}]`
+        - ``[5.191, ...]``
       * - Solvent accessible surface area
-        - :code:`protein[{'residue'|'atom'}]['SASA']`
-        - :code:`[242.03138732910156, 136.46714782714844,... ]`
+        - :code:`[{'residue'|'atom'}]['SASA']`
+        - :code:`[242.031, ...]`
       * - Relative accessible surface area
-        - :code:`protein['residue']['RSA']`
-        - :code:`[1.377291202545166, 0.5476430058479309,... ]`
+        - :code:`['residue']['RSA']`
+        - :code:`[1.377, ...]`
       * - Atom position
-        - :code:`protein['atom']['atom_number']`
-        - :code:`[7, 8, 9, 10, 11,..]`
+        - :code:`['atom']['atom_number']`
+        - :code:`[1, 2, 3, ...]`
       * - Atom type
-        - :code:`protein['atom']['atom_type']`
-        - :code:`['N', 'CA', 'C', 'O',...]`
+        - :code:`['atom']['atom_type']`
+        - :code:`['N', 'CA', ...]`
 
 
     Arguments
@@ -246,22 +246,22 @@ class Dataset():
         """
         raise NotImplementedError
 
-    def add_protein_attributes(self, protein):
+    def add_protein_attributes(self, protein_dict):
         """ Implement me in a subclass!
 
         This method annotates protein objects with addititional information, such as functional labels or classes. It takes a protein object (a dictionary), modifies, and returns it. Usually, this would utilize the `ID` attribute to load an annotation file or to query information from a database.
 
         Parameters
         ----------
-        protein: dict
-            A protein object. See :meth:`proteinshake.datasets.Dataset.parse_pdb` for details.
+        protein_dict: dict
+            A protein_dict object. See :meth:`proteinshake.datasets.Dataset.parse_pdb` for details.
 
         Returns
         -------
         dict
-            The protein object with a new attribute added.
+            The protein_dict object with a new attribute added.
         """
-        return protein
+        return protein_dict
 
     def download_complete(self):
         """ Dumps a marker file when the download was successful, to skip downloading next time.

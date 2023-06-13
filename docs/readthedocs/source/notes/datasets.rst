@@ -1,11 +1,10 @@
 Working with datasets
 =====================
 
-ProteinShake provides two main classes: the ``Dataset`` and the ``Task``.
 Datasets are a collection of protein structures which can be converted to any of three representations (graphs, voxel grids, or point clouds) depending on your deep learning model.
-Tasks extend the datasets with metrics and data splits for model evaluation.
+There are various different datasets available, checkout the :doc:`Overview <overview>` for a full list.
 
-Let's download a dataset from the ProteinShake data repository:
+Let's download an enzyme dataset from the ProteinShake data repository:
 
 .. code-block:: python
 
@@ -31,6 +30,7 @@ We can for example access the sequence of the protein, which is a protein-level 
 
 Other fields included in the ``protein_dict`` are the database ID, the coordinates (a residue-level property) and surface accessibility scores (RSA/SASA).
 Each dataset also has fields specific to their proteins, such as the Enzyme Commission number (``protein_dict['protein']['EC']``) of the ``EnzymeCommissionDataset``.
+See the ``Dataset`` documentation for a full list of attributes.
 
 The ``protein_dict`` is not perfectly suited for a deep learning model, which requires tensors of data.
 Models may use different representations depending on their architecture.
