@@ -160,7 +160,7 @@ A custom task
 A dataset becomes truly valuable when you define how to evaluate a model on it.
 In ProteinShake, this is called a task.
 It comprises train/test/validation splits and metrics that assess the performance of the model.
-The metrics depends on the label(s) that you are interested in.
+The metrics depend on the label(s) that you are interested in.
 
 We will create a task based on our custom ``DNABindingDataset``.
 An empty task looks like this:
@@ -191,7 +191,7 @@ For this we assign the ``DatasetClass`` class attribute:
 
 .. code:: python
 
-    class Task:
+    class DNABindingTask:
         DatasetClass = DNABindingDataset
 
 Then there are a few key properties that define how a task is structured.
@@ -237,6 +237,8 @@ The whole class looks like the following.
 Again, you can use it like any other ProteinShake task, convert them to a repesentation, and load them to your favorite framework dataloader.
 
 .. code:: python
+
+    import sklearn
 
     class DNABindingTask:
 
