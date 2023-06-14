@@ -17,7 +17,7 @@ from proteinshake.utils import extract_tar, download_url
 RDLogger.DisableLog('rdApp.*') # disable warnings
 
 class ProteinLigandInterfaceDataset(Dataset):
-    """Proteins bound to small molecules from PDBBind with annotated binding site, ligand and affinity information.
+    """ Proteins bound to small molecules from PDBBind with annotated binding site, ligand and affinity information.
 
     Parameters
     ----------
