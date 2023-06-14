@@ -94,6 +94,8 @@ class Dataset():
         Proteins larger than maximum_length residues will be skipped.
     exclude_ids: list, default []
         Exclude PDB IDs from the dataset.
+    skip_signature_check: bool, default False
+        If True, skips the signature check. 
     verbosity: int, default 2
         Verbosity level of output logging. 2: full output, 1: no progress bars, 0: only warnings and errors, -1: only errors, -2: no output.
     """
@@ -111,6 +113,7 @@ class Dataset():
             minimum_length                 = 10,
             maximum_length                 = 2048,
             exclude_ids                    = [],
+            skip_signature_check           = False,
             verbosity                      = 2,
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
@@ -123,6 +126,7 @@ class Dataset():
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
+        self.skip_signature_check = skip_signature_check
         self.verbosity = verbosity
         
         os.makedirs(f'{self.root}', exist_ok=True)
@@ -155,6 +159,7 @@ class Dataset():
         return self.compute_signature(use_defaults=False)
 
     def check_signature(self):
+        if self.skip_signature_check: return
         if os.path.exists(f'{self.root}/signature.txt'):
             with open(f'{self.root}/signature.txt','r') as file:
                 if not file.read() == self.signature: error('The Dataset is called with different arguments than were used to create it. Delete or change the root.', verbosity=self.verbosity)
