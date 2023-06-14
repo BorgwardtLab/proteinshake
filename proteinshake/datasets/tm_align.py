@@ -29,7 +29,8 @@ from proteinshake.utils import (extract_tar,
 
 
 class TMAlignDataset(RCSBDataset):
-    """Proteins that were aligned with TMalign. The dataset provides the TM-score, RMSD, Global Distance Test (GDT), and Local Distance Difference Test (LDDT) as similarity/distance metrics between any two proteins.
+    """Proteins that were aligned with TMalign annotated with distance/similarity metrics.
+    The dataset provides the TM-score, RMSD, Global Distance Test (GDT), and Local Distance Difference Test (LDDT).
 
     .. list-table:: Dataset stats
        :widths: 100

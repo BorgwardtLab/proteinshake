@@ -3,10 +3,7 @@ import json
 from proteinshake.datasets import RCSBDataset
 
 class EnzymeCommissionDataset(RCSBDataset):
-    """
-    Datsaet of enzymes which are assigned label based
-    on the reaction they catalyze.
-
+    """ Enzymes with annotated enzyme commission (EC) numbers.
 
     .. list-table:: Dataset stats
        :widths: 100
@@ -28,6 +25,8 @@ class EnzymeCommissionDataset(RCSBDataset):
         - :code:`'2.7.7.4'`
 
     """
+
+    description = 'Enzymes'
 
     def __init__(self, query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs):
         """

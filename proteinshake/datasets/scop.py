@@ -7,7 +7,7 @@ from proteinshake.datasets import RCSBDataset
 from proteinshake.utils import download_url, progressbar
 
 class SCOPDataset(RCSBDataset):
-    """ Proteins for which the SCOP classification is known.
+    """ Proteins with annotated SCOP class.
 
     .. list-table:: Dataset stats
        :widths: 100

@@ -6,7 +6,7 @@ from proteinshake.utils import download_url, unzip_file
 from functools import cached_property
 
 class GeneOntologyDataset(RCSBDataset):
-    """ Proteins from RCSB for which the Gene Ontology (GO) term is known.
+    """ Proteins with annotated Gene Ontology (GO) terms.
     Each protein in the dataset has a `GO` attribute which stores the path
     from the root to the leaves along the GO hierarchy. The GeneOntologyDataset
     also has a `godag` attribute, which stores the GO hierarchy (see [goatools.obo_parser.GODag](https://github.com/tanghaibao/goatools)).
@@ -38,6 +38,8 @@ class GeneOntologyDataset(RCSBDataset):
 
 
     """
+
+    description = 'Gene Ontology'
 
     additional_files = ['GeneOntologyDataset.godag.obo']
 

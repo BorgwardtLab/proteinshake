@@ -27,8 +27,10 @@ AF_DATASET_NAMES = {
     'swissprot': 'swissprot_pdb',
 }
 
+description = 'Predicted structures'
+
 class AlphaFoldDataset(Dataset):
-    """ 3D structures predicted from sequence by AlphaFold.
+    """ 3D structures predicted by AlphaFold.
 
     Requires the `organism` name to be specified. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
     Pass the full latin organism name separated by a space or underscore. `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
@@ -83,7 +85,7 @@ class AlphaFoldDataset(Dataset):
 
     exlude_args_from_signature = ['organism']
 
-    def __init__(self, organism, version='v4', only_single_chain=True, **kwargs):
+    def __init__(self, organism='swissprot', version='v4', only_single_chain=True, **kwargs):
         self.organism = organism.lower().replace(' ','_')
         self.base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
         self.version = version

@@ -6,7 +6,7 @@ from proteinshake.datasets import Dataset
 from proteinshake.utils import download_url, unzip_file, error, warning, progressbar
 
 class RCSBDataset(Dataset):
-    """ Non-redundant structures taken from RCSB Protein Databank.
+    """ Experimental structures from the RCSB Protein Data Bank.
 
     This class also serves as a base class for all RCSB derived datasets. It can be subclassed by defining a default ``query`` argument. The query is a list of triplets ``(attribute, operator, value)`` according to `this <https://search.rcsb.org/#attribute-queries>`_ and `this <https://data.rcsb.org/data-attributes.html>`_ , which is passed to the REST API call to RCSB. See e.g. the GODataset subclass for an example. To find the right attributes, the queries can be constructed by doing an advanced search `at RCSB <https://www.rcsb.org/search/advanced>`_ and exporting to JSON. Also compare the API call in the :meth:`download()` method.
 

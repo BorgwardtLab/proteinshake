@@ -18,7 +18,7 @@ EXTENDED_AA_THREE_TO_ONE = {
 }
 
 class ProteinLigandDecoysDataset(Dataset):
-    """ Proteins (targets) from `DUDE-Z <https://pubs.acs.org/doi/10.1021/acs.jcim.0c00598>`_ with a list of decoys and active molecules for each.
+    """ Proteins (targets) from DUDE-Z with annotated ligands and decoys.
     Each molecule is encoded as a SMILES string, meant to be used in a virtual screen setting.
     In this setting a model is given a protein and a ligand and outputs a score reflecting the likelihood
     that the given molecule is a binder. Then, this score is used to sort the union of all the ligands and
@@ -60,6 +60,8 @@ class ProteinLigandDecoysDataset(Dataset):
 
 
     """
+
+    description = 'Proteins with ligands and decoys'
 
     @patch('proteinshake.datasets.dataset.AA_THREE_TO_ONE', EXTENDED_AA_THREE_TO_ONE)
     def pdb2df(self, path):
