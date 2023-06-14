@@ -36,6 +36,10 @@ class Task:
 
     DatasetClass = None
 
+    type = None
+    input = None
+    output = None
+
     def __init__(self,
                  root                       = 'data',
                  split                      = 'random',

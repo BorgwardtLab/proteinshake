@@ -12,6 +12,10 @@ class ProteinFamilyTask(Task):
 
     DatasetClass = ProteinFamilyDataset
     
+    type = 'Multiclass Classification'
+    input = 'Protein'
+    output = 'Protein Family (Pfam)'
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

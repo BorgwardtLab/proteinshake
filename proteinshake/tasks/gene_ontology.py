@@ -15,6 +15,10 @@ class GeneOntologyTask(Task):
 
     DatasetClass = GeneOntologyDataset
     
+    type = 'Multilabel Classification'
+    input = 'Protein'
+    output = 'Gene Ontology Terms'
+    
     def __init__(self, branch='molecular_function', *args, **kwargs):
         self.branch = branch
         super().__init__(*args, **kwargs)

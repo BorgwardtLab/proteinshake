@@ -12,6 +12,10 @@ class EnzymeClassTask(Task):
 
     DatasetClass = EnzymeCommissionDataset
     
+    type = 'Multiclass Classification'
+    input = 'Protein'
+    output = 'Enzyme Commission Level 1'
+    
     def __init__(self, ec_level=0, *args, **kwargs):
         self.ec_level = ec_level
         super().__init__(*args, **kwargs)

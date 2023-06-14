@@ -25,6 +25,10 @@ class ProteinProteinInterfaceTask(Task):
     """
 
     DatasetClass = ProteinProteinInterfaceDataset
+    
+    type = 'Binary Classification'
+    input = 'Protein and Protein'
+    output = 'Protein Binding Interface Residues'
 
     @property
     def task_in(self):

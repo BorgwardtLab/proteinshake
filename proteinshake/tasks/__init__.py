@@ -11,9 +11,9 @@ from .gene_ontology import GeneOntologyTask
 from .virtual_screen import VirtualScreenTask
 
 classes = ['Task',
+           'GeneOntologyTask',
            'EnzymeClassTask',
            'ProteinFamilyTask',
-           'GeneOntologyTask',
            'LigandAffinityTask',
            'BindingSiteDetectionTask',
            'ProteinProteinInterfaceTask',

@@ -9,6 +9,10 @@ class BindingSiteDetectionTask(Task):
     """
     
     DatasetClass = ProteinLigandInterfaceDataset
+    
+    type = 'Binary Classification'
+    input = 'Residue'
+    output = 'Small Molecule Binding Residues'
 
     @property
     def task_in(self):

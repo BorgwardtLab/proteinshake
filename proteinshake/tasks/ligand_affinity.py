@@ -4,12 +4,16 @@ from proteinshake.datasets import ProteinLigandInterfaceDataset
 from proteinshake.tasks import Task
 
 class LigandAffinityTask(Task):
-    """ Predict the dissociation constant (kd) for a protein and a small molecule. This is a protein-level regression task.
+    """ Predict the dissociation constant (Kd) for a protein and a small molecule. This is a protein-level regression task.
     Small molecule ligand information is stored as ``dataset[i].smiles`` for a SMILES string, or as pre-computed molecular
     fingerprints ``dataset[i].fp_maccs``, ```dataset[i].fp_morgan_r2``.
     """
     
     DatasetClass = ProteinLigandInterfaceDataset
+    
+    type = 'Regression'
+    input = 'Protein and Molecule'
+    output = 'Dissociation Constant Kd'
 
     @property
     def task_in(self):
