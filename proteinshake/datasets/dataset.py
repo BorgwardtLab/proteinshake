@@ -3,7 +3,8 @@
 Base dataset class for protein 3D structures.
 """
 import os, gzip, inspect, time, itertools, tarfile, io
-from collections import defaultdict
+import copy
+from collections import defaultdict, Counter
 from functools import cached_property
 import multiprocessing as mp
 
@@ -15,7 +16,7 @@ from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.transforms import IdentityTransform
+from proteinshake.transforms import IdentityTransform, RandomRotateTransform, CenterTransform
 from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator, progressbar, warning, error
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -115,9 +116,13 @@ class Dataset():
             exclude_ids                    = [],
             skip_signature_check           = False,
             verbosity                      = 2,
+            # center                         = True, Put back after submission
+            # random_rotate                  = True
             ):
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
+        # self.random_rotate = random_rotate
+        # self.center = center
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
@@ -301,7 +306,19 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing', verbosity=self.verbosity))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
+
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
+
+        # if self.center:
+        # if True:
+        # if self.random_rotate:
+        if self.name == 'ProteinProteinInteractionDataset':
+            print("Centering")
+            proteins = [CenterTransform()(p) for p in proteins]
+            print("Rotating")
+            seeds = (abs(hash(p['protein']['sequence'])) % 2**28 for p in proteins)
+            proteins = [RandomRotateTransform(seed=seed)(p) for seed, p in zip(seeds, proteins)]
+
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
         write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
@@ -333,17 +350,20 @@ class Dataset():
         atom_sasa, residue_sasa, residue_rsa = [], [], []
         for i in atom_df['atom_number']:
             try:
+                assert not np.isnan(result.atomArea(i)), "nan sasa"
                 atom_sasa.append(result.atomArea(i))
             except:
                 atom_sasa.append(-1)
         for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
             try:
+                assert not np.isnan(residue_result[chain][str(i)].total), "nan sasa"
+                assert not np.isnan(residue_result[chain][str(i)].relativeTotal), "nan sasa"
+
                 residue_sasa.append(residue_result[chain][str(i)].total)
                 residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
             except:
                 residue_sasa.append(-1)
                 residue_rsa.append(-1)
-            
 
         # create protein_dict
         protein = {
