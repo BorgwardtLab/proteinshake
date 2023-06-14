@@ -2,7 +2,7 @@
 """
 Base dataset class for protein 3D structures.
 """
-import os, gzip, inspect, time, itertools, tarfile, io
+import os, gzip, inspect, time, itertools, tarfile, io, requests
 import copy
 from collections import defaultdict, Counter
 from functools import cached_property
@@ -80,7 +80,7 @@ class Dataset():
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
     use_precomputed: bool, default True
-        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
+        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will force to download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
     release: str, default '12JUL2022'
         The tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. "latest" (default) is recommended.
     only_single_chain: bool, default False
@@ -123,6 +123,9 @@ class Dataset():
         self.n_jobs = n_jobs
         # self.random_rotate = random_rotate
         # self.center = center
+        if use_precomputed and not self.check_if_precomputed_available():
+            warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=.verbosity)
+            use_precomputed = False
         self.use_precomputed = use_precomputed
         self.root = root
         self.minimum_length = minimum_length
@@ -142,6 +145,9 @@ class Dataset():
             self.parse()
         else:
             self.check_signature_same_as_hosted()
+
+    def check_if_precomputed_available(self):
+        return requests.head(f'{self.repository_url}/{self.name}.residue.avro.gz').status_code == 200
 
     def compute_signature(self, use_defaults=False):
         signature = dict(inspect.signature(self.__init__).parameters.items())
