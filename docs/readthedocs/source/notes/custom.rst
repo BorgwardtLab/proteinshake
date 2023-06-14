@@ -157,3 +157,100 @@ Neat, right? You can use it like any other ProteinShake dataset:
 A custom task
 -------------
 
+A dataset becomes truly valuable when you define how to evaluate a model on it.
+In ProteinShake, this is called a task.
+It comprises train/test/validation splits and metrics that assess the performance of the model.
+The metrics depends on the label(s) that you are interested in.
+
+We will create a task based on our custom ``DNABindingDataset``.
+An empty task looks like this:
+
+.. code:: python
+
+    class Task:
+
+        DatasetClass = None
+
+        def task_type(self):
+            raise NotImplementedError
+
+        def num_features(self):
+            raise NotImplementedError
+
+        def num_classes(self):
+            raise NotImplementedError
+
+        def target(self, protein):
+            raise NotImplementedError
+
+        def evaluate(self, y_true, y_pred):
+            raise NotImplementedError
+
+First we need to tell ProteinShake which dataset this task is based on.
+For this we assign the ``DatasetClass`` class attribute:
+
+.. code:: python
+
+    class Task:
+        DatasetClass = DNABindingDataset
+
+Then there are a few key properties that define how a task is structured.
+The properties are ``task_type``, ``num_features`` and ``num_classes``.
+Models can query these attributes to make task-specific decisions, such as the number of output neurons, or the type of loss to be used.
+
+.. code:: python
+
+    def task_type(self):
+        # a protein-level binary classification
+        return ('protein', 'binary')
+
+.. note::
+
+    The ``task_type`` attribute has to follow a pre-defined scheme.
+    See the task documentation for a comprehensive list.
+
+The most important methods of a task are ``target`` and ``evaluate``.
+The first defines how the prediction target value can be read from the ``protein_dict``, the latter defines a dictionary of appropriate metrics.
+Let's implement the two.
+
+.. code:: python
+
+    def target(self, protein_dict):
+        return protein_dict['protein']['DNA-binding']
+
+    def evaluate(self, y_true, y_pred):
+        return {
+            'Accuracy': sklearn.metrics.accuracy_score(y_true, y_pred),
+            'MCC': sklearn.metrics.matthews_corrcoef(y_true, y_pred),
+        }
+
+.. tip::
+
+    By default, a random split will be computed on the fly when you use the task.
+    You can implement ``compute_custom_split`` to define your own splitting logic.
+
+    The random, sequence, and structure splits will only be computed during a release.
+    If you :doc:`contribute your task<contribution>` we will compute and host them for you.
+
+And we are done with the task!
+The whole class looks like the following.
+Again, you can use it like any other ProteinShake task, convert them to a repesentation, and load them to your favorite framework dataloader.
+
+.. code:: python
+
+    class DNABindingTask:
+
+        DatasetClass = DNABindingDataset
+
+        def task_type(self):
+            # a protein-level binary classification
+            return ('protein', 'binary')
+
+        def target(self, protein_dict):
+            return protein_dict['protein']['DNA-binding']
+
+        def evaluate(self, y_true, y_pred):
+            return {
+                'Accuracy': sklearn.metrics.accuracy_score(y_true, y_pred),
+                'MCC': sklearn.metrics.matthews_corrcoef(y_true, y_pred),
+            }
