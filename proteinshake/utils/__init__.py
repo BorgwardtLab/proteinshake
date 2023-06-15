@@ -1,6 +1,7 @@
 from .embeddings import *
 from .io import *
 from .similarity import *
+from .uniprot import *
 
 __all__ = ['onehot',
            'tokenize',
@@ -13,6 +14,7 @@ __all__ = ['onehot',
            'zip_file',
            'unzip_file',
            'write_avro',
+           'uniprot_query',
            ]
 
 classes = __all__

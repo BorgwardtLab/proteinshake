@@ -1,9 +1,9 @@
 import requests, re, io
 from requests.adapters import HTTPAdapter, Retry
 import pandas as pd
-from .util import progressbar
+from proteinshake.utils import progressbar
 
-def query_uniprot(query, columns='', verbosity=2):
+def uniprot_query(query, columns='', verbosity=2):
     columns = 'accession,'+columns
     re_next_link = re.compile(r'<(.+)>; rel="next"')
     retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
@@ -23,10 +23,11 @@ def query_uniprot(query, columns='', verbosity=2):
             batch_url = get_next_link(response.headers)
     url = f'https://rest.uniprot.org/uniprotkb/search?fields={columns}&format=tsv&query={query}&size=500'
     df = pd.DataFrame()
-    with progressbar(verbosity=verbosity) as pbar:
+    with progressbar(total=100, verbosity=verbosity) as pbar:
         for batch, total in get_batch(url):
             pbar.total = int(total)
             batch = pd.read_csv(io.StringIO(batch.text), sep='\t')
             df = pd.concat([df,batch])
             pbar.update(len(batch))
+    df = df.set_index('Entry', drop=True)
     return df.to_dict('index')
