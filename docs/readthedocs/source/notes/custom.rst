@@ -46,10 +46,11 @@ By convention, we put these files into ``f'{self.root}/raw/files'``, although yo
 .. code:: python
 
     def download(self):
-        url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/UP000000805_243232_METJA_v4.tar'
-        download_url(url, f'{self.root}/raw')
-        extract_tar(f'{self.root}/raw/UP000000805_243232_METJA_v4.tar', f'{self.root}/raw/files')
-        for path in glob.glob(f'{self.root}/raw/files/*.pdb.gz'):
+        base_url = 'https://ftp.ebi.ac.uk/pub/databases/alphafold/latest/'
+        file_name = 'UP000000625_83333_ECOLI_v4.tar'
+        download_url(base_url+file_name, self.root+'/raw')
+        extract_tar(self.root+'/raw/'+file_name, self.root+'/raw/files')
+        for path in glob.glob(self.root+'/raw/files/*.pdb.gz'):
             unzip_file(path)
 
 .. hint::
@@ -83,14 +84,14 @@ We do this by implementing ``get_raw_files`` which returns a list of paths to ea
 .. code:: python
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
+        return glob.glob(self.root+'/raw/files/*.pdb')
 
 ProteinShake also needs a unique ID to reference each individual protein, which we parse from the file name (in AlphaFoldDB files, this is the UniProt accession ID):
 
 .. code:: python
 
     def get_id_from_filename(self, filename):
-        return filename.rstrip('.pdb')
+        return filename.split('-')[1]
 
 Lastly, the annotation step is implemented in the ``add_protein_attributes`` method.
 Here we add the annotation to the ``protein_dict`` of each individual protein.
@@ -104,12 +105,15 @@ Here we add the annotation to the ``protein_dict`` of each individual protein.
 .. code:: python
 
     def add_protein_attributes(self, protein_dict):
-        uniprot_id = self.protein_dict['protein']['ID']
-        protein_dict['protein']['DNA-binding'] = self.annotations[uniprot_id]
+        uniprot_id = protein_dict['protein']['ID']
+        if not uniprot_id in self.annotations: return
+        dna_binding = self.annotations[uniprot_id]['DNA binding']
+        protein_dict['protein']['DNA binding'] = not dna_binding is None
+        return protein_dict
 
 .. tip::
 
-    You can use the ``add_protein_attributes`` method also for filtering: if it returns ``None``, the protein will be removed from the dataset.
+    You can use the ``add_protein_attributes`` method for filtering: if it returns ``None``, the protein will be removed from the dataset.
 
 That's it! ProteinShake will now take care of downloading, parsing, cleaning and storing your data.
 The whole code now looks like this:
@@ -117,7 +121,7 @@ The whole code now looks like this:
 .. code:: python
 
     import glob
-    from proteinshake.dataset import Dataset
+    from proteinshake.datasets import Dataset
     from proteinshake.utils import *
 
     class DNABindingDataset(Dataset):
@@ -135,12 +139,13 @@ The whole code now looks like this:
             return glob.glob(self.root+'/raw/files/*.pdb')
 
         def get_id_from_filename(self, filename):
-            return filename.rstrip('.pdb')
+            return filename.split('-')[1]
 
         def add_protein_attributes(self, protein_dict):
             uniprot_id = protein_dict['protein']['ID']
-            dna_binding = self.annotations[uniprot_id]['ft_dna_bind']
-            protein_dict['protein']['DNA-binding'] = dna_binding
+            if not uniprot_id in self.annotations: return
+            dna_binding = self.annotations[uniprot_id]['DNA binding']
+            protein_dict['protein']['DNA binding'] = not dna_binding is None
             return protein_dict
 
 Neat, right? You can use it like any other ProteinShake dataset:
@@ -170,15 +175,9 @@ An empty task looks like this:
     class Task:
 
         DatasetClass = None
-
-        def task_type(self):
-            raise NotImplementedError
-
-        def num_features(self):
-            raise NotImplementedError
-
-        def num_classes(self):
-            raise NotImplementedError
+        type = None
+        input = None
+        output = None
 
         def target(self, protein):
             raise NotImplementedError
@@ -191,23 +190,25 @@ For this we assign the ``DatasetClass`` class attribute:
 
 .. code:: python
 
-    class DNABindingTask:
+    class DNABindingTask(Task):
         DatasetClass = DNABindingDataset
 
 Then there are a few key properties that define how a task is structured.
-The properties are ``task_type``, ``num_features`` and ``num_classes``.
+The properties are ``type``, ``input`` and ``output``.
 Models can query these attributes to make task-specific decisions, such as the number of output neurons, or the type of loss to be used.
 
 .. code:: python
 
-    def task_type(self):
-        # a protein-level binary classification
-        return ('protein', 'binary')
+    class DNABindingTask(Task):
+        ...
+        type = 'Binary Classification'
+        input = 'Protein'
+        output = 'DNA Binding'
 
 .. note::
 
-    The ``task_type`` attribute has to follow a pre-defined scheme.
-    See the task documentation for a comprehensive list.
+    The ``type`` and ``input`` attribute have to follow a convention.
+    See the task documentation for details.
 
 The most important methods of a task are ``target`` and ``evaluate``.
 The first defines how the prediction target value can be read from the ``protein_dict``, the latter defines a dictionary of appropriate metrics.
@@ -216,7 +217,7 @@ Let's implement the two.
 .. code:: python
 
     def target(self, protein_dict):
-        return protein_dict['protein']['DNA-binding']
+        return protein_dict['protein']['DNA binding']
 
     def evaluate(self, y_true, y_pred):
         return {
@@ -239,17 +240,17 @@ Again, you can use it like any other ProteinShake task, convert them to a repese
 .. code:: python
 
     import sklearn
+    from proteinshake.tasks import Task
 
-    class DNABindingTask:
+    class DNABindingTask(Task):
 
         DatasetClass = DNABindingDataset
-
-        def task_type(self):
-            # a protein-level binary classification
-            return ('protein', 'binary')
+        type = 'Binary Classification'
+        input = 'Protein'
+        output = 'DNA Binding'
 
         def target(self, protein_dict):
-            return protein_dict['protein']['DNA-binding']
+            return protein_dict['protein']['DNA binding']
 
         def evaluate(self, y_true, y_pred):
             return {

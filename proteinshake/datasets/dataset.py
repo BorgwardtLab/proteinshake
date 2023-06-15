@@ -119,15 +119,15 @@ class Dataset():
             # center                         = True, Put back after submission
             # random_rotate                  = True
             ):
+        self.root = root
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
         # self.random_rotate = random_rotate
         # self.center = center
-        if use_precomputed and not self.check_if_precomputed_available():
-            warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=.verbosity)
+        if use_precomputed and not self.precomputed_already_downloaded() and not self.precomputed_available():
+            warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=verbosity)
             use_precomputed = False
         self.use_precomputed = use_precomputed
-        self.root = root
         self.minimum_length = minimum_length
         self.maximum_length = maximum_length
         self.only_single_chain = only_single_chain
@@ -138,7 +138,7 @@ class Dataset():
         self.verbosity = verbosity
         
         os.makedirs(f'{self.root}', exist_ok=True)
-        self.check_signature()
+        #self.check_signature()
 
         if not use_precomputed:
             self.start_download()
@@ -146,8 +146,11 @@ class Dataset():
         else:
             self.check_signature_same_as_hosted()
 
-    def check_if_precomputed_available(self):
-        return requests.head(f'{self.repository_url}/{self.name}.residue.avro.gz').status_code == 200
+    def precomputed_already_downloaded(self):
+        return os.path.exists(f'{self.root}/{self.name}.residue.avro') or os.path.exists(f'{self.root}/{self.name}.atom.avro')
+    
+    def precomputed_available(self):
+        return requests.head(f'{self.repository_url}/{self.name}.residue.avro.gz', timeout=5).status_code == 200
 
     def compute_signature(self, use_defaults=False):
         signature = dict(inspect.signature(self.__init__).parameters.items())

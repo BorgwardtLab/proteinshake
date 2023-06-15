@@ -1,6 +1,7 @@
 import requests, re, io
 from requests.adapters import HTTPAdapter, Retry
 import pandas as pd
+import numpy as np
 from proteinshake.utils import progressbar
 
 def uniprot_query(query, columns='', verbosity=2):
@@ -29,5 +30,5 @@ def uniprot_query(query, columns='', verbosity=2):
             batch = pd.read_csv(io.StringIO(batch.text), sep='\t')
             df = pd.concat([df,batch])
             pbar.update(len(batch))
-    df = df.set_index('Entry', drop=True)
+    df = df.set_index('Entry', drop=True).replace(np.nan, None)
     return df.to_dict('index')
