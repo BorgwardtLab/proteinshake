@@ -14,7 +14,3 @@ Built on the datasets, we provide evaluation tasks, which provide data splits an
   <div style='display:flex; justify-content: center; align-items:center;'>
     <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/quickstart.html" width="670px" height="600px"></object>
   </div>
-
-.. hint::
-
-  You can find hands-on examples in the tutorials for working with :doc:`datasets <datasets>` and :doc:`tasks <tasks>`.
