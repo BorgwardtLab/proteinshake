@@ -28,9 +28,11 @@ RELEASES = {
 }
 
 class Dataset():
-    """ Base dataset class. Holds the logic for downloading and parsing PDB files.
+    """ Base dataset class.
+    Holds the logic for downloading and parsing PDB files.
     If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
-    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
+    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``.
+    Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
     .. note::
 

@@ -20,11 +20,20 @@ EXTENDED_AA_THREE_TO_ONE = {
 class ProteinLigandDecoysDataset(Dataset):
     """ Proteins (targets) from DUDE-Z with annotated ligands and decoys.
     Each molecule is encoded as a SMILES string, meant to be used in a virtual screen setting.
-    In this setting a model is given a protein and a ligand and outputs a score reflecting the likelihood
-    that the given molecule is a binder. Then, this score is used to sort the union of all the ligands and
-    decoys. A good model places true ligands at the top of this list. This is known as enrichment factor
-    analysis.
-    `data source <https://dudez.docking.org/>`_.
+    In this setting a model is given a protein and a ligand and outputs a score reflecting the likelihood that the given molecule is a binder.
+    Then, this score is used to sort the union of all the ligands and decoys.
+    A good model places true ligands at the top of this list.
+    This is known as enrichment factor analysis.
+
+    .. admonition:: Please cite
+
+      Stein, Reed M et al. “Property-Unmatched Decoys in Docking Benchmarks.” Journal of chemical information and modeling vol. 61,2 (2021): 699-714. doi:10.1021/acs.jcim.0c00598
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `DUDE-Z <https://dudez.docking.org/>`_.
+
+
 
 
     .. list-table:: Dataset stats

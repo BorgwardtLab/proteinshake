@@ -31,9 +31,21 @@ description = 'Predicted structures'
 
 class AlphaFoldDataset(Dataset):
     """ 3D structures predicted by AlphaFold.
+    Requires the `organism` name to be specified.
+    See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
+    Pass the full latin organism name separated by a space or underscore.
+    `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
 
-    Requires the `organism` name to be specified. See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
-    Pass the full latin organism name separated by a space or underscore. `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
+    .. admonition:: Please cite
+
+      Jumper, John, et al. "Highly accurate protein structure prediction with AlphaFold." Nature 596.7873 (2021): 583-589.
+
+      Varadi, Mihaly, et al. "AlphaFold Protein Structure Database: massively expanding the structural coverage of protein-sequence space with high-accuracy models." Nucleic acids research 50.D1 (2022): D439-D444.
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `AlphaFoldDB <https://alphafold.ebi.ac.uk>`_, originally licensed under `CC-BY-4.0 <https://creativecommons.org/licenses/by/4.0/>`_.
+
 
     .. list-table :: Data Properties
        :widths: 50 50
@@ -75,16 +87,6 @@ class AlphaFoldDataset(Dataset):
          - 39,203
        * - ``'swissprot'``
          - 541,143
-
-    .. admonition:: Please cite:
-
-      Jumper, John, et al. "Highly accurate protein structure prediction with AlphaFold." Nature 596.7873 (2021): 583-589.
-
-      Varadi, Mihaly, et al. "AlphaFold Protein Structure Database: massively expanding the structural coverage of protein-sequence space with high-accuracy models." Nucleic acids research 50.D1 (2022): D439-D444.
-
-    .. admonition:: Legal note
-
-      Raw data was obtained and modified from `AlphaFoldDB<https://alphafold.ebi.ac.uk>`_, originally licensed under `CC-BY-4.0<https://creativecommons.org/licenses/by/4.0/>`_.
 
     Parameters
     ----------

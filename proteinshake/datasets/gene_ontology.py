@@ -7,9 +7,22 @@ from functools import cached_property
 
 class GeneOntologyDataset(RCSBDataset):
     """ Proteins with annotated Gene Ontology (GO) terms.
-    Each protein in the dataset has a `GO` attribute which stores the path
-    from the root to the leaves along the GO hierarchy. The GeneOntologyDataset
-    also has a `godag` attribute, which stores the GO hierarchy (see [goatools.obo_parser.GODag](https://github.com/tanghaibao/goatools)).
+    Each protein in the dataset has a `GO` attribute which stores the path from the root to the leaves along the GO hierarchy.
+    The GeneOntologyDataset also has a `godag` attribute, which stores the GO hierarchy (see [goatools.obo_parser.GODag](https://github.com/tanghaibao/goatools)).
+
+    .. admonition:: Please cite
+
+      Botstein, David, et al. "Gene Ontology: tool for the unification of biology." Nat genet 25.1 (2000): 25-9.
+
+      Central, G. O., et al. "The Gene Ontology knowledgebase in 2023." Genetics 224.1 (2023).
+
+      Berman, H M et al. “The Protein Data Bank.” Nucleic acids research vol. 28,1 (2000): 235-42. doi:10.1093/nar/28.1.235
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
+
+
 
     .. list-table:: Dataset stats
        :widths: 100

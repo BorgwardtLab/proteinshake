@@ -32,6 +32,17 @@ class TMAlignDataset(RCSBDataset):
     """ Proteins that were aligned with TMalign annotated with distance/similarity metrics.
     The dataset provides the TM-score, RMSD, Global Distance Test (GDT), and Local Distance Difference Test (LDDT).
 
+    .. admonition:: Please cite
+
+      Zhang, Yang, and Jeffrey Skolnick. "TM-align: a protein structure alignment algorithm based on the TM-score." Nucleic acids research 33.7 (2005): 2302-2309.
+
+      Berman, H M et al. “The Protein Data Bank.” Nucleic acids research vol. 28,1 (2000): 235-42. doi:10.1093/nar/28.1.235
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
+
+      
     .. list-table:: Dataset stats
        :widths: 100
        :header-rows: 1

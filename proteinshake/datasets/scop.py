@@ -9,33 +9,44 @@ from proteinshake.utils import download_url, progressbar
 class SCOPDataset(RCSBDataset):
     """ Proteins with annotated SCOP class.
 
+    .. admonition:: Please cite
+
+      Murzin, Alexey G., et al. "SCOP: a structural classification of proteins database for the investigation of sequences and structures." Journal of molecular biology 247.4 (1995): 536-540.
+
+      Berman, H M et al. “The Protein Data Bank.” Nucleic acids research vol. 28,1 (2000): 235-42. doi:10.1093/nar/28.1.235
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
+
+
     .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
+      :widths: 100
+      :header-rows: 1
 
-       * - # proteins
-       * - 10066
+      * - # proteins
+      * - 10066
 
 
-   .. list-table:: Annotations
+    .. list-table:: Annotations
       :widths: 25 45 35
       :header-rows: 1
 
       * - Attribute
-        - Key
-        - Sample value
+      - Key
+      - Sample value
       * - Protein type
-        - :code:`protein['protein']['SCOP-TP']`
-        - :code:`'1'`
+      - :code:`protein['protein']['SCOP-TP']`
+      - :code:`'1'`
       * - Protein class 
-        - :code:`protein['protein']['SCOP-CL']`
-        - ``'1000000'``
+      - :code:`protein['protein']['SCOP-CL']`
+      - ``'1000000'``
       * - Superfamily 
-        - :code:`protein['protein']['SCOP-SF']`
-        - ``'3000001'``
+      - :code:`protein['protein']['SCOP-SF']`
+      - ``'3000001'``
       * - Family
-        - :code:`protein['protein']['SCOP-FA']`
-        - ``'4002873'``
+      - :code:`protein['protein']['SCOP-FA']`
+      - ``'4002873'``
 
 
     """

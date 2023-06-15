@@ -14,11 +14,19 @@ from proteinshake.datasets import Dataset
 from proteinshake.utils import extract_tar, download_url, progressbar, load, save, unzip_file
 
 class ProteinProteinInterfaceDataset(Dataset):
-    """Protein-protein complexes from PDBBind with annotated interfaces. Residues
-    and atoms in each protein are marked with a boolean `is_interface` to indicate
-    residues/atoms defined to belong to the interface of two protein chains.
+    """Protein-protein complexes from PDBBind with annotated interfaces.
+    Residues and atoms in each protein are marked with a boolean `is_interface` to indicate residues/atoms defined to belong to the interface of two protein chains.
     The default threshold for determining interface residues is 6 Angstroms (used by DIPS).
     See :meth:`proteinshake.utils.get_interfaces` for details.
+
+    .. admonition:: Please cite
+
+      Wang, Renxiao, et al. "The PDBbind database: Collection of binding affinities for protein− ligand complexes with known three-dimensional structures." Journal of medicinal chemistry 47.12 (2004): 2977-2980.
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified with permission from `PDBbind-CN <http://www.pdbbind.org.cn/>`_, originally licensed under the `End User Agreement for Access to the PDBbind-CN Database and Web Site <http://www.pdbbind.org.cn/enroll.php>`_.
+
 
     Parameters
     ----------

@@ -7,12 +7,25 @@ from proteinshake.utils import download_url, unzip_file, error, warning, progres
 
 class RCSBDataset(Dataset):
     """ Experimental structures from the RCSB Protein Data Bank.
-
-    This class also serves as a base class for all RCSB derived datasets. It can be subclassed by defining a default ``query`` argument. The query is a list of triplets ``(attribute, operator, value)`` according to `this <https://search.rcsb.org/#attribute-queries>`_ and `this <https://data.rcsb.org/data-attributes.html>`_ , which is passed to the REST API call to RCSB. See e.g. the GODataset subclass for an example. To find the right attributes, the queries can be constructed by doing an advanced search `at RCSB <https://www.rcsb.org/search/advanced>`_ and exporting to JSON. Also compare the API call in the :meth:`download()` method.
+    This class also serves as a base class for all RCSB derived datasets.
+    It can be subclassed by defining a default ``query`` argument.
+    The query is a list of triplets ``(attribute, operator, value)`` according to `this <https://search.rcsb.org/#attribute-queries>`_ and `this <https://data.rcsb.org/data-attributes.html>`_ , which is passed to the REST API call to RCSB.
+    See e.g. the GODataset subclass for an example.
+    To find the right attributes, the queries can be constructed by doing an advanced search `at RCSB <https://www.rcsb.org/search/advanced>`_ and exporting to JSON.
+    Also compare the API call in the :meth:`download()` method.
 
     It uses RCSB's integrated sequence similarity filtering to remove redundant proteins.
 
     Also, only single chain proteins are used. Change the REST payload in `download` to override this behaviour.
+
+    .. admonition:: Please cite
+
+        Berman, H M et al. “The Protein Data Bank.” Nucleic acids research vol. 28,1 (2000): 235-42. doi:10.1093/nar/28.1.235
+
+    .. admonition:: Source
+
+        Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
+
 
     Parameters
     ----------
