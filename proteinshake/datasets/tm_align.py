@@ -99,7 +99,7 @@ class TMAlignDataset(RCSBDataset):
         return 1000
     
     def align_structures(self):
-        """ Calls TMAlignn on all pairs of structures and saves the output"""
+        """ Calls TMalign on all pairs of structures and saves the output"""
         if os.path.exists(f'{self.root}/{self.name}.tmscore.npy'):
             return
         pdbids = [p['protein']['ID'] for p in self.proteins()]

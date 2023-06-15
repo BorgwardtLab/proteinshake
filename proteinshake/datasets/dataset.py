@@ -24,7 +24,7 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1107272',
+    'latest': '1212262',
 }
 
 class Dataset():
@@ -128,7 +128,7 @@ class Dataset():
         # self.center = center
         if use_precomputed and not self.precomputed_already_downloaded() and not self.precomputed_available():
             warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=verbosity)
-            #use_precomputed = False
+            use_precomputed = False
         self.use_precomputed = use_precomputed
         self.minimum_length = minimum_length
         self.maximum_length = maximum_length

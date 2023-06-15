@@ -36,6 +36,10 @@ class TestDatasets(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ds = RCSBDataset(root=tmp, verbosity=0).download_precomputed()
 
+    def test_scop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = SCOPDataset(root=tmp, verbosity=0).download_precomputed()
+
     def test_af(self):
         organism = 'methanocaldococcus jannaschii'
         with tempfile.TemporaryDirectory() as tmp:

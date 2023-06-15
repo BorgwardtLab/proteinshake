@@ -20,6 +20,8 @@ They work very similar to a ``Dataset``:
   The latter two are based on sequence/structure similarity which we pre-compute for you.
   The split type influences how hard the generalization to the test set is for the model.
 
+  The ``split_similarity_threshold`` argument controls the maximum similarity between train and test.
+
 The task has a few attributes and methods that are specific to model training and evaluation.
 Let's look at our prediction targets.
 
