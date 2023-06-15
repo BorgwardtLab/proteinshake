@@ -76,6 +76,15 @@ class AlphaFoldDataset(Dataset):
        * - ``'swissprot'``
          - 541,143
 
+    .. admonition:: Please cite:
+
+      Jumper, John, et al. "Highly accurate protein structure prediction with AlphaFold." Nature 596.7873 (2021): 583-589.
+
+      Varadi, Mihaly, et al. "AlphaFold Protein Structure Database: massively expanding the structural coverage of protein-sequence space with high-accuracy models." Nucleic acids research 50.D1 (2022): D439-D444.
+
+    .. admonition:: Legal note
+
+      Raw data was obtained and modified from `AlphaFoldDB<https://alphafold.ebi.ac.uk>`_, originally licensed under `CC-BY-4.0<https://creativecommons.org/licenses/by/4.0/>`_.
 
     Parameters
     ----------

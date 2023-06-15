@@ -126,7 +126,7 @@ class Dataset():
         # self.center = center
         if use_precomputed and not self.precomputed_already_downloaded() and not self.precomputed_available():
             warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=verbosity)
-            use_precomputed = False
+            #use_precomputed = False
         self.use_precomputed = use_precomputed
         self.minimum_length = minimum_length
         self.maximum_length = maximum_length
