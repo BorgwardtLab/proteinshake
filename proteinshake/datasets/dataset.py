@@ -2,8 +2,9 @@
 """
 Base dataset class for protein 3D structures.
 """
-import os, gzip, inspect, time, itertools, tarfile, io
-from collections import defaultdict
+import os, gzip, inspect, time, itertools, tarfile, io, requests
+import copy
+from collections import defaultdict, Counter
 from functools import cached_property
 import multiprocessing as mp
 
@@ -15,7 +16,7 @@ from joblib import Parallel, delayed
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
-from proteinshake.transforms import IdentityTransform
+from proteinshake.transforms import IdentityTransform, RandomRotateTransform, CenterTransform
 from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator, progressbar, warning, error
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
@@ -23,13 +24,15 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1175739',
+    'latest': '1212262',
 }
 
 class Dataset():
-    """ Base dataset class. Holds the logic for downloading and parsing PDB files.
+    """ Base dataset class.
+    Holds the logic for downloading and parsing PDB files.
     If ``use_precomputed=True``, fetched pre-processed data from Zenodo.
-    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``. Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
+    Else, builds the dataset from scratch by executing: :meth:`download()` to fetch structures in PDB format, then :meth:`parse()` is applied to each to extract the relevant info and store it in a protein dictionary which has three outer keys ``'protein'``, ``'residue'``, and ``'atom'``.
+    Subclassing :meth:`add_protein_attributes` lets the user include custom attributes.
 
     .. note::
 
@@ -79,7 +82,7 @@ class Dataset():
     root: str, default 'data'
         The data root directory to store both raw and parsed data.
     use_precomputed: bool, default True
-        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
+        If `True`, will download the processed dataset from the ProteinShake repository (recommended). If `False`, will force to download the raw data from the original sources and process them on your device. You can use this option if you wish to create a custom dataset. Using `False` is compute-intensive, consider increasing `n_jobs`.
     release: str, default '12JUL2022'
         The tag of the dataset release. See https://github.com/BorgwardtLab/proteinshake/releases for all available releases. "latest" (default) is recommended.
     only_single_chain: bool, default False
@@ -94,6 +97,8 @@ class Dataset():
         Proteins larger than maximum_length residues will be skipped.
     exclude_ids: list, default []
         Exclude PDB IDs from the dataset.
+    skip_signature_check: bool, default False
+        If True, skips the signature check. 
     verbosity: int, default 2
         Verbosity level of output logging. 2: full output, 1: no progress bars, 0: only warnings and errors, -1: only errors, -2: no output.
     """
@@ -111,28 +116,43 @@ class Dataset():
             minimum_length                 = 10,
             maximum_length                 = 2048,
             exclude_ids                    = [],
+            skip_signature_check           = False,
             verbosity                      = 2,
+            # center                         = True, Put back after submission
+            # random_rotate                  = True
             ):
+        self.root = root
         self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
+        # self.random_rotate = random_rotate
+        # self.center = center
+        if use_precomputed and not self.precomputed_already_downloaded() and not self.precomputed_available():
+            warning('Could not find precomputed file in the ProteinShake data repository. Setting use_precomputed to False. The dataset will be processed locally.', verbosity=verbosity)
+            use_precomputed = False
         self.use_precomputed = use_precomputed
-        self.root = root
         self.minimum_length = minimum_length
         self.maximum_length = maximum_length
         self.only_single_chain = only_single_chain
         self.check_sequence = check_sequence
         self.release = release
         self.exclude_ids = exclude_ids
+        self.skip_signature_check = skip_signature_check
         self.verbosity = verbosity
         
         os.makedirs(f'{self.root}', exist_ok=True)
-        self.check_signature()
+        #self.check_signature()
 
         if not use_precomputed:
             self.start_download()
             self.parse()
         else:
             self.check_signature_same_as_hosted()
+
+    def precomputed_already_downloaded(self):
+        return os.path.exists(f'{self.root}/{self.name}.residue.avro') or os.path.exists(f'{self.root}/{self.name}.atom.avro')
+    
+    def precomputed_available(self):
+        return requests.head(f'{self.repository_url}/{self.name}.residue.avro.gz', timeout=5).status_code == 200
 
     def compute_signature(self, use_defaults=False):
         signature = dict(inspect.signature(self.__init__).parameters.items())
@@ -155,6 +175,7 @@ class Dataset():
         return self.compute_signature(use_defaults=False)
 
     def check_signature(self):
+        if self.skip_signature_check: return
         if os.path.exists(f'{self.root}/signature.txt'):
             with open(f'{self.root}/signature.txt','r') as file:
                 if not file.read() == self.signature: error('The Dataset is called with different arguments than were used to create it. Delete or change the root.', verbosity=self.verbosity)
@@ -296,7 +317,19 @@ class Dataset():
         proteins = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(paths, desc='Parsing', verbosity=self.verbosity))
         before = len(proteins)
         proteins = [p for p in proteins if p is not None]
+
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
+
+        # if self.center:
+        # if True:
+        # if self.random_rotate:
+        if self.name == 'ProteinProteinInteractionDataset':
+            print("Centering")
+            proteins = [CenterTransform()(p) for p in proteins]
+            print("Rotating")
+            seeds = (abs(hash(p['protein']['sequence'])) % 2**28 for p in proteins)
+            proteins = [RandomRotateTransform(seed=seed)(p) for seed, p in zip(seeds, proteins)]
+
         residue_proteins = [{'protein':p['protein'], 'residue':p['residue']} for p in proteins]
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
         write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
@@ -328,17 +361,20 @@ class Dataset():
         atom_sasa, residue_sasa, residue_rsa = [], [], []
         for i in atom_df['atom_number']:
             try:
+                assert not np.isnan(result.atomArea(i)), "nan sasa"
                 atom_sasa.append(result.atomArea(i))
             except:
                 atom_sasa.append(-1)
         for i,chain in zip(residue_df['residue_number'], residue_df['chain_id']):
             try:
+                assert not np.isnan(residue_result[chain][str(i)].total), "nan sasa"
+                assert not np.isnan(residue_result[chain][str(i)].relativeTotal), "nan sasa"
+
                 residue_sasa.append(residue_result[chain][str(i)].total)
                 residue_rsa.append(residue_result[chain][str(i)].relativeTotal)
             except:
                 residue_sasa.append(-1)
                 residue_rsa.append(-1)
-            
 
         # create protein_dict
         protein = {

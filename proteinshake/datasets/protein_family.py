@@ -3,8 +3,18 @@ import json
 from proteinshake.datasets import RCSBDataset
 
 class ProteinFamilyDataset(RCSBDataset):
-    """ Proteins from RCSB for which the protein family (Pfam) term is known.
+    """ Proteins with annotated protein families (Pfam).
     Each protein in the dataset has a `Pfam` attribute which stores the list of protein families.
+
+    .. admonition:: Please cite
+
+      Berman, H M et al. “The Protein Data Bank.” Nucleic acids research vol. 28,1 (2000): 235-42. doi:10.1093/nar/28.1.235
+
+    .. admonition:: Source
+
+      Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
+
+
 
     .. list-table:: Dataset stats
        :widths: 100
@@ -26,6 +36,8 @@ class ProteinFamilyDataset(RCSBDataset):
         - `['PF00102']`
 
     """
+
+    description = 'Protein Families'
 
     def __init__(self, pfam_version='34.0', query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
         self.pfam_version = pfam_version

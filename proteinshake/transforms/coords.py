@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from proteinshake.transforms import Transform
 
@@ -28,7 +29,7 @@ def _get_coords_array(protein, resolution='residue'):
                      protein[resolution]['y'],
                      protein[resolution]['z']
                      ]
-                   ).T.reshape((N, 3, 1))
+                   ).T.reshape((N, 3))
 
 def _set_coords(protein, coord_array, resolution='residue', in_place=True):
     """ Given an Nx3 array of coordinates, set them to the
@@ -45,9 +46,9 @@ def _set_coords(protein, coord_array, resolution='residue', in_place=True):
 
     """
 
-    protein[resolution]['x'] = list(coord_array[:,0])
-    protein[resolution]['y'] = list(coord_array[:,1])
-    protein[resolution]['z'] = list(coord_array[:,2])
+    protein[resolution]['x'] = list(map(float,coord_array[:,0]))
+    protein[resolution]['y'] = list(map(float,coord_array[:,1]))
+    protein[resolution]['z'] = list(map(float,coord_array[:,2]))
 
 class CenterTransform(Transform):
     """ Center the coordinates of a protein at atom and residue level.
@@ -79,14 +80,10 @@ class RandomRotateTransform(Transform):
 
     def __call__(self, protein):
         coords = _get_coords_array(protein, resolution=self.resolution)
+        rotation = Rotation.random()
+        rotated_coordinates = rotation.apply(coords)
+        rotation_matrix = rotation.as_matrix()
 
-        # choose an angle and axis along which to rotate
-        rnd = int(np.random.randint(0,2+1,(1,)))
-        rot = int(np.random.randint(1,3+1,(1,)))
-        rotation_plane = {0:[0,1],1:[1,2],2:[0,2]}[rnd]
-        N = len(protein[self.resolution]['x'])
-        coords_rot = np.rot90(coords,k=rot, axes=rotation_plane).reshape(N, 3)
-
-        _set_coords(protein, coords_rot, resolution=self.resolution)
+        _set_coords(protein, rotated_coordinates, resolution=self.resolution)
 
         return protein

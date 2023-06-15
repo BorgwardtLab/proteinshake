@@ -20,6 +20,8 @@ They work very similar to a ``Dataset``:
   The latter two are based on sequence/structure similarity which we pre-compute for you.
   The split type influences how hard the generalization to the test set is for the model.
 
+  The ``split_similarity_threshold`` argument controls the maximum similarity between train and test.
+
 The task has a few attributes and methods that are specific to model training and evaluation.
 Let's look at our prediction targets.
 
@@ -40,6 +42,14 @@ We can retrieve the train, test and validation splits to put them into a dataloa
   train, test = DataLoader(task.train), DataLoader(task.test)
 
 The task classes also implement appropriate metrics and function as an evaluator.
+
+.. tip::
+
+  Every task implements a ``dummy_output`` method you can use for testing if you don't have model predictions at hand.
+
+  .. code:: python
+
+    my_model_predictions = task.dummy_output()
 
 .. code-block:: python
 

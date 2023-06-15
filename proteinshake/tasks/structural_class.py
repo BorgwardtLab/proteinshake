@@ -12,6 +12,10 @@ class StructuralClassTask(Task):
 
     DatasetClass = SCOPDataset
     
+    type = 'Multiclass Classification'
+    input = 'Protein'
+    output = 'SCOP Class'
+    
     def __init__(self, scop_level='SCOP-FA', *args, **kwargs):
         self.scop_level = scop_level
         super().__init__(*args, **kwargs)

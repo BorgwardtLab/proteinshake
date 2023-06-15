@@ -20,6 +20,10 @@ class StructureSearchTask(Task):
     """
 
     DatasetClass = TMAlignDataset
+    
+    type = 'Retrieval'
+    input = 'Protein'
+    output = 'Similar Proteins'
 
     def __init__(self, min_sim=0.8, *args, **kwargs):
         self.min_sim = min_sim

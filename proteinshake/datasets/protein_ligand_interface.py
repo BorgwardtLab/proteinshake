@@ -17,8 +17,17 @@ from proteinshake.utils import extract_tar, download_url
 RDLogger.DisableLog('rdApp.*') # disable warnings
 
 class ProteinLigandInterfaceDataset(Dataset):
-    """Proteins bound to small molecules from PDBBind with binding site, ligand and affinity information.
+    """ Proteins bound to small molecules from PDBBind with annotated binding site, ligand and affinity information.
 
+    .. admonition:: Please cite
+
+        Wang, Renxiao, et al. "The PDBbind database: Collection of binding affinities for protein− ligand complexes with known three-dimensional structures." Journal of medicinal chemistry 47.12 (2004): 2977-2980.
+
+    .. admonition:: Source
+
+        Raw data was obtained and modified with permission from `PDBbind-CN <http://www.pdbbind.org.cn/>`_, originally licensed under the `End User Agreement for Access to the PDBbind-CN Database and Web Site <http://www.pdbbind.org.cn/enroll.php>`_.
+
+      
     Parameters
     ----------
     root: str
@@ -35,42 +44,43 @@ class ProteinLigandInterfaceDataset(Dataset):
        * - # proteins
        * - 4642
 
+    .. list-table:: Annotations
+        :widths: 20 55 25
+        :header-rows: 1
 
-   .. list-table:: Annotations
-      :widths: 20 55 25
-      :header-rows: 1
-
-      * - Attribute
+        * - Attribute
         - Key
         - Sample value
-      * - Dissociation constant (kd)
+        * - Dissociation constant (kd)
         - :code:`protein['protein']['kd']`
         - :code:`77.0`
-      * - Affinity
+        * - Affinity
         - :code:`protein['protein']['neglog_aff']`
         - :code:`4.11000`
-      * - Resolution (Angstroms)
+        * - Resolution (Angstroms)
         - :code:`protein['protein']['resolution']`
         - :code:`2.20`
-      * - Year solved
+        * - Year solved
         - :code:`protein['protein']['year']`
         - :code:`2016`
-      * - Ligand identifier (PDB code)
+        * - Ligand identifier (PDB code)
         - :code:`protein['protein']['ligands_id']`
         - :code:`IEE`
-      * - Ligand SMILES 
+        * - Ligand SMILES 
         - :code:`protein['protein']['ligand_smiles']`
         - :code:`'Cc1ccc(CNc2cc(Cl)nc(N)n2)cc1'`
-      * - Molecular ingerprints
+        * - Molecular ingerprints
         - :code:`protein['protein']['fp_maccs']`, :code:`protein['protein']['fp_morgan_r2']`
         - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
-      * - Molecular ingerprints
+        * - Molecular ingerprints
         - :code:`protein['protein']['fp_maccs']`, :code:`protein['protein']['fp_morgan_r2']`
         - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
-      * - Binding site (1 if in binding site, 0 else)
+        * - Binding site (1 if in binding site, 0 else)
         - :code:`protein['residue']['binding_site']`
         - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
     """
+
+    description = ''
 
     def __init__(self, version='2020', **kwargs):
         self.version = version

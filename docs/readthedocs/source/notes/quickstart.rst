@@ -11,4 +11,6 @@ Built on the datasets, we provide evaluation tasks, which provide data splits an
 
 .. raw:: html
 
-  <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/quickstart.html" width="670px" height="600px"></object>
+  <div style='display:flex; justify-content: center; align-items:center;'>
+    <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/quickstart.html" width="670px" height="600px"></object>
+  </div>

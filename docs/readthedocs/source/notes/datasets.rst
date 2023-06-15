@@ -50,7 +50,7 @@ The ``.to_voxel()`` method can also be replaced with ``.to_graph()`` or ``.to_po
 
 There is not many things you can do with this dataset though, because it is a transitional object. Its purpose is to be converted further to your framework of choice:
 
-.. caution:: 
+.. important:: 
 
   Make sure you have installed the necessary frameworks.
 
@@ -76,6 +76,8 @@ To automate this, we provide a ``transforms`` interface.
 
 .. code-block:: python
 
+  import torch
+  
   def my_transform(item):
       data, protein_dict = item
       label = protein_dict['protein']['EC']

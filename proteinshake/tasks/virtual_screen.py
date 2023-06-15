@@ -37,6 +37,10 @@ class VirtualScreenTask(Task):
     """
 
     DatasetClass = ProteinLigandDecoysDataset
+    
+    type = 'Ranking'
+    input = 'Protein and Molecule'
+    output = 'Affinity Score Ranking'
 
     def __init__(self, *args, **kwargs):
         kwargs['split'] = 'none'

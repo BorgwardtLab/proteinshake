@@ -37,30 +37,21 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 
 **Installation:**
 
+```diff
+- This is a pre-release version. There may be unannounced changes to the API and datasets. -
+- We expect some bugs as well, please open an issue if you find one. -
+```
+
 ```
 pip install proteinshake
 ```
 
 </br>
 
----
-
 <div align="center">
-
-**Legal Note**
 
 *Code in this repository is licensed under [BSD-3](https://github.com/BorgwardtLab/proteinshake/blob/main/LICENSE), the dataset files on Zenodo are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).*
 
-*We obtained and modified data from the following sources:*
-
-*The AlphaFold protein structures were downloaded from the [AlphaFold Structure Database](https://alphafold.ebi.ac.uk/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
-
-*The RCSB protein structures were downloaded from [RCSB](https://www.rcsb.org/), available under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
-
-*Protein and Ligand binding structures and annotations were downloaded from [PDBbind-CN](http://www.pdbbind.org.cn/), available under the [End User Agreement for Access to the PDBbind-CN Database and Web Site](http://www.pdbbind.org.cn/enroll.php).*
-
-*The Gene Ontology was downloaded from the [Gene Ontology Consortium](http://geneontology.org/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
-
-*The SCOP data was downloaded from the [Structural Classification of Proteins](https://scop.mrc-lmb.cam.ac.uk/), available under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).*
+*To build ProteinShake, we obtained and modified data from various sources. Please see the documentation of the respective dataset classes for a reference to the original data, license, and paper.*
 
 </div>

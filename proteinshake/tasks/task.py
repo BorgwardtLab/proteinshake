@@ -36,6 +36,10 @@ class Task:
 
     DatasetClass = None
 
+    type = None
+    input = None
+    output = None
+
     def __init__(self,
                  root                       = 'data',
                  split                      = 'random',
@@ -89,13 +93,14 @@ class Task:
 
     def compute_targets(self):
         # compute targets (e.g. for scaling)
-        self.train_targets = np.array([self.target(self.proteins[i]) for i in self.train_index], dtype=object)
-        self.val_targets = np.array([self.target(self.proteins[i]) for i in self.val_index], dtype=object)
-        self.test_targets = np.array([self.target(self.proteins[i]) for i in self.test_index], dtype=object)
+        self.train_targets = [self.target(self.proteins[i]) for i in self.train_index]
+        self.val_targets = [self.target(self.proteins[i]) for i in self.val_index]
+        self.test_targets = [self.target(self.proteins[i]) for i in self.test_index]
             
     def compute_custom_split(self, split):
-        """ Implements custom splitting. Only necessary when not using the precomputed splits, e.g. when implementing a custom task.
+        """ Implements random splitting. Only necessary when not using the precomputed splits, e.g. when implementing a custom task.
         Note that the random, sequence and structure splits will be automatically computed for your custom task if it is merged into ProteinShake main.
+        Override this method to implement your own splitting logic.
         Compare also the proteinshake_release repository.
 
         Arguments
@@ -112,7 +117,11 @@ class Task:
         test_index
             Numpy array with the index of proteins in the test split.
         """
-        raise Exception('The requested split is not available. Implement <compute_custom_split> to provide your own splitting logic.')
+        inds = list(range(len(self.dataset.proteins())))
+        train, test = train_test_split(inds, test_size=0.2)
+        val, test = train_test_split(test, test_size=0.5)
+
+        return train, val, test
 
     @property
     def task_type(self):

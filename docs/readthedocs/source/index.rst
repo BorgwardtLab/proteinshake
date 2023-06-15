@@ -49,6 +49,5 @@ New datasets and tasks can be created with just a few lines of code (see the :do
    modules/datasets
    modules/tasks
    modules/representations
-   modules/frameworks
    modules/transforms
    modules/utils

@@ -15,6 +15,10 @@ class GeneOntologyTask(Task):
 
     DatasetClass = GeneOntologyDataset
     
+    type = 'Multilabel Classification'
+    input = 'Protein'
+    output = 'Gene Ontology Terms'
+    
     def __init__(self, branch='molecular_function', *args, **kwargs):
         self.branch = branch
         super().__init__(*args, **kwargs)
@@ -106,6 +110,7 @@ class GeneOntologyTask(Task):
         return 'Fmax'
 
     def evaluate(self, y_true, y_pred):
+        y_true, y_pred = np.array(y_true), np.array(y_pred)
         return {
             'Fmax': self.fmax(y_true, y_pred),
             #'Smin': self.smin(y_true, y_pred),

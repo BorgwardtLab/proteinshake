@@ -1,6 +1,12 @@
 Installation
 ============
 
+.. caution::
+
+  This is a pre-release version.
+  There may be unannounced changes to the API and datasets.
+  We expect some bugs as well, please open an issue if you find one.
+
 ProteinShake can be installed through PyPi:
 
 .. code-block:: bash

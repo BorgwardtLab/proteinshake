@@ -15,6 +15,10 @@ class StructureSimilarityTask(Task):
     """
 
     DatasetClass = TMAlignDataset
+    
+    type = 'Regression'
+    input = 'Protein and Protein'
+    output = 'Local Distance Difference Test'
 
     def __init__(self, *args, **kwargs):
 

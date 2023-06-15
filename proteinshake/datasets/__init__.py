@@ -13,15 +13,15 @@ from .protein_ligand_decoys import ProteinLigandDecoysDataset
 __all__ = [
     'Dataset',
     'RCSBDataset',
-    'EnzymeCommissionDataset',
+    'AlphaFoldDataset',
     'GeneOntologyDataset',
+    'EnzymeCommissionDataset',
+    'ProteinFamilyDataset',
     'ProteinProteinInterfaceDataset',
     'ProteinLigandInterfaceDataset',
-    'ProteinFamilyDataset',
-    'TMAlignDataset',
-    'AlphaFoldDataset',
+    'ProteinLigandDecoysDataset',
     'SCOPDataset',
-    'ProteinLigandDecoysDataset'
+    'TMAlignDataset',
     ]
 
 classes = __all__

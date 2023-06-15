@@ -16,8 +16,9 @@ If you have questions on how to contribute, please feel free to open an issue on
 
     The submitted dataset/task needs to fulfill the following requirements in order to be merged:
 
+    - The dataset/task is well documented.
     - The dataset is fully reproducible and can be created anywhere (i.e. on our release server).
-    - The dataset is compatible with our BSD-3/CC-BY-4.0 licenses (Please provide the license and, if applicable, citation in the pull request).
+    - The dataset is compatible with our BSD-3/CC-BY-4.0 licenses (Please provide the source, license and, if applicable, citation in the docstring).
     - The task implements appropriate metrics.
     - Test cases have been implemented for the dataset/task.
     - The pull request passes the test pipeline (see the report on GitHub when opening a pull request. The tests will automatically run).
