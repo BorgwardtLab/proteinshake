@@ -43,6 +43,14 @@ We can retrieve the train, test and validation splits to put them into a dataloa
 
 The task classes also implement appropriate metrics and function as an evaluator.
 
+.. tip::
+
+  Every task implements a ``dummy_output`` method you can use for testing if you don't have model predictions at hand.
+
+  .. code:: python
+
+    my_model_predictions = task.dummy_output()
+
 .. code-block:: python
 
   metrics = task.evaluate(task.test_targets, my_model_predictions)

@@ -76,6 +76,8 @@ To automate this, we provide a ``transforms`` interface.
 
 .. code-block:: python
 
+  import torch
+  
   def my_transform(item):
       data, protein_dict = item
       label = protein_dict['protein']['EC']
