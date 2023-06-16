@@ -1,6 +1,5 @@
-
 <p align="center">
-<img src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_subtitle.png#gh-light-mode-only" width="60%">
+<img src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_subtitle.png" width="60%">
 </p>
 
 <div align="center">
