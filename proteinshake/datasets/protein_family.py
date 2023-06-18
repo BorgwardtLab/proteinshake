@@ -27,8 +27,6 @@ class ProteinFamilyDataset(RCSBDataset):
 
     """
 
-    description = 'Protein Families'
-
     def __init__(self, pfam_version='34.0', query=[['rcsb_polymer_entity_annotation.type','exact_match','Pfam']], **kwargs):
         self.pfam_version = pfam_version
         super().__init__(query=query, **kwargs)

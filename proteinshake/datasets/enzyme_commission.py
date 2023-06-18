@@ -26,8 +26,6 @@ class EnzymeCommissionDataset(RCSBDataset):
 
     """
 
-    description = 'Enzymes'
-
     def __init__(self, query=[['rcsb_polymer_entity.rcsb_ec_lineage.name','exists']], **kwargs):
         """
 

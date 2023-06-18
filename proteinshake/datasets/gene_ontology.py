@@ -42,8 +42,6 @@ class GeneOntologyDataset(RCSBDataset):
 
     """
 
-    description = 'Gene Ontology'
-
     additional_files = ['GeneOntologyDataset.godag.obo']
 
     def __init__(self, query=[['rcsb_polymer_entity_annotation.type','exact_match','GO']], **kwargs):

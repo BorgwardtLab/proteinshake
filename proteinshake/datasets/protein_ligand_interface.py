@@ -73,8 +73,6 @@ class ProteinLigandInterfaceDataset(Dataset):
         - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
     """
 
-    description = ''
-
     def __init__(self, version='2020', **kwargs):
         self.version = version
         super().__init__(**kwargs)

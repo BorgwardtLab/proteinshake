@@ -2,22 +2,17 @@
 """
 Base dataset class for protein 3D structures.
 """
-import os, gzip, inspect, time, itertools, tarfile, io, requests
-import copy
-from collections import defaultdict, Counter
+import os, inspect, requests, glob
 from functools import cached_property
-import multiprocessing as mp
 
-import pandas as pd
 import numpy as np
 import freesasa
 from biopandas.pdb import PandasPdb
 from joblib import Parallel, delayed
-from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 from fastavro import reader as avro_reader
 
 from proteinshake.transforms import IdentityTransform, RandomRotateTransform, CenterTransform
-from proteinshake.utils import download_url, save, load, unzip_file, write_avro, Generator, progressbar, warning, error
+from proteinshake.utils import download_url, unzip_file, write_avro, Generator, progressbar, warning, error
 
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
@@ -241,7 +236,7 @@ class Dataset():
         list
             The list of raw PDB files used in this dataset.
         """
-        raise NotImplementedError
+        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
 
     def get_id_from_filename(self, filename):
         """ Implement me in a subclass!
@@ -258,7 +253,7 @@ class Dataset():
         str
             A PDB identifier or other ID.
         """
-        raise NotImplementedError
+        return filename.rstrip('.pdb')
 
     def download(self):
         """ Implement me in a subclass!

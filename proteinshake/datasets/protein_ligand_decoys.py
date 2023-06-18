@@ -59,17 +59,9 @@ class ProteinLigandDecoysDataset(Dataset):
 
     """
 
-    description = 'Proteins with ligands and decoys'
-
     @patch('proteinshake.datasets.dataset.AA_THREE_TO_ONE', EXTENDED_AA_THREE_TO_ONE)
     def pdb2df(self, path):
         return super().pdb2df(path)
-
-    def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')[:self.limit]
-
-    def get_id_from_filename(self, filename):
-        return filename.split(".")[0]
 
     def download(self):
         targets  = ['AA2AR', 'ABL1', 'ACES', 'ADA', 'ADRB2', 'AMPC', 'ANDR', 'CSF1R', 'CXCR4', 'DEF', 'DRD4', 'EGFR', 'FA7', 'FA10', 'FABP4', 'FGFR1', 'FKB1A', 'GLCM', 'HDAC8', 'HIVPR', 'HMDH', 'HS90A', 'ITAL', 'KITH', 'KIT', 'LCK', 'MAPK2', 'MK01', 'MT1', 'NRAM', 'PARP1', 'PLK1', 'PPARA', 'PTN1', 'PUR2', 'RENI', 'ROCK1', 'SRC', 'THRB', 'TRY1', 'TRYB1', 'UROK', 'XIAP']
