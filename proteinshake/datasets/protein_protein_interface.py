@@ -40,14 +40,6 @@ class ProteinProteinInterfaceDataset(Dataset):
         Distance in angstroms within which a pair of residues is considered to
         belong to the interface.
 
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 2839
-
-
    .. list-table:: Annotations
       :widths: 25 55 20
       :header-rows: 1

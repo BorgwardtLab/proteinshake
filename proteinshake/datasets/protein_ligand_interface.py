@@ -37,13 +37,6 @@ class ProteinLigandInterfaceDataset(Dataset):
     version: str
         PDBBind version to use.
 
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 4642
-
     .. list-table:: Annotations
         :widths: 20 55 25
         :header-rows: 1

@@ -33,17 +33,6 @@ class ProteinLigandDecoysDataset(Dataset):
 
       Raw data was obtained and modified from `DUDE-Z <https://dudez.docking.org/>`_.
 
-
-
-
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 38
-
-
    .. list-table:: Annotations
       :widths: 25 35 45
       :header-rows: 1

@@ -14,16 +14,6 @@ class ProteinFamilyDataset(RCSBDataset):
 
       Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
 
-
-
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 31109
-
-
    .. list-table:: Annotations
       :widths: 25 35 45
       :header-rows: 1

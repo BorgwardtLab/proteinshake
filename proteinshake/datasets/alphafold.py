@@ -30,11 +30,7 @@ AF_DATASET_NAMES = {
 description = 'Predicted structures'
 
 class AlphaFoldDataset(Dataset):
-    """ 3D structures predicted by AlphaFold.
-    Requires the `organism` name to be specified.
-    See https://alphafold.ebi.ac.uk/download for a full list of available organsims.
-    Pass the full latin organism name separated by a space or underscore.
-    `organism` can also be 'swissprot', in which case the full SwissProt structure predictions will be downloaded (ca. 500.000).
+    """ SwissProt 3D structures predicted by AlphaFold.
 
     .. admonition:: Please cite
 
@@ -45,48 +41,6 @@ class AlphaFoldDataset(Dataset):
     .. admonition:: Source
 
       Raw data was obtained and modified from `AlphaFoldDB <https://alphafold.ebi.ac.uk>`_, originally licensed under `CC-BY-4.0 <https://creativecommons.org/licenses/by/4.0/>`_.
-
-
-    .. list-table :: Data Properties
-       :widths: 50 50
-       :header-rows: 1
-
-       * - organism
-         - # proteins
-       * - ``'arabidopsis_thaliana'``
-         - 27,386
-       * - ``'caenorhabditis_elegans'``
-         - 19,613
-       * - ``'candida_albicans'``
-         - 5,951
-       * - ``'danio_rerio'``
-         - 24,430
-       * - ``'dictyostelium_discoideum'``
-         - 12,485
-       * - ``'drosophila_melanogaster'``
-         - 13,318
-       * - ``'escherichia_coli'``
-         - 4,362
-       * - ``'glycine_max'``
-         - 55,696
-       * - ``'homo_sapiens'``
-         - 23,172
-       * - ``'methanocaldococcus_jannaschii'``
-         - 1,773
-       * - ``'mus_musculus'``
-         - 21,398
-       * - ``'oryza_sativa'``
-         - 43,631
-       * - ``'rattus_norvegicus'``
-         - 21,069
-       * - ``'saccharomyces_cerevisiae'``
-         - 6,016
-       * - ``'schizosaccharomyces_pombe'``
-         - 5,104
-       * - ``'zea_mays'``
-         - 39,203
-       * - ``'swissprot'``
-         - 541,143
 
     Parameters
     ----------
