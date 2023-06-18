@@ -194,10 +194,3 @@ class ProteinLigandInterfaceDataset(Dataset):
         protein['protein']['fp_morgan_r2'] = fp_morgan
 
         return protein
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = "Small Mol. Binding Site (residue-level)"
-        desc['values'] = 2
-        desc['type'] = 'Binary'
-        return desc

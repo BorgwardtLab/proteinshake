@@ -1,7 +1,5 @@
 import itertools
 import numpy as np
-from sklearn import metrics
-from functools import cached_property
 
 from proteinshake.datasets import GeneOntologyDataset
 from proteinshake.tasks import Task
@@ -18,49 +16,14 @@ class GeneOntologyTask(Task):
     type = 'Multilabel Classification'
     input = 'Protein'
     output = 'Gene Ontology Terms'
-    
-    def __init__(self, branch='molecular_function', *args, **kwargs):
-        self.branch = branch
-        super().__init__(*args, **kwargs)
+    default_metric = 'Fmax'
 
-    @cached_property
-    def token_map(self):
-        labels = set(itertools.chain(*[p['protein'][self.branch] for p in self.proteins]))
-        return {label: i for i, label in enumerate(sorted(list(labels)))}
-
-    @property
-    def num_classes(self):
-        return len(self.token_map)
-    
-    @property
-    def classes(self):
-        return list(self.token_map.keys())
-
-    @property
-    def task_in(self):
-        return ('protein')
-
-    @property
-    def task_type(self):
-        return ('protein', 'multi_label')
-
-    @property
-    def task_out(self):
-        return ('multi_label')
-
-    @property
-    def target_dim(self):
-        return (len(self.token_map.values()))
-
-    @property
-    def num_features(self):
-        return 20
+    def compute_token_map(self):
+        labels = set(itertools.chain(*[p['protein']['molecular_function'] for p in self.dataset.proteins()]))
+        return {k:v for v,k in enumerate(sorted(labels))}
 
     def target(self, protein):
-        tokens = [self.token_map[i] for i in protein['protein'][self.branch]]
-        target = np.zeros_like(self.classes, dtype=bool)
-        target[tokens] = True
-        return target
+        return [self.token_map[i] for i in protein['protein']['molecular_function']]
 
     def precision(self, y_true, y_pred, threshold):
         mt = (y_pred.max(axis=1) >= threshold).sum()
@@ -77,12 +40,6 @@ class GeneOntologyTask(Task):
         nom = np.logical_and(y_true, y_pred).sum(axis=1).astype(np.float32)
         denom = y_true.sum(axis=1).astype(np.float32)
         return 1/ne * np.divide(nom, denom, out=np.zeros_like(nom), where=denom!=0).sum()
-    
-    def remaining_uncertainty(self, y_true, y_pred, threshold):
-        pass
-
-    def missing_information(self, y_true, y_pred, threshold):
-        pass
 
     def fmax(self, y_true, y_pred):
         fmax = 0
@@ -92,26 +49,14 @@ class GeneOntologyTask(Task):
             f1 = (2 * prec * rec) / (prec + rec)
             fmax = max(fmax, f1)
         return fmax
-    
-    def smin(self, y_pred):
-        return min([
-            np.sqrt(
-                self.remaining_uncertainty(y_pred, t) ** 2
-                + self.missing_information(y_pred, t) ** 2
-            )
-            for t in np.linspace(0,1,21)
-        ])
-
-    def dummy_output(self):
-        return np.random.rand(len(self.test_index), len(self.token_map.keys()))
-
-    @property
-    def default_metric(self):
-        return 'Fmax'
 
     def evaluate(self, y_true, y_pred):
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
+        _y_true = np.zeros((len(y_true), len(self.token_map)), dtype=bool)
+        for i,indices in enumerate(y_true): _y_true[i,indices] = True
+        y_pred = np.array(y_pred)
         return {
-            'Fmax': self.fmax(y_true, y_pred),
-            #'Smin': self.smin(y_true, y_pred),
+            'Fmax': self.fmax(_y_true, y_pred),
         }
+    
+    def dummy(self):
+        return np.random.rand(len(self.test_targets), len(self.token_map))

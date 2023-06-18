@@ -24,23 +24,11 @@ class StructureSearchTask(Task):
     type = 'Retrieval'
     input = 'Protein'
     output = 'Similar Proteins'
+    default_metric = 'Precision@k'
 
     def __init__(self, min_sim=0.8, *args, **kwargs):
         self.min_sim = min_sim
         super().__init__(*args, **kwargs)
-
-    @property
-    def task_type(self):
-        return ('protein', 'retrieval')
-
-
-    @property
-    def task_in(self):
-        return ('protein')
-
-    @property
-    def task_out(self):
-        return ('retrieval')
 
     @cached_property
     def targets(self):
@@ -51,29 +39,15 @@ class StructureSearchTask(Task):
         return targets
 
     def target(self, protein):
-        """ The target for a protein is a list of proteins deemed 'relevant'
-        according to `self.min_sim`.
+        """ The target for a protein is a list of proteins deemed 'relevant' according to `self.min_sim`.
         """
         return self.targets[protein['protein']['ID']]
 
-    def _precision_at_k(self, y_true, y_pred, k):
+    def precision_at_k(self, y_true, y_pred, k):
         return len(set(y_pred[:k]).intersection(set(y_true))) / len(y_pred)
 
-    def _recall_at_k(self, y_true, y_pred, k):
+    def recall_at_k(self, y_true, y_pred, k):
         return len(set(y_pred[:k]).intersection(set(y_true))) / len(y_true)
-
-    def dummy_output(self):
-        import random
-        pred = []
-        ids = [p['protein']['ID'] for p in self.proteins] 
-        for query in self.proteins[self.test_index]:
-            targets = self.target(query)
-            pred.append(random.sample(ids, len(targets)))
-        return pred
-
-    @property
-    def default_metric(self):
-        return 'precision_at_k'
 
     def evaluate(self, y_true, y_pred, k=5):
         """ Retrieval metrics.
@@ -83,9 +57,17 @@ class StructureSearchTask(Task):
         y_pred:
             List of indices of items (hits) in the dataset for a query.
         """
-        results = defaultdict(list)
-        for yt, yp in zip(y_true, y_pred):
-            results['precision_at_k'].append(self._precision_at_k(yt, yp, k))
-            results['recall_at_k'].append(self._recall_at_k(yt, yp, k))
+        return {
+            'Precision@k': [self.precision_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred],
+            'Recall@k': [self.recall_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred],
 
         return {k: np.mean(v) for k, v in results.items()}
+
+    def dummy(self):
+        import random
+        pred = []
+        ids = [p['protein']['ID'] for p in self.proteins] 
+        for query in self.proteins[self.test_index]:
+            targets = self.target(query)
+            pred.append(random.sample(ids, len(targets)))
+        return pred

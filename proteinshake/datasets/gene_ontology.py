@@ -73,10 +73,3 @@ class GeneOntologyDataset(RCSBDataset):
         protein['protein']['cellular_component'] = [term for term in go_terms if godag[term].namespace == 'cellular_component']
         protein['protein']['biological_process'] = [term for term in go_terms if godag[term].namespace == 'biological_process']
         return protein
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = "Gene Ontology (GO)"
-        desc['values'] = f"{len(set((p['GO'][0] for p in self.proteins)))} (root)"
-        desc['type'] = 'Categorical, Hierarchical'
-        return desc

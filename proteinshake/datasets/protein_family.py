@@ -41,10 +41,3 @@ class ProteinFamilyDataset(RCSBDataset):
                 pfams.append(a['annotation_id'])
         protein['protein']['Pfam'] = pfams
         return protein
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = "Protein Family (Pfam)"
-        desc['values'] = f"{len(set((p['Pfam'][0] for p in self.proteins)))} (root)"
-        desc['type'] = 'Categorical, Hierarchical'
-        return desc

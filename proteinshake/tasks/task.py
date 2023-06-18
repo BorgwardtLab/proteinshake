@@ -1,29 +1,20 @@
 import os
 import requests
+import itertools
 
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from proteinshake.utils import save, load
+from proteinshake.utils import save, load, progressbar
 
 class Task:
     """ Base class for a task.
 
-    Sample usage (assuming you have a model in the namespace):
-
-     .. code-block:: python
-
-        >>> from proteinshake.tasks import EnzymeClassTask
-        >>> task = EnzymeClassTask()
-        >>> data = task.dataset.to_graph(eps=8).pyg()
-        >>> y_pred = model(data[task.train])
-        >>> task.evaluate(y_pred)
-        ... {'roc_auc_score': 0.7}
-
-
     Arguments
     ----------
-    split: str, default='random'
+    root: str, default 'data'
+        The root directory to put the dataset and task data.
+    split: str, default 'random'
         How to split the data. Can be 'random', 'sequence', 'structure' or 'custom'.
     split_similarity_threshold: float
         Maximum similarity between train and test set.
@@ -35,6 +26,7 @@ class Task:
     input = None
     output = None
     default_metric = None
+    pairwise = False
 
     def __init__(self,
                  root                       = 'data',
@@ -54,15 +46,19 @@ class Task:
         
         task_info = load(f'{self.root}/{self.__class__.__name__}.json.gz')
         split_info = task_info[f'{split}_split'][f'similarity {split_similarity_threshold}']
-
         self.token_map = task_info['token_map']
-        self.targets = np.array(task_info['targets'])
-        self.train_indices = np.array(split_info['train'])
-        self.test_indices = np.array(split_info['test'])
-        self.val_indices = np.array(split_info['val'])
-        self.train_targets = np.array(self.targets[self.train_indices])
-        self.test_targets = np.array(self.targets[self.test_indices])
-        self.val_targets = np.array(self.targets[self.val_indices])
+        self.targets = np.array(task_info['targets'], dtype=object)
+
+        self.train_index = split_info['train']
+        self.test_index = split_info['test']
+        self.val_index = split_info['val']
+        if self.pairwise:
+            self.train_index = self.compute_pairs(self.train_index)
+            self.val_index = self.compute_pairs(self.val_index)
+            self.test_index = self.compute_pairs(self.test_index)
+        self.train_targets = np.array(self.targets[self.train_index])
+        self.test_targets = np.array(self.targets[self.test_index])
+        self.val_targets = np.array(self.targets[self.val_index])
 
     def __getattr__(self, key):
         """ Captures method calls and forwards them to the dataset if they are a representation or framework conversion.
@@ -90,24 +86,27 @@ class Task:
         """ Computes the task file with splits, token maps, and targets.
         """
         self.token_map = self.compute_token_map()
+        self.targets = self.compute_paired_targets() if self.pairwise else self.compute_targets()
         save({
             'random_split': self.compute_random_split(),
             'sequence_split': self.compute_sequence_split(),
             'structure_split': self.compute_structure_split(),
             'custom_split': self.compute_custom_split(),
             'token_map': self.token_map,
-            'targets': self.compute_targets(),
+            'targets': self.targets,
         }, f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def compute_random_split(self, seed=0):
         indices = np.arange(len(self.dataset.proteins()))
         train_indices, test_val_indices = train_test_split(indices, test_size=0.2, random_state=seed)
         test_indices, val_indices = train_test_split(test_val_indices, test_size=0.5, random_state=seed)
-        return { 'similarity 0.7': {
-            'train': train_indices.tolist(),
-            'test': test_indices.tolist(),
-            'val': val_indices.tolist(),
-        }}
+        return {
+            'similarity 0.7': {
+                'train': train_indices.tolist(),
+                'test': test_indices.tolist(),
+                'val': val_indices.tolist(),
+            }
+        }
 
     def compute_sequence_split(self, seed=0):
         return None
@@ -124,20 +123,33 @@ class Task:
     def compute_targets(self):
         return [
             self.target(protein_dict)
-            for protein_dict in self.dataset.proteins()
+            for protein_dict in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
         ]
+    
+    def compute_paired_targets(self):
+        return [
+            [self.target(A,B) for B in self.dataset.proteins()]
+            for A in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
+        ]
+    
+    def compute_pairs(self, index):
+        """ Computes all pairs between each element in the index.
+        """
+        combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)
+        index = np.array(index)[combinations]
+        return tuple(index[:,0]), tuple(index[:,1])
 
     @property
     def train(self):
         return self.dataset[self.train_index]
 
     @property
-    def val(self):
-        return self.dataset[self.val_index]
-
-    @property
     def test(self):
         return self.dataset[self.test_index]
+    
+    @property
+    def val(self):
+        return self.dataset[self.val_index]
 
     def target(self, protein_dict):
         """ Return the prediction target for one protein in the dataset.
@@ -176,4 +188,3 @@ class Task:
     def dummy(self):
         raise NotImplementedError
     
-            

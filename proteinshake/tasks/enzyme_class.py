@@ -17,13 +17,12 @@ class EnzymeClassTask(Task):
 
     def compute_token_map(self):
         unique_labels = {p['protein']['EC'].split(".")[0] for p in self.dataset.proteins()}
-        return {k:v for v,k in enumerate(unique_labels)}
+        return {k:v for v,k in enumerate(sorted(unique_labels))}
 
     def target(self, protein_dict):
         return self.token_map[protein_dict['protein']['EC'].split(".")[0]]
 
     def evaluate(self, y_true, y_pred):
-        """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         y_true = np.array(y_true, dtype=int)
         y_pred = np.array(y_pred, dtype=int)
         return {
@@ -33,4 +32,4 @@ class EnzymeClassTask(Task):
         }
     
     def dummy(self):
-        return np.random.randint(0, max(self.token_map), len(self.test))
+        return np.random.choice(self.token_map.values(), len(self.test_targets))

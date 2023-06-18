@@ -6,33 +6,18 @@ from proteinshake.tasks import Task
 
 class VirtualScreenTask(Task):
     """ Test an affinity scoring model on a virtual screen.
-    The goal in a virtual screen is: for a given protein and a library of potential
-    binders, bring the binders to the top of the list.
+    The goal in a virtual screen is: for a given protein and a library of potential binders, bring the binders to the top of the list.
     In this task, the model is given a protein and a list of ligands to score.
-    The model scores each ligand in a library with a score proportional to the likelihood
-    that the protein and ligand will bind. This can be a docking score, energy calculation,
-    or just a probability.
-    Each protein's ligand library contains a certain number of active molecules (ligands)
-    and a certai (larger) number of decoys (non-binders).
-    We use the predicted scores to sort the whole library and calculate the position of each
-    active ligand in the sorted library.
-    Ligands in the topi percentiles which are known to be active contribute a 1 to the score
-    and those below the cutoff contribute a 0.
+    The model scores each ligand in a library with a score proportional to the likelihood that the protein and ligand will bind.
+    This can be a docking score, energy calculation, or just a probability.
+    Each protein's ligand library contains a certain number of active molecules (ligands) and a certai (larger) number of decoys (non-binders).
+    We use the predicted scores to sort the whole library and calculate the position of each active ligand in the sorted library.
+    Ligands in the topi percentiles which are known to be active contribute a 1 to the score and those below the cutoff contribute a 0.
 
     .. warning::
 
-        This is a zero-shot task so we use the whole dataset in
-        evaluation. No train/test split.
-
-    .. code-block:: python
-
-        >>> from proteinshake.tasks import VirtualScreenTask
-        >>> import numpy as np
-        >>> task = VirtualScreenTask()
-        # predict a (random) binding score for each molecule 
-        >>> preds = [np.random.rand(len(task.target(p))) for p in task.dataset.proteins()]
-        >>> task.evaluate(preds, cutoff_fraction=.2)
-        {'enrichment_factor-@.2': 0.6}
+        This is a zero-shot task so we use the whole dataset in evaluation.
+        There are no train/test/val splits.
 
     """
 
@@ -41,27 +26,12 @@ class VirtualScreenTask(Task):
     type = 'Ranking'
     input = 'Protein and Molecule'
     output = 'Affinity Score Ranking'
+    default_metric = ''Enrichment Factor''
 
     def __init__(self, *args, **kwargs):
         kwargs['split'] = 'none'
         super().__init__(*args, **kwargs)
         self.test_targets = [self.target(p) for p in self.proteins]
-
-    @property
-    def task_in(self):
-        return ('protein', 'molecule')
-
-    @property
-    def task_type(self):
-        return ('protein', 'virtual_screen')
-
-    @property
-    def task_out(self):
-        return ('virtual_screen')
-
-    @property
-    def target_dim(self):
-        return (1)
 
     def target(self, protein):
         """ The target here is a sorted list of smiles where the true ligands
@@ -70,19 +40,6 @@ class VirtualScreenTask(Task):
 
         """
         return protein['protein']['ligands_smiles'] + protein['protein']['decoys_smiles']
-
-    @property
-    def num_features(self):
-        return 20
-
-    def dummy_output(self):
-        import random
-        return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
-
-    @property
-    def default_metric(self):
-        return 'enrichment_factor'
-        pass
 
     def evaluate(self, y_true, y_pred, cutoff_fraction=.2):
         """ Computing enrichment factor on the whole dataset.
@@ -119,5 +76,9 @@ class VirtualScreenTask(Task):
             mean_active_rank = np.mean([ranks_dict[lig_id] for lig_id in active_ids])
             efs.append(mean_active_rank)
 
-        return {f'enrichment_factor': np.mean(efs)}
+        return {'Enrichment Factor': np.mean(efs)}
+    
+    def dummy(self):
+        import random
+        return [[random.random() for _ in range(len(self.target(p)))] for p in self.proteins]
 
