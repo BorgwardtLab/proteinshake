@@ -2,7 +2,6 @@
 Tests prediction task classes.
 '''
 
-import random
 import unittest, tempfile
 from proteinshake.tasks import *
 

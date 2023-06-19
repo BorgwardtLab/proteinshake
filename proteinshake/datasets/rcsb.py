@@ -39,12 +39,6 @@ class RCSBDataset(Dataset):
         self.max_requests = max_requests
         super().__init__(only_single_chain=only_single_chain, **kwargs)
 
-    def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/*.pdb')
-
-    def get_id_from_filename(self, filename):
-        return filename[:4]
-
     def download(self):
         """ Fetches PDBs from RCSB with an API call. The default query selects protein-only
         structures with a single chain.

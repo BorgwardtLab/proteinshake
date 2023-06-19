@@ -40,14 +40,6 @@ class ProteinProteinInterfaceDataset(Dataset):
         Distance in angstroms within which a pair of residues is considered to
         belong to the interface.
 
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 2839
-
-
    .. list-table:: Annotations
       :widths: 25 55 20
       :header-rows: 1
@@ -86,9 +78,6 @@ class ProteinProteinInterfaceDataset(Dataset):
 
     def get_raw_files(self):
         return glob.glob(f'{self.root}/raw/files/chains/*.pdb')
-
-    def get_id_from_filename(self, filename):
-        return filename[:4]
 
     def get_contacts(self, protein, cutoff=6):
         """Obtain interfacing residues within a single structure of polymers. Uses
@@ -135,7 +124,6 @@ class ProteinProteinInterfaceDataset(Dataset):
             seq_inds.append(ind)
 
         query = kdt.query_radius(coords, cutoff)
-        interface = []
         for i,result in enumerate(query):
             this_chain = protein['residue']['chain_id'][i]
             this_pos = seq_inds[i]
@@ -178,14 +166,3 @@ class ProteinProteinInterfaceDataset(Dataset):
                 new_df._df = {'ATOM': chain_df}
                 new_df.to_pdb(os.path.join(dest, f"{pdbid}_{chain}.pdb"))
                 # assert not chain_df.isnull().values.any(), f"NULL in {p}"
-        pass
-
-    def get_id_from_filename(self, filename):
-        return filename.split(".")[0]
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = "Protein-protein interface (residue-level)"
-        desc['values'] = 2
-        desc['type'] = "Binary"
-        return desc

@@ -1,28 +1,29 @@
 from sklearn import metrics
 import numpy as np
 
-from proteinshake.datasets import EnzymeCommissionDataset
+from proteinshake.datasets import ProteinFamilyDataset
 from proteinshake.tasks import Task
 
-class EnzymeClassTask(Task):
-    """ Predict the enzyme commission classification of a protein structure.
+class ProteinFamilyTask(Task):
+    """ Predict the protein family classification of a protein structure. This is a protein-level multi-class prediction.
     """
 
-    DatasetClass = EnzymeCommissionDataset
+    DatasetClass = ProteinFamilyDataset
     
     type = 'Multiclass Classification'
     input = 'Protein'
-    output = 'Enzyme Commission Level 1'
+    output = 'Protein Family (Pfam)'
     default_metric = 'Precision'
 
     def compute_token_map(self):
-        unique_labels = {p['protein']['EC'].split(".")[0] for p in self.dataset.proteins()}
-        return {k:v for v,k in enumerate(sorted(unique_labels))}
+        labels = {p['protein']['Pfam'][0] for p in self.dataset.proteins()}
+        return {k: v for v,k in enumerate(sorted(labels))}
 
-    def target(self, protein_dict):
-        return self.token_map[protein_dict['protein']['EC'].split(".")[0]]
+    def target(self, protein):
+        return self.token_map[protein['protein']['Pfam'][0]]
 
     def evaluate(self, y_true, y_pred):
+        """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
         y_true = np.array(y_true, dtype=int)
         y_pred = np.array(y_pred, dtype=int)
         return {

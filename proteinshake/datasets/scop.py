@@ -19,15 +19,6 @@ class SCOPDataset(RCSBDataset):
 
       Raw data was obtained and modified from `RCSB Protein Data Bank <https://www.rcsb.org/>`_, originally licensed under `CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
 
-
-    .. list-table:: Dataset stats
-      :widths: 100
-      :header-rows: 1
-
-      * - # proteins
-      * - 10066
-
-
     .. list-table:: Annotations
       :widths: 25 45 35
       :header-rows: 1
@@ -51,7 +42,7 @@ class SCOPDataset(RCSBDataset):
 
     """
 
-    def _parse_scop(self, path):
+    def parse_scop(self, path):
         names = ['FA-DOMID', 'FA-PDBID', 'FA-PDBREG', 'FA-UNIID', 'FA-UNIREG', 'SF-DOMID', 'SF-PDBID', 'SF-PDBREG', 'SF-UNIID', 'SF-UNIREG', 'SCOPCLA']
         df = pd.read_csv(path, sep=' ', comment='#', names=names, dtype=str)
         return {k: dict([cla.split("=") for cla in v.split(",")]) for k,v in zip(df['FA-PDBID'], df['SCOPCLA'])}
@@ -59,7 +50,7 @@ class SCOPDataset(RCSBDataset):
     def download(self):
         # get the annots
         download_url(f'http://scop.mrc-lmb.cam.ac.uk/files/scop-cla-latest.txt', f'{self.root}/raw/scop.txt')
-        self.scop = self._parse_scop(f'{self.root}/raw/scop.txt')
+        self.scop = self.parse_scop(f'{self.root}/raw/scop.txt')
         ids = list(self.scop['FA-PDBID'].unique())
 
         # get the proteins

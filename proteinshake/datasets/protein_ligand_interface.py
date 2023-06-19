@@ -37,13 +37,6 @@ class ProteinLigandInterfaceDataset(Dataset):
     version: str
         PDBBind version to use.
 
-    .. list-table:: Dataset stats
-       :widths: 100
-       :header-rows: 1
-
-       * - # proteins
-       * - 4642
-
     .. list-table:: Annotations
         :widths: 20 55 25
         :header-rows: 1
@@ -79,8 +72,6 @@ class ProteinLigandInterfaceDataset(Dataset):
         - :code:`protein['residue']['binding_site']`
         - :code:`'[..,0, 0, 1, 0, 1, 0, 0, 0,..]`
     """
-
-    description = ''
 
     def __init__(self, version='2020', **kwargs):
         self.version = version
@@ -203,10 +194,3 @@ class ProteinLigandInterfaceDataset(Dataset):
         protein['protein']['fp_morgan_r2'] = fp_morgan
 
         return protein
-
-    def describe(self):
-        desc = super().describe()
-        desc['property'] = "Small Mol. Binding Site (residue-level)"
-        desc['values'] = 2
-        desc['type'] = 'Binary'
-        return desc

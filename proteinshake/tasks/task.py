@@ -1,37 +1,23 @@
 import os
-import json
+import requests
 import itertools
 
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from proteinshake.utils import download_url, save, load
+from proteinshake.utils import save, load, progressbar
 
 class Task:
-    """ Base class for task-related utilities.
-    This class wraps a proteinshake dataset and exposes split indices,
-    integer-coded labels for classification tasks, and an evaluator function.
-
-    Sample usage (assuming you have a model in the namespace):
-
-     .. code-block:: python
-
-        >>> from proteinshake.tasks import EnzymeClassTask
-        >>> task = EnzymeClassTask()
-        >>> data = task.dataset.to_graph(eps=8).pyg()
-        >>> y_pred = model(data[task.train])
-        >>> task.evaluate(y_pred)
-        ... {'roc_auc_score': 0.7}
-
+    """ Base class for a task.
 
     Arguments
     ----------
-    dataset: pytorch.datasets.Dataset
-        Dataset to use for this task.
-    split: str, default='random'
-        How to split the data. Can be 'random', 'sequence', or 'structure'.
+    root: str, default 'data'
+        The root directory to put the dataset and task data.
+    split: str, default 'random'
+        How to split the data. Can be 'random', 'sequence', 'structure' or 'custom'.
     split_similarity_threshold: float
-        Maximum similarity to allow between train and test samples.
+        Maximum similarity between train and test set.
     """
 
     DatasetClass = None
@@ -39,119 +25,156 @@ class Task:
     type = None
     input = None
     output = None
+    default_metric = None
+    pairwise = False
+    level = 'Protein'
 
     def __init__(self,
                  root                       = 'data',
                  split                      = 'random',
                  split_similarity_threshold = 0.7,
+                 use_precomputed_task       = True,
                  **kwargs
                 ):
         self.root = root
         self.dataset = self.DatasetClass(root=root, **kwargs)
-        proteins = self.dataset.proteins()
-        self.size = len(proteins)
-        self.split_similarity_threshold = split_similarity_threshold
         self.split = split
-    
-        class Proteins(): # dummy class to implement __getitem__, could be implemented directly on the task
-            def __init__(self, proteins):
-                self.proteins = list(proteins)
+        self.split_similarity_threshold = split_similarity_threshold
 
-            def __len__(self):
-                return len(self.proteins)
+        if not self.files_exist:
+            if use_precomputed_task and self.files_hosted: self.download_precomputed()
+            else: self.compute()
+        
+        task_info = load(f'{self.root}/{self.__class__.__name__}.json.gz')
+        split_info = task_info[f'{split}_split'][f'similarity {split_similarity_threshold}']
+        self.token_map = task_info['token_map']
+        self.targets = np.array(task_info['targets'], dtype=object)
+        self.sizes = np.arrya(task_info['sizes'])
 
-            def __getitem__(self, idx):
-                try:
-                    idx = int(idx)
-                except:
-                    return [self.__getitem__(i) for i in idx]
-                if idx >= len(self.proteins):
-                    raise StopIteration
-                return self.proteins[idx]
+        self.train_index = split_info['train']
+        self.test_index = split_info['test']
+        self.val_index = split_info['val']
+        if self.pairwise:
+            self.train_index = self.compute_pairs(self.train_index)
+            self.val_index = self.compute_pairs(self.val_index)
+            self.test_index = self.compute_pairs(self.test_index)
 
-        self.proteins = Proteins(proteins)
-        self.name = self.__class__.__name__
+        self.train_targets = self.target_transform(self.train_index)
+        self.test_targets = self.target_transform(self.train_index)
+        self.val_targets = self.target_transform(self.train_index)
 
-        # load split indices
-        if not self.split == 'none':
-            self.compute_index()
-            self.compute_targets()
+    def target_transform(self, index):
+        return np.array(self.targets[index])
 
-    def compute_index(self):
-        split_name = f'{self.split}_split_{self.split_similarity_threshold}' if self.split in ['sequence','structure'] else f'{self.split}_split'
-        if split_name in self.proteins[0]['protein']:
-            self.train_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'train'])
-            self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
-            self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
+    def __getattr__(self, key):
+        """ Captures method calls and forwards them to the dataset if they are a representation or framework conversion.
+        """
+        if key in ['to_graph','to_point','to_voxel','np','dgl','pyg','torch','nx','tf']:
+            def proxy(*args, **kwargs):
+                self.dataset = getattr(self.dataset, key)(*args, **kwargs)
+                return self
+            return proxy
         else:
-            self.train_index, self.val_index, self.test_index = self.compute_custom_split(self.split)
+            return getattr(self, key, lambda: None)
+        
+    @property
+    def files_exist(self):
+        return os.path.exists(f'{self.root}/{self.__class__.__name__}.json.gz')
 
-        self.update_index()
+    @property
+    def files_hosted(self):
+        return requests.head(f'{self.dataset.repository_url}/{self.__class__.__name__}.npz', timeout=5).status_code == 200
+    
+    def download_precomputed(self):
+        raise NotImplementedError
 
-    def update_index(self):
-        pass
+    def compute(self):
+        """ Computes the task file with splits, token maps, and targets.
+        """
+        self.token_map = self.compute_token_map()
+        self.targets = self.compute_paired_targets() if self.pairwise else self.compute_targets()
+        save({
+            'random_split': self.compute_random_split(),
+            'sequence_split': self.compute_sequence_split(),
+            'structure_split': self.compute_structure_split(),
+            'custom_split': self.compute_custom_split(),
+            'token_map': self.token_map,
+            'targets': self.targets,
+            'sizes': self.compute_sizes if self.level != 'Protein' else None,
+        }, f'{self.root}/{self.__class__.__name__}.json.gz')
+
+    def compute_random_split(self, seed=0):
+        indices = np.arange(len(self.dataset.proteins()))
+        train_indices, test_val_indices = train_test_split(indices, test_size=0.2, random_state=seed)
+        test_indices, val_indices = train_test_split(test_val_indices, test_size=0.5, random_state=seed)
+        return {
+            'similarity 0.7': {
+                'train': train_indices.tolist(),
+                'test': test_indices.tolist(),
+                'val': val_indices.tolist(),
+            }
+        }
+
+    def compute_sequence_split(self, seed=0):
+        return None
+
+    def compute_structure_split(self, seed=0):
+        return None
+
+    def compute_custom_split(self, seed=0):
+        return None
+
+    def compute_token_map(self):
+        return None
 
     def compute_targets(self):
-        # compute targets (e.g. for scaling)
-        self.train_targets = [self.target(self.proteins[i]) for i in self.train_index]
-        self.val_targets = [self.target(self.proteins[i]) for i in self.val_index]
-        self.test_targets = [self.target(self.proteins[i]) for i in self.test_index]
-            
-    def compute_custom_split(self, split):
-        """ Implements random splitting. Only necessary when not using the precomputed splits, e.g. when implementing a custom task.
-        Note that the random, sequence and structure splits will be automatically computed for your custom task if it is merged into ProteinShake main.
-        Override this method to implement your own splitting logic.
-        Compare also the proteinshake_release repository.
-
-        Arguments
-        ------------
-        split: str
-            Name of the custom split as passed to the task. ('random', 'sequence', 'structure', 'none')
-
-        Returns:
-        --------
-        train_index
-            Numpy array with the index of proteins in the train split.
-        val_index
-            Numpy array with the index of proteins in the validation split.
-        test_index
-            Numpy array with the index of proteins in the test split.
+        return [
+            self.target(protein_dict)
+            for protein_dict in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
+        ]
+    
+    def compute_paired_targets(self):
+        return [
+            [self.target(A,B) for B in self.dataset.proteins()]
+            for A in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
+        ]
+    
+    def compute_pairs(self, index):
+        """ Computes all pairs between each element in the index.
         """
-        inds = list(range(len(self.dataset.proteins())))
-        train, test = train_test_split(inds, test_size=0.2)
-        val, test = train_test_split(test, test_size=0.5)
-
-        return train, val, test
-
-    @property
-    def task_type(self):
-        """ Returns a string describing the type of task."""
-        raise NotImplementedError
+        combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)
+        index = np.array(index)[combinations]
+        return tuple(index[:,0]), tuple(index[:,1])
+    
+    def compute_sizes(self):
+        return [len(p) for p in self.dataset.proteins()]
 
     @property
-    def num_features(self):
-        """ Number of input features to use for this task """
-        raise NotImplementedError
+    def train(self):
+        return self.dataset[self.train_index]
 
     @property
-    def num_classes(self):
-        """ Size of the output dimension for this task """
-        raise NotImplementedError
-
+    def test(self):
+        return self.dataset[self.test_index]
+    
     @property
-    def target(self, protein):
+    def val(self):
+        return self.dataset[self.val_index]
+
+    def target(self, protein_dict):
         """ Return the prediction target for one protein in the dataset.
+        Can be a scalar or a fixed size array.
 
         Arguments
         ------------
-        protein: dict
-            proteinshake protein dictionary
+        protein_dict: dict
+            A protein dictionary.
 
+        Returns
+        -------
+        target: float
+            The prediction target.
 
-        .. code-block: python
-
-            >>> from proteinshake.tasks import EnzymeCommissionTask
-            >>> ta = EnzymeCommissionTask()
         """
         raise NotImplementedError
 
@@ -171,51 +194,7 @@ class Task:
             Dictionary with evaluation results. Key-value pairs correspond to metric-score pairs. E.g. 'roc-auc': 0.7
         """
         raise NotImplementedError
-
-    @property
-    def train(self):
-        return self.dataset[self.train_index]
-
-    @property
-    def val(self):
-        return self.dataset[self.val_index]
-
-    @property
-    def test(self):
-        return self.dataset[self.test_index]
-
-    def to_graph(self, *args, **kwargs):
-        self.dataset = self.dataset.to_graph(*args, **kwargs)
-        return self
-
-    def to_point(self, *args, **kwargs):
-        self.dataset = self.dataset.to_point(*args, **kwargs)
-        return self
-
-    def to_voxel(self, *args, **kwargs):
-        self.dataset = self.dataset.to_voxel(*args, **kwargs)
-        return self
-
-    def pyg(self, *args, **kwargs):
-        self.dataset = self.dataset.pyg(*args, **kwargs)
-        return self
-
-    def dgl(self, *args, **kwargs):
-        self.dataset = self.dataset.dgl(*args, **kwargs)
-        return self
-
-    def nx(self, *args, **kwargs):
-        self.dataset = self.dataset.nx(*args, **kwargs)
-        return self
-
-    def np(self, *args, **kwargs):
-        self.dataset = self.dataset.np(*args, **kwargs)
-        return self
-
-    def tf(self, *args, **kwargs):
-        self.dataset = self.dataset.tf(*args, **kwargs)
-        return self
-
-    def torch(self, *args, **kwargs):
-        self.dataset = self.dataset.torch(*args, **kwargs)
-        return self
+    
+    def dummy(self):
+        raise NotImplementedError
+    

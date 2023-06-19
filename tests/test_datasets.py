@@ -4,7 +4,6 @@ Tests downloading the precomputed datasets and loading the data.
 
 import unittest, tempfile
 from proteinshake.datasets import *
-from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 class TestDatasets(unittest.TestCase):
 
