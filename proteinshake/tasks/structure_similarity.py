@@ -34,4 +34,4 @@ class StructureSimilarityTask(Task):
         }
     
     def dummy(self):
-        return np.random.uniform(size=(len(self.test_targets),))
+        return np.random.uniform(size=len(self.test_targets))

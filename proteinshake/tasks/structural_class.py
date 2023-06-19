@@ -36,4 +36,4 @@ class StructuralClassTask(Task):
         }
     
     def dummy(self):
-        return np.random.choice(self.token_map.values(), size=(len(self.test_targets))
+        return np.random.choice(self.token_map.values(), size=len(self.test_targets))

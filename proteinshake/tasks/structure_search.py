@@ -58,10 +58,9 @@ class StructureSearchTask(Task):
             List of indices of items (hits) in the dataset for a query.
         """
         return {
-            'Precision@k': [self.precision_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred],
-            'Recall@k': [self.recall_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred],
-
-        return {k: np.mean(v) for k, v in results.items()}
+            'Precision@k': np.mean([self.precision_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred)]),
+            'Recall@k': np.mean([self.recall_at_k(yt, yp, k) for yt, yp in zip(y_true, y_pred)]),
+        }
 
     def dummy(self):
         import random

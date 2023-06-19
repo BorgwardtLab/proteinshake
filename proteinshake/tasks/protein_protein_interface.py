@@ -16,6 +16,7 @@ class ProteinProteinInterfaceTask(Task):
     output = 'Protein Binding Interface Residues'
     default_metric = 'AUROC (median)'
     pairwise = True
+    level = 'Residues'
 
     def compute_pairs(self, index):
         # todo: would be easier to take the all-pairwise from the parent class and just filter if they are not in the interfaces

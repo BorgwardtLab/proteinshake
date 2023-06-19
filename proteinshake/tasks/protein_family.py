@@ -33,4 +33,4 @@ class ProteinFamilyTask(Task):
         }
     
     def dummy(self):
-        return np.random.choice(self.token_map.values(), len(self.test_targets))
+        return np.random.choice(list(self.token_map.values()), len(self.test_targets))

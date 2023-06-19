@@ -27,6 +27,7 @@ class Task:
     output = None
     default_metric = None
     pairwise = False
+    level = 'Protein'
 
     def __init__(self,
                  root                       = 'data',
@@ -48,6 +49,7 @@ class Task:
         split_info = task_info[f'{split}_split'][f'similarity {split_similarity_threshold}']
         self.token_map = task_info['token_map']
         self.targets = np.array(task_info['targets'], dtype=object)
+        self.sizes = np.arrya(task_info['sizes'])
 
         self.train_index = split_info['train']
         self.test_index = split_info['test']
@@ -56,9 +58,13 @@ class Task:
             self.train_index = self.compute_pairs(self.train_index)
             self.val_index = self.compute_pairs(self.val_index)
             self.test_index = self.compute_pairs(self.test_index)
-        self.train_targets = np.array(self.targets[self.train_index])
-        self.test_targets = np.array(self.targets[self.test_index])
-        self.val_targets = np.array(self.targets[self.val_index])
+
+        self.train_targets = self.target_transform(self.train_index)
+        self.test_targets = self.target_transform(self.train_index)
+        self.val_targets = self.target_transform(self.train_index)
+
+    def target_transform(self, index):
+        return np.array(self.targets[index])
 
     def __getattr__(self, key):
         """ Captures method calls and forwards them to the dataset if they are a representation or framework conversion.
@@ -94,6 +100,7 @@ class Task:
             'custom_split': self.compute_custom_split(),
             'token_map': self.token_map,
             'targets': self.targets,
+            'sizes': self.compute_sizes if self.level != 'Protein' else None,
         }, f'{self.root}/{self.__class__.__name__}.json.gz')
 
     def compute_random_split(self, seed=0):
@@ -138,6 +145,9 @@ class Task:
         combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)
         index = np.array(index)[combinations]
         return tuple(index[:,0]), tuple(index[:,1])
+    
+    def compute_sizes(self):
+        return [len(p) for p in self.dataset.proteins()]
 
     @property
     def train(self):

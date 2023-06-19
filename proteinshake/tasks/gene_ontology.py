@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from proteinshake.datasets import GeneOntologyDataset
 from proteinshake.tasks import Task
@@ -24,6 +25,12 @@ class GeneOntologyTask(Task):
 
     def target(self, protein):
         return [self.token_map[i] for i in protein['protein']['molecular_function']]
+    
+    def target_transform(self, index):
+        transformed = np.zeros((len(index), len(self.token_map)), dtype=bool)
+        targets = self.targets[index]
+        for i,indices in enumerate(targets): transformed[i,indices] = True
+        return transformed
 
     def precision(self, y_true, y_pred, threshold):
         mt = (y_pred.max(axis=1) >= threshold).sum()
@@ -51,11 +58,9 @@ class GeneOntologyTask(Task):
         return fmax
 
     def evaluate(self, y_true, y_pred):
-        _y_true = np.zeros((len(y_true), len(self.token_map)), dtype=bool)
-        for i,indices in enumerate(y_true): _y_true[i,indices] = True
         y_pred = np.array(y_pred)
         return {
-            'Fmax': self.fmax(_y_true, y_pred),
+            'Fmax': self.fmax(y_true, y_pred),
         }
     
     def dummy(self):

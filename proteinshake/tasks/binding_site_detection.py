@@ -12,13 +12,14 @@ class BindingSiteDetectionTask(Task):
     DatasetClass = ProteinLigandInterfaceDataset
     
     type = 'Binary Classification'
-    input = 'Residue'
+    input = 'Protein'
     output = 'Small Molecule Binding Residues'
     default_metric = 'MCC'
+    level = 'Residue'
 
     def target(self, protein_dict):
         binding_sites = protein_dict['residue']['binding_site']
-        return list(np.arange(len(binding_sites))[binding_sites])
+        return np.arange(len(binding_sites))[binding_sites].tolist()
 
     def evaluate(self, y_true, y_pred):
         return {
@@ -27,4 +28,4 @@ class BindingSiteDetectionTask(Task):
         }
     
     def dummy(self):
-        return np.random.randint(0, 1, size=(len(self.test_targets)))
+        return [np.random.choice([0,1], size=L) for L in self.sizes[self.test_index]]

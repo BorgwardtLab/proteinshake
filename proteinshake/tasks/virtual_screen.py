@@ -26,7 +26,7 @@ class VirtualScreenTask(Task):
     type = 'Ranking'
     input = 'Protein and Molecule'
     output = 'Affinity Score Ranking'
-    default_metric = ''Enrichment Factor''
+    default_metric = 'Enrichment Factor'
 
     def __init__(self, *args, **kwargs):
         kwargs['split'] = 'none'
