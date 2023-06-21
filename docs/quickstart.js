@@ -7,7 +7,7 @@ const lines = {
         dgl: 'from dgl.dataloading import GraphDataLoader as DataLoader',
         nx: '',
         torch: 'from torch.utils.data import DataLoader',
-        tf: 'from tensorflow.data import Dataset',
+        tf: 'import tensorflow as tf',
         np: '',
     },
     comment_1: {
@@ -41,7 +41,7 @@ const lines = {
         dgl: 'DataLoader(task.train)',
         nx: 'task.train',
         torch: 'DataLoader(task.train)',
-        tf: 'Dataset.from_generator(lambda:iter(task.train), output_types=(tf.float32))',
+        tf: 'tf.data.Dataset.from_generator(lambda:iter(task.train), output_types=(tf.float32))',
         np: 'task.train',
     }
 };
