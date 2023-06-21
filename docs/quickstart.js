@@ -4,10 +4,10 @@ var framework = 'torch';
 const lines = {
     import: {
         pyg: 'from torch_geometric.loader import DataLoader',
-        dgl: 'from torch.utils.data import DataLoader',
+        dgl: 'from dgl.dataloading import GraphDataLoader as DataLoader',
         nx: '',
         torch: 'from torch.utils.data import DataLoader',
-        tf: 'from tf.data import Dataset',
+        tf: 'from tensorflow.data import Dataset',
         np: '',
     },
     comment_1: {
@@ -41,9 +41,9 @@ const lines = {
         dgl: 'DataLoader(task.train)',
         nx: 'task.train',
         torch: 'DataLoader(task.train)',
-        tf: 'Dataset.from_tensor_slices(task.train)',
+        tf: 'Dataset.from_generator(lambda:iter(task.train), output_types=(tf.float32))',
         np: 'task.train',
-    },
+    }
 };
 
 function quickstart() {
@@ -69,20 +69,23 @@ function quickstart() {
 
     var code = document.getElementById('code');
     code.innerHTML =
-`from proteinshake.tasks import GeneOntologyTask
+`from proteinshake.tasks import EnzymeClassTask, DummyModel
 ${lines.import[framework]}
 
-# Use proteins with Gene Ontology annotations
+# Use proteins with Enzyme Class annotations
 ${lines.comment_1[representation]}
 ${lines.comment_2[framework]}
-task = GeneOntologyTask().to_${lines.convert[representation]}.${framework}()
+task = EnzymeClassTask().to_${lines.convert[representation]}.${framework}()
+
+# Replace this with your own model
+model = DummyModel(task)
 
 ${lines.comment_3[framework]}
 for batch in ${lines.loader[framework]}:
     model.train_step(batch) # your model training goes here
 
 # Evaluation with the provided metrics
-prediction = model.inference(task.test)
+prediction = model.test_step(task.test)
 metrics = task.evaluate(task.test_targets, prediction)
 
 print(metrics)`;

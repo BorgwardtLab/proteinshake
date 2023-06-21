@@ -139,6 +139,9 @@ div.table {
     width:100%;
     min-width: 670px;
     max-width: 1000px;
+    background-color: #333;
+    border-radius: 5px;
+    overflow: hidden;
 }
 div.tabs {
     display: flex;
@@ -161,6 +164,8 @@ div.tab-item {
     border: 3px solid #333;
     border-bottom-width:0;
     box-sizing:border-box;
+    border-radius: 5px;
+    overflow: hidden;
 }
 div.tab-item.selected {
     color: var(--blue);

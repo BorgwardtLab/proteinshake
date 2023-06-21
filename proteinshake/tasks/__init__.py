@@ -1,4 +1,5 @@
 from .task import Task
+from .dummy import DummyModel
 from .enzyme_class import EnzymeClassTask
 from .pfam_task import ProteinFamilyTask
 from .ligand_affinity import LigandAffinityTask

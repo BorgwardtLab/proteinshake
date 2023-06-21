@@ -13,16 +13,19 @@ class NumpyVoxelDataset(FrameworkDataset):
     """ Voxel dataset for NumPy.
     """
 
-    def convert_to_framework(self, data_item):
-        return sparse.csr_array(data_item.data)
+    def __init__(self, *args, transform=lambda x:x[0], **kwargs):
+        super().__init__(*args, transform=transform, **kwargs)
 
-    def load_transform(self, data, protein_dict):
-        return data.todense(), protein_dict
+    def convert_to_framework(self, data_item):
+        return data_item.data
 
 
 class NumpyPointDataset(FrameworkDataset):
     """ Point dataset for NumPy.
     """
+
+    def __init__(self, *args, transform=lambda x:x[0], **kwargs):
+        super().__init__(*args, transform=transform, **kwargs)
 
     def convert_to_framework(self, data_item):
         return data_item.data

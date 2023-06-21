@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-__version__ = '0.3.12'
+__version__ = '0.3.13'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
 
 install_requires = [
