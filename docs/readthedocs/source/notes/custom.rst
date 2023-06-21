@@ -12,7 +12,7 @@ A custom dataset
 For the sake of this tutorial we will implement a small dataset with AlphaFoldDB structures of *E. coli*.
 We will query UniProtKB to obtain annotations for each protein and add them to the dataset.
 
-Let's have a look at how the ProteinShake base ``Dataset`` class is structured.
+Let's have a look at how the ProteinShake base :class:`~proteinshake.datasets.Dataset` class is structured.
 
 .. code:: python
 
@@ -36,7 +36,7 @@ Let's have a look at how the ProteinShake base ``Dataset`` class is structured.
 
 
 These are all the methods you need to implement when creating a custom dataset.
-The most important one is the ``download`` method.
+The most important one is the :func:`~proteinshake.datasets.Dataset.download` method.
 Here you implement the download of the raw protein data (and possibly annotation files).
 
 For our example we download the data from AlphaFoldDB.
@@ -55,7 +55,7 @@ By convention, we put these files into ``f'{self.root}/raw/files'``, although yo
 
 .. hint::
 
-    ``download_url`` ``extract_tar`` ``unzip_file`` ``uniprot_query``
+    :func:`~proteinshake.datasets.Dataset.download_url`, :func:`~proteinshake.datasets.Dataset.extract_tar`, :func:`~proteinshake.datasets.Dataset.unzip_file`, :func:`~proteinshake.datasets.Dataset.uniprot_query`
 
     We use a few convenience functions provided by ProteinShake here. They come from the ``utils`` module, check it out!
 
@@ -79,7 +79,7 @@ The data is stored in a dictionary that is accessible via the UniProt ID.
 We will use this later in the annotation step.
 
 Next, we need to tell ProteinShake where to find the ``.pdb`` files.
-We do this by implementing ``get_raw_files`` which returns a list of paths to each file.
+We do this by implementing :func:`~proteinshake.datasets.Dataset.get_raw_files` which returns a list of paths to each file.
 
 .. code:: python
 
@@ -113,7 +113,7 @@ Here we add the annotation to the ``protein_dict`` of each individual protein.
 
 .. tip::
 
-    You can use the ``add_protein_attributes`` method for filtering: if it returns ``None``, the protein will be removed from the dataset.
+    You can use the :func:`~proteinshake.datasets.Dataset.add_protein_attributes` method for filtering: if it returns ``None``, the protein will be removed from the dataset.
 
 That's it! ProteinShake will now take care of downloading, parsing, cleaning and storing your data.
 The whole code now looks like this:

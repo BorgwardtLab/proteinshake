@@ -1,7 +1,7 @@
 Working with datasets
 =====================
 
-Datasets are a collection of protein structures which can be converted to any of three representations (graphs, voxel grids, or point clouds) depending on your deep learning model.
+Datasets are collections of protein structures which can be converted to any of three representations (graphs, voxel grids, or point clouds) depending on your deep learning model.
 There are various different datasets available, checkout the :doc:`Overview <overview>` for a full list.
 
 Let's download an enzyme dataset from the ProteinShake data repository:
@@ -19,9 +19,9 @@ To start the download, we can manually access the dataset generator:
   proteins = dataset.proteins(resolution='residue')
 
 Now the download will start.
-``dataset.proteins()`` returns a generator of dictionaries, each dictionary has two entries (``protein`` and ``residue``) which contain annotations on the protein and residue level, respectively.
+``dataset.proteins()`` returns a generator of dictionaries, each dictionary has two entries (``'protein'`` and ``'residue'``) which contain annotations on the protein and residue level, respectively.
 
-We can for example access the sequence of the protein, which is a protein-level annotation:
+For example, we can access the sequence of the protein, which is a protein-level annotation:
 
 .. code-block:: python
 
@@ -29,8 +29,8 @@ We can for example access the sequence of the protein, which is a protein-level 
   sequence = protein_dict['protein']['sequence']
 
 Other fields included in the ``protein_dict`` are the database ID, the coordinates (a residue-level property) and surface accessibility scores (RSA/SASA).
-Each dataset also has fields specific to their proteins, such as the Enzyme Commission number (``protein_dict['protein']['EC']``) of the ``EnzymeCommissionDataset``.
-See the ``Dataset`` documentation for a full list of attributes.
+Each dataset also has fields specific to their proteins, such as the Enzyme Commission number (``protein_dict['protein']['EC']``) of the :func:`~proteinshake.datasets.EnzymeCommissionDataset`.
+See the :func:`~proteinshake.datasets.Dataset` documentation for a full list of attributes.
 
 The ``protein_dict`` is not perfectly suited for a deep learning model, which requires tensors of data.
 Models may use different representations depending on their architecture.
@@ -72,7 +72,7 @@ It depends on the converter and framework you used.
 The ``protein_dict`` is the same as before.
 You can use it to access annotations of the protein, for example to obtain class labels for your training.
 
-To automate this, we provide a ``transforms`` interface.
+To automate this, we provide a :class:`~proteinshake.transforms` interface.
 
 .. code-block:: python
 
