@@ -293,8 +293,8 @@ div.install:hover img.copycode {
         font-weight: 500;
     }
     h2 {
-        font-size: 1.3em;
-        line-height: 1.4em;
+        font-size: 1.4em;
+        line-height: 1.6em;
         font-weight: 500;
     }
     h3 {
@@ -311,6 +311,7 @@ div.install:hover img.copycode {
     div.install {
         width: 18em;
         font-size: 1.7em;
+        font-weight: 500;
     }
     img.copycode {
         right: 0.1em;
