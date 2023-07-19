@@ -45,26 +45,9 @@ class Task:
             if use_precomputed_task and self.files_hosted: self.download_precomputed()
             else: self.compute()
         
-        task_info = load(f'{self.root}/{self.__class__.__name__}.json.gz')
-        split_info = task_info[f'{split}_split'][f'similarity {split_similarity_threshold}']
-        self.token_map = task_info['token_map']
-        self.targets = np.array(task_info['targets'], dtype=object)
-        self.sizes = np.arrya(task_info['sizes'])
-
-        self.train_index = split_info['train']
-        self.test_index = split_info['test']
-        self.val_index = split_info['val']
-        if self.pairwise:
-            self.train_index = self.compute_pairs(self.train_index)
-            self.val_index = self.compute_pairs(self.val_index)
-            self.test_index = self.compute_pairs(self.test_index)
-
-        self.train_targets = self.target_transform(self.train_index)
-        self.test_targets = self.target_transform(self.train_index)
-        self.val_targets = self.target_transform(self.train_index)
-
-    def target_transform(self, index):
-        return np.array(self.targets[index])
+        task_data = load(f'{self.root}/{self.__class__.__name__}.json.gz')
+        self.load_splits(task_data)
+        self.load_targets(task_data)
 
     def __getattr__(self, key):
         """ Captures method calls and forwards them to the dataset if they are a representation or framework conversion.
@@ -74,8 +57,7 @@ class Task:
                 self.dataset = getattr(self.dataset, key)(*args, **kwargs)
                 return self
             return proxy
-        else:
-            return getattr(self, key, lambda: None)
+        else: return object.__getattribute__(self, key)
         
     @property
     def files_exist(self):
@@ -100,28 +82,25 @@ class Task:
             'custom_split': self.compute_custom_split(),
             'token_map': self.token_map,
             'targets': self.targets,
-            'sizes': self.compute_sizes if self.level != 'Protein' else None,
         }, f'{self.root}/{self.__class__.__name__}.json.gz')
 
-    def compute_random_split(self, seed=0):
+    def compute_random_split(self):
         indices = np.arange(len(self.dataset.proteins()))
-        train_indices, test_val_indices = train_test_split(indices, test_size=0.2, random_state=seed)
-        test_indices, val_indices = train_test_split(test_val_indices, test_size=0.5, random_state=seed)
+        train_indices, test_val_indices = train_test_split(indices, test_size=0.2, random_state=0)
+        test_indices, val_indices = train_test_split(test_val_indices, test_size=0.5, random_state=0)
         return {
-            'similarity 0.7': {
-                'train': train_indices.tolist(),
-                'test': test_indices.tolist(),
-                'val': val_indices.tolist(),
-            }
+            'train': train_indices.tolist(),
+            'test': test_indices.tolist(),
+            'val': val_indices.tolist(),
         }
 
-    def compute_sequence_split(self, seed=0):
+    def compute_sequence_split(self):
         return None
 
-    def compute_structure_split(self, seed=0):
+    def compute_structure_split(self):
         return None
 
-    def compute_custom_split(self, seed=0):
+    def compute_custom_split(self):
         return None
 
     def compute_token_map(self):
@@ -132,34 +111,70 @@ class Task:
             self.target(protein_dict)
             for protein_dict in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
         ]
-    
+        
     def compute_paired_targets(self):
+        print(len(self.dataset.proteins()))
+        index = self.compute_paired_index(np.arange(len(self.dataset.proteins())))
+        print(len(index))
+        exit()
         return [
-            [self.target(A,B) for B in self.dataset.proteins()]
+            self.target(A,B)
             for A in progressbar(self.dataset.proteins(), verbosity=self.dataset.verbosity, desc='Computing targets')
+            for B in self.dataset.proteins()
         ]
+        
+    def load_splits(self, task_data):
+        split_data = task_data[f'{self.split}_split']
+        if self.split != 'random': split_data = split_data[f'similarity_{self.split_similarity_threshold}']
+        self.train_index, self.test_index, self.val_index = split_data['train'], split_data['test'], split_data['val']
+        if self.pairwise:
+            self.train_index = self.compute_paired_index(self.train_index)
+            self.val_index = self.compute_paired_index(self.val_index)
+            self.test_index = self.compute_paired_index(self.test_index)
     
-    def compute_pairs(self, index):
+    def compute_paired_index(self, index):
         """ Computes all pairs between each element in the index.
         """
         combinations = np.array(list(itertools.combinations(range(len(index)), 2)), dtype=int)
-        index = np.array(index)[combinations]
-        return tuple(index[:,0]), tuple(index[:,1])
-    
-    def compute_sizes(self):
-        return [len(p) for p in self.dataset.proteins()]
+        return np.array(index)[combinations]
+        
+    def load_targets(self, task_data):
+        self.token_map = task_data['token_map']
+        self.targets = np.array([self.target_transform(target) for target in task_data['targets']], dtype=object)
+        if self.pairwise: self.targets = self.targets.reshape(int(np.square(len(self.targets))), int(np.square(len(self.targets))))
+        
+    def target_transform(self, target):
+        return target
 
     @property
-    def train(self):
+    def X_train(self):
         return self.dataset[self.train_index]
 
     @property
-    def test(self):
+    def X_test(self):
         return self.dataset[self.test_index]
     
     @property
-    def val(self):
+    def X_val(self):
         return self.dataset[self.val_index]
+    
+    @property
+    def y_train(self):
+        return np.take(self.targets, self.train_index)
+
+    @property
+    def y_test(self):
+        return np.take(self.targets, self.test_index)
+    
+    @property
+    def y_val(self):
+        return np.take(self.targets, self.val_index)
+    
+    @property
+    def y_dummy(self):
+        """ Generates a random data object of the right type and shape to compare against the test set.
+        """
+        raise NotImplementedError
 
     def target(self, protein_dict):
         """ Return the prediction target for one protein in the dataset.
@@ -195,6 +210,4 @@ class Task:
         """
         raise NotImplementedError
     
-    def dummy(self):
-        raise NotImplementedError
     

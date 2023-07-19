@@ -19,13 +19,22 @@ class BindingSiteDetectionTask(Task):
 
     def target(self, protein_dict):
         binding_sites = protein_dict['residue']['binding_site']
-        return np.arange(len(binding_sites))[binding_sites].tolist()
+        return np.arange(len(binding_sites))[binding_sites].tolist(), len(binding_sites)
+    
+    def target_transform(self, target):
+        residue_indices, size = target
+        transformed_target = np.zeros(size, dtype=bool)
+        transformed_target[residue_indices] = True
+        return transformed_target
 
     def evaluate(self, y_true, y_pred):
+        print(np.hstack(y_true))
+        print(np.hstack(y_pred))
         return {
-            'Accuracy': metrics.accuracy_score(y_true.flatten(), y_pred.flatten()),
-            'MCC': metrics.matthews_corrcoef(y_true.flatten(), y_pred.flatten()),
+            'Accuracy': metrics.accuracy_score(np.hstack(y_true), np.hstack(y_pred)),
+            'MCC': metrics.matthews_corrcoef(np.hstack(y_true), np.hstack(y_pred)),
         }
     
-    def dummy(self):
-        return [np.random.choice([0,1], size=L) for L in self.sizes[self.test_index]]
+    @property
+    def y_dummy(self):
+        return np.array([np.random.choice([0,1], size=len(x)).astype(bool) for x in self.y_test], dtype=object)

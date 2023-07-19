@@ -301,6 +301,10 @@ class Dataset():
             download_url(f'{self.repository_url}/{self.name}.{resolution}.avro.gz', f'{self.root}', verbosity=self.verbosity)
             if self.verbosity > 0: print('Unzipping...')
             unzip_file(f'{self.root}/{self.name}.{resolution}.avro.gz')
+            for filename in self.additional_files:
+                if not os.path.exists(f'{self.root}/{filename}'):
+                    download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
+                    unzip_file(f'{self.root}/{filename}.gz')
 
     def parse(self):
         """ Parses all PDB files returned from :meth:`proteinshake.datasets.Dataset.get_raw_files()` and saves them to disk. Can run in parallel.
@@ -315,9 +319,6 @@ class Dataset():
 
         if self.verbosity > 0: print(f'Filtered {before-len(proteins)} proteins.')
 
-        # if self.center:
-        # if True:
-        # if self.random_rotate:
         if self.name == 'ProteinProteinInteractionDataset':
             print("Centering")
             proteins = [CenterTransform()(p) for p in proteins]
@@ -329,6 +330,7 @@ class Dataset():
         atom_proteins = [{'protein':p['protein'], 'atom':p['atom']} for p in proteins]
         write_avro(residue_proteins, f'{self.root}/{self.name}.residue.avro')
         write_avro(atom_proteins, f'{self.root}/{self.name}.atom.avro')
+        return proteins
 
     def parse_pdb(self, path):
         """ Parses a single PDB file first into a DataFrame, then into a protein object (a dictionary). Also validates the PDB file and provides the hook for `add_protein_attributes`. Returns `None` if the protein was found to be invalid.

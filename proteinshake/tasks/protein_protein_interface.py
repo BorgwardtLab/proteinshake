@@ -18,43 +18,24 @@ class ProteinProteinInterfaceTask(Task):
     pairwise = True
     level = 'Residues'
 
-    def compute_pairs(self, index):
-        # todo: would be easier to take the all-pairwise from the parent class and just filter if they are not in the interfaces
-        """ Grab all pairs of chains that share an interface"""
-        protein_to_index = {p['protein']['ID']: i for i, p in enumerate(self.dataset.proteins())}
-        chain_pairs = []
-        for i, protein in enumerate(self.dataset.proteins()):
-            if i not in index: continue
-            pdbid, chain = protein['protein']['ID'].split('_')
-            try:
-                chain_pairs.extend([
-                    (i, protein_to_index[f'{pdbid}_{partner}'])
-                    for partner in self.dataset._interfaces[pdbid][chain]
-                ])
-            except (KeyError, IndexError): # if chain is not in any interface, we skip
-                continue
-        # filter partner if not in same index (train/test/val)
-        chain_pairs = [(i,j) for i,j in chain_pairs if i in index and j in index] # @carlos please check
-        return tuple(map(tuple, zip(*chain_pairs)))
+    def compute_paired_index(self, index):
+        """ Return all pairs of interactions that are in self.interfaces.
+        """
+        pdb_to_idx = {p['protein']['ID']:i for i,p in enumerate(self.dataset.proteins())}
+        i,j = [],[]
+        for k
 
     def target(self, protein_1, protein_2):
-        chain_1 = protein_1['residue']['chain_id'][0]
-        chain_2 = protein_2['residue']['chain_id'][0]
-        chain_1_length = len(protein_1['residue']['chain_id'])
-        chain_2_length = len(protein_2['residue']['chain_id'])
-        pdbid = protein_1['protein']['ID'].split('_')[0]
-
-        print(pdbid, chain_1, chain_2)
-
-        contacts = np.zeros((chain_1_length, chain_2_length))
-        try:
-            print(self.dataset._interfaces[pdbid][chain_1][chain_2])
-            print('-----------')
-            inds = np.array(self.dataset._interfaces[pdbid][chain_1][chain_2])
-            contacts[inds[:,0], inds[:,1]] = 1.0
-        except KeyError: # raised if there are no interactions between query chains
-            pass
-        return np.array(contacts)
+        pdbid_1, chain_1 = protein_1['protein']['ID'].split('_')
+        pdbid_2, chain_2 = protein_2['protein']['ID'].split('_')
+        shape = (len(protein_1['residue']['chain_id']), len(protein_2['residue']['chain_id']))
+        return self.dataset.interfaces[pdbid_1][chain_1][chain_2], shape
+    
+    def target_transform(self, target):
+        residue_indices, shape = target
+        transformed_target = np.zeros(shape, dtype=bool)
+        transformed_target[tuple(zip(*residue_indices))] = True
+        return transformed_target
 
     def evaluate(self, y_true, y_pred):
         """ Evaluate performance of an interface classifier.
@@ -62,7 +43,7 @@ class ProteinProteinInterfaceTask(Task):
         raw_values = {
             'auroc': np.zeros(len(y_true)),
             'auprc': np.zeros(len(y_true)),
-            'sizes':np.zeros(len(y_true))
+            'sizes': np.zeros(len(y_true))
         }
 
         for i, (y, y_pred) in enumerate(zip(y_true, y_pred)):
@@ -84,5 +65,5 @@ class ProteinProteinInterfaceTask(Task):
             'AUPRC (mean)':  np.mean(raw_values['auprc']),
         }
         
-    def dummy(self):
+    def y_dummy(self):
         return [np.where(np.random.randint(0, 2, p.shape) == 0, 0, 1) for p in self.test_targets]

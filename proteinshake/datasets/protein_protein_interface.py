@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-import os
-import glob
-from joblib import Parallel, delayed
-from tqdm import tqdm
-from collections import defaultdict, Counter
-
+import os, glob
 import pandas as pd
+import numpy as np
+from joblib import Parallel, delayed
 from biopandas.pdb import PandasPdb
 from sklearn.neighbors import KDTree
-import numpy as np
 
 from proteinshake.datasets import Dataset
 from proteinshake.utils import extract_tar, download_url, progressbar, load, save, unzip_file
@@ -64,105 +60,51 @@ class ProteinProteinInterfaceDataset(Dataset):
         self.version = version
         self.cutoff = cutoff
         super().__init__(**kwargs)
-
-        def download_file(filename):
-            if not os.path.exists(f'{self.root}/{filename}'):
-                if not self.use_precomputed:
-                    self.parse_interfaces()
-                else:
-                    download_url(f'{self.repository_url}/{filename}.gz', f'{self.root}', verbosity=0)
-                    unzip_file(f'{self.root}/{filename}.gz')
-            return load(f'{self.root}/{filename}')
-
-        self._interfaces = download_file(f'{self.name}.interfaces.json')
+        self.interfaces = load(f'{self.root}/{self.name}.interfaces.json')
 
     def get_raw_files(self):
-        return glob.glob(f'{self.root}/raw/files/chains/*.pdb')
+        return sorted(glob.glob(f'{self.root}/raw/files/chains/*.pdb'))
+    
+    def get_id_from_filename(self, filename):
+        return filename.rstrip('.pdb')#.rstrip('.ent')
 
-    def get_contacts(self, protein, cutoff=6):
-        """Obtain interfacing residues within a single structure of polymers. Uses
-        KDTree data structure for vector search.
-
-        Parameters
-        ----------
-        protein: dict
-            Parsed protein dictionary.
-
-        Returns
-        --------
-            `dict`: 2-level dictionary mapping a pair of chains to the list of interfacing residue positions (e.g `interfaces['A']['B'] = {(1, 3), (2, 4)}`
-                    says that residues 1 and 2 of chain A are in contact with 3 and 4 in chain B. The positions are _indices_ in the residue/atom list.
+    def get_contacts(self, path):
+        """ Obtain interfacing residues within a single structure of polymers.
+        Uses KDTree data structure for vector search.
         """
-
-        def get_coords(p):
-            return np.array([p['residue']['x'],
-                             p['residue']['y'],
-                             p['residue']['z']]).T
-
-
-        def defaultdict_to_dict(default_dict):
-            if isinstance(default_dict, defaultdict):
-                default_dict = {k: defaultdict_to_dict(v) for k, v in default_dict.items()}
-            elif isinstance(default_dict, dict):
-                default_dict = {k: defaultdict_to_dict(v) for k, v in default_dict.items()}
-            return default_dict
-
-        interfaces = defaultdict(lambda: defaultdict(list))
-        coords = get_coords(protein)
-        kdt = KDTree(coords, leaf_size=1)
-
-        seq_inds = [0]
-        current_chain = protein['residue']['chain_id'][0]
-
-        # get a vector of sequence positions
-        ind = 0
-        for chain_id in protein['residue']['chain_id'][1:]:
-            if chain_id != current_chain:
-                ind = -1
-                current_chain = chain_id
-            ind += 1
-            seq_inds.append(ind)
-
-        query = kdt.query_radius(coords, cutoff)
-        for i,result in enumerate(query):
-            this_chain = protein['residue']['chain_id'][i]
-            this_pos = seq_inds[i]
-            for r in result:
-                that_chain = protein['residue']['chain_id'][r]
-                that_pos = seq_inds[r]
-                if this_chain != that_chain:
-                    # ugly , I know
-                    interfaces[this_chain][that_chain].append((this_pos, that_pos))
-                    interfaces[that_chain][this_chain].append((that_pos, this_pos))
-
-        return defaultdict_to_dict(interfaces)
-
-    def get_complexes_files(self):
-        return glob.glob(f"{self.root}/raw/files/PP/*.pdb")
-
-    def parse_interfaces(self):
-        """ Get all interfaces and store in dict"""
-        protein_dfs = Parallel(n_jobs=self.n_jobs)(delayed(self.parse_pdb)(path) for path in progressbar(self.get_complexes_files(), desc='Loading complexes'))
-        print("Computing interfaces")
-        interfaces = {p['protein']['ID']: self.get_contacts(p, cutoff=self.cutoff) for p in tqdm(protein_dfs, total=len(protein_dfs)) if not p is None}
-        save(interfaces, f'{self.root}/{self.name}.interfaces.json')
+        df = PandasPdb().read_pdb(path).df['ATOM']
+        
+        # split chains
+        pdbid = os.path.basename(path).rstrip('.pdb')
+        for chain, chain_df  in df.groupby('chain_id'):
+            new_df = PandasPdb()
+            new_df._df = {'ATOM': chain_df}
+            new_df.to_pdb(f'{self.root}/raw/files/chains/{pdbid}_{chain}.pdb')
+            
+        # compute contacts
+        df = df[df['atom_name'] == 'CA']
+        coords = df[['x_coord','y_coord','z_coord']].to_numpy()
+        chain_ids = np.array(df['chain_id'])
+        chain_index = np.hstack([np.arange(np.sum(chain_ids==chain)) for chain in list(dict.fromkeys(chain_ids))]) # get residue position relative to chain
+        contacts = KDTree(coords, leaf_size=1).query_radius(coords, self.cutoff) # for each residue, get all neighbouring residues within the cutoff radius
+        query_chains = np.repeat(chain_ids, [len(c) for c in contacts]) # construct long index of query chain ids
+        query_chain_index = np.repeat(chain_index, [len(c) for c in contacts]) # construct long index of query chain index
+        result_chains = np.hstack([chain_ids[c] for c in contacts]) # construct long index of result chain ids
+        result_chain_index = np.hstack([chain_index[c] for c in contacts]) # construct long index of result chain index
+        interfaces = pd.DataFrame({'query': query_chains, 'result': result_chains, 'index': tuple(zip(query_chain_index.tolist(),result_chain_index.tolist()))})
+        interfaces = interfaces[query_chains != result_chains] # remove contacts in the same chain
+        if len(interfaces) == 0: return pdbid, None
+        interfaces = dict(interfaces.groupby('query').apply(lambda x: dict(x.groupby('result')['index'].apply(list)))) # format to dict of dicts: {chain_A: chain_B: [13, 27, ...]}
+        return pdbid, interfaces
 
     def download(self):
-        download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
-        extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
+        #download_url(f'https://pdbbind.oss-cn-hangzhou.aliyuncs.com/download/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw')
+        #extract_tar(f'{self.root}/raw/PDBbind_v{self.version}_PP.tar.gz', f'{self.root}/raw/files', extract_members=True)
         os.makedirs(f'{self.root}/raw/files/chains', exist_ok=True)
-        print("Chain splitting")
-        self.chain_split(f'{self.root}/raw/files/chains')
-
-    def chain_split(self, dest):
-        """ Split all the raw PDBs in path to individual ones by chain.
-        Replaces original PDB file in place.
-        """
-        for p in tqdm(self.get_complexes_files()):
-            ppdb = PandasPdb().read_pdb(p).df['ATOM']
-            pdbid = os.path.basename(p).split(".")[0]
-            for chain, chain_df  in ppdb.groupby('chain_id'):
-                new_df = PandasPdb()
-                new_df._df = {'ATOM': chain_df}
-                new_df.to_pdb(os.path.join(dest, f"{pdbid}_{chain}.pdb"))
-                # assert not chain_df.isnull().values.any(), f"NULL in {p}"
+        complexed_files = sorted(glob.glob(f'{self.root}/raw/files/PP/*.pdb'))
+        contacts = Parallel(n_jobs=self.n_jobs)(delayed(self.get_contacts)(path) for path in progressbar(complexed_files, desc='Computing interfaces', verbosity=self.verbosity))
+        interfaces = {pdbid: interfaces for pdbid, interfaces in contacts if not interfaces is None}
+        save(interfaces, f'{self.root}/{self.name}.interfaces.json')
+        
+            
+        

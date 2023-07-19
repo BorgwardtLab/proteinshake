@@ -2,8 +2,6 @@
 '''
 TMalign needs to be in your $PATH. Follow the instructions at https://zhanggroup.org/TM-align/readme.c++.txt
 '''
-import glob
-import requests
 import os
 import itertools
 import re
@@ -12,20 +10,10 @@ import tempfile
 import shutil
 import numpy as np
 from biopandas.pdb import PandasPdb
-from collections import defaultdict
 from joblib import Parallel, delayed
-from functools import cached_property
 
 from proteinshake.datasets import RCSBDataset
-from proteinshake.utils import (extract_tar,
-                                download_url,
-                                save,
-                                load,
-                                unzip_file,
-                                global_distance_test,
-                                local_distance_difference_test,
-                                progressbar
-                                )
+from proteinshake.utils import download_url, load, unzip_file, global_distance_test, local_distance_difference_test, progressbar
 
 
 class TMAlignDataset(RCSBDataset):

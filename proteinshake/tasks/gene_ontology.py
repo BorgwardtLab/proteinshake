@@ -26,10 +26,9 @@ class GeneOntologyTask(Task):
     def target(self, protein):
         return [self.token_map[i] for i in protein['protein']['molecular_function']]
     
-    def target_transform(self, index):
-        transformed = np.zeros((len(index), len(self.token_map)), dtype=bool)
-        targets = self.targets[index]
-        for i,indices in enumerate(targets): transformed[i,indices] = True
+    def target_transform(self, target):
+        transformed = np.zeros(len(self.token_map), dtype=bool)
+        transformed[target] = True
         return transformed
 
     def precision(self, y_true, y_pred, threshold):
@@ -50,7 +49,7 @@ class GeneOntologyTask(Task):
 
     def fmax(self, y_true, y_pred):
         fmax = 0
-        for t in np.linspace(0,1,21):
+        for t in np.linspace(0,1,11):
             prec, rec = self.precision(y_true, y_pred, t), self.recall(y_true, y_pred, t)
             if prec+rec == 0: continue
             f1 = (2 * prec * rec) / (prec + rec)
@@ -63,5 +62,6 @@ class GeneOntologyTask(Task):
             'Fmax': self.fmax(y_true, y_pred),
         }
     
-    def dummy(self):
-        return np.random.rand(len(self.test_targets), len(self.token_map))
+    @property
+    def y_dummy(self):
+        return np.random.rand(len(self.y_test), len(self.token_map))
