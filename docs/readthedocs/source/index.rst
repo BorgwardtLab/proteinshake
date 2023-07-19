@@ -1,7 +1,7 @@
 Welcome to ProteinShake!
 =====================================
 
-**ProteinShake provides one-liner imports of large scale, pre-processed protein structure datasets and tasks for various model types and frameworks.**
+**Protein structure datasets and tasks in any learning framework... in one line.**
 
 We provide a collection of pre-processed and cleaned protein 3D structure datasets from RCSB and AlphaFoldDB, including annotations.
 Structures are easily converted to graphs, voxels, or point clouds and loaded natively into PyTorch, TensorFlow, NumPy, JAX, PyTorch Geometric, DGL and NetworkX.

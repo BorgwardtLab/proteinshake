@@ -4,7 +4,7 @@ from proteinshake.datasets import ProteinLigandInterfaceDataset
 from proteinshake.tasks import Task
 
 class LigandAffinityTask(Task):
-    """ Predict the dissociation constant (Kd) for a protein and a small molecule. This is a protein-level regression task.
+    """ Predict the dissociation constant (Kd) for a protein and a small molecule. Accurate estimates of the binding strength between a protein and a small molecule ligand is a crucial step in understanding protein function regulation and in efficiently searching the massive space of small molecules new therapies. 
     Small molecule ligand information is stored as ``dataset[i].smiles`` for a SMILES string, or as pre-computed molecular
     fingerprints ``dataset[i].fp_maccs``, ```dataset[i].fp_morgan_r2``.
     """
