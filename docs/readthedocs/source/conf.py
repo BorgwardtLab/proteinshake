@@ -2,6 +2,7 @@ import datetime
 import proteinshake
 from sphinxawesome_theme import ThemeOptions
 
+
 author = "Tim Kucera, Carlos Oliver, Dexiong Chen, Karsten Borgwardt"
 project = 'ProteinShake'
 version = "0.0.1"
