@@ -20,6 +20,44 @@ Each framework sub-class implements ``convert_to_framework`` and optionally ``lo
       {{ cls }}
     {% endfor %}
 
-.. automodule:: proteinshake.frameworks
+.. automodule:: proteinshake.frameworks.dataset
     :members:
-    :exclude-members: convert_to_framework, load_transform
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: proteinshake.frameworks.torch
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: convert_to_framework
+
+.. automodule:: proteinshake.frameworks.tf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: convert_to_framework
+
+.. automodule:: proteinshake.frameworks.np
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: convert_to_framework
+
+.. automodule:: proteinshake.frameworks.pyg
+    :members:
+    :undoc-members:
+    :exclude-members: convert_to_framework
+    :show-inheritance:
+
+.. automodule:: proteinshake.frameworks.dgl
+    :members:
+    :undoc-members:
+    :exclude-members: convert_to_framework
+    :show-inheritance:
+
+
+.. automodule:: proteinshake.frameworks.nx
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: convert_to_framework
