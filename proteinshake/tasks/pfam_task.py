@@ -18,6 +18,10 @@ class ProteinFamilyTask(Task):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+    @property
+    def num_classes(self):
+        return len(self.token_map)
 
     @cached_property
     def token_map(self):

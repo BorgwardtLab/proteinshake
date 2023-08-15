@@ -19,6 +19,10 @@ class StructuralClassTask(Task):
     def __init__(self, scop_level='SCOP-FA', *args, **kwargs):
         self.scop_level = scop_level
         super().__init__(*args, **kwargs)
+        
+    @property
+    def num_classes(self):
+        return len(self.token_map)
 
     @cached_property
     def token_map(self):

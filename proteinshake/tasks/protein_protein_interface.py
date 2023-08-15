@@ -18,6 +18,10 @@ class ProteinProteinInterfaceTask(Task):
     type = 'Binary Classification'
     input = 'Protein and Protein'
     output = 'Protein Binding Interface Residues'
+    
+    @property
+    def num_classes(self):
+        return 2
 
     @property
     def task_in(self):

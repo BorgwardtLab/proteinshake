@@ -13,6 +13,10 @@ class BindingSiteDetectionTask(Task):
     type = 'Binary Classification'
     input = 'Residue'
     output = 'Small Molecule Binding Residues'
+    
+    @property
+    def num_classes(self):
+        return 2
 
     @property
     def task_in(self):
