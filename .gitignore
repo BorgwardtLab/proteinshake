@@ -16,7 +16,6 @@ data/
 data_transformed/
 ec_prediction/
 task_test/
-release/
 venv/
 docsvenv/
 test.py
