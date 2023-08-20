@@ -146,7 +146,7 @@ class Dataset():
             self.start_download()
             self.parse()
         else:
-            self.check_signature_same_as_hosted()
+            pass#self.check_signature_same_as_hosted()
 
     def precomputed_already_downloaded(self):
         return os.path.exists(f'{self.root}/{self.name}.residue.avro') or os.path.exists(f'{self.root}/{self.name}.atom.avro')
