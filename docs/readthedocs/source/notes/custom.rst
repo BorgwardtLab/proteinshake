@@ -264,7 +264,7 @@ Custom splits
 
 The above examples demonstrate the basic usage of ProteinShake with custom datasets and tasks. But it can easily be used to integrate existing benchmarks in more complex scenarios.
 
-Let's create another dataset and task derived from the popular CAFA benchmark for protein function prediction. It is very similar to the ProteinShake ``GeneOntologyTask``, but features a very different splitting procedure based on temporal holdouts. When the CAFA challenge is hosted, numerous protein targets with no known functional annotation are collected and predicted by the contestants. One may use any available data for training. After some period of time, the predictions are matched against new experimental annotations that have been added in the meantime.
+Let's create another dataset and task derived from the popular `CAFA benchmark <https://biofunctionprediction.org/cafa/>`_ for protein function prediction. It is very similar to the ProteinShake ``GeneOntologyTask``, but features a very different splitting procedure based on temporal holdouts. When the CAFA challenge is hosted, numerous protein targets with no known functional annotation are collected and predicted by the contestants. One may use any available data for training. After some period of time, the predictions are matched against new experimental annotations that have been added in the meantime.
 
 To accomodate such use cases, ProteinShake offers the ``compute_custom_split`` method to integrate your own splits. We will implement this method with the CAFA3 test targets as an example.
 
@@ -303,7 +303,7 @@ But first we need to make sure that the protein structure data of the test targe
 
     We only query RCSB PDB for target structures here, but not all targets will be included in this database. One could integrate AlphaFold predictions to increase the number of targets with a structure.
 
-Next we create the task with our custom split. Again it is based on the ``GeneOntologyTask`` to re-use some functionality such as the metrics.
+Next we create the task with our custom split. Again it is based on the ``GeneOntologyTask`` to re-use some functionality, such as the metrics.
 
 .. code:: python
 

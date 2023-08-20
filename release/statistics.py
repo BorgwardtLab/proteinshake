@@ -112,7 +112,7 @@ with open(f'{OUT_DIR}/statistics.html','w') as file:
         
         # SEQUENCE LENGTH
         x = [len(p['protein']['sequence']) for p in task.proteins]
-        plot = px.histogram(x=x, nbins=100, title='Sequence Length', labels={'x':'Residue Number', 'count':'Count'}, template='plotly_white')
+        plot = px.histogram(x=x, nbins=100, title='Sequence Length', labels={'x':'Sequence Length', 'count':'Protein Count'}, template='plotly_white')
         plot.update_layout(yaxis_title="Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
@@ -126,14 +126,14 @@ with open(f'{OUT_DIR}/statistics.html','w') as file:
             np.ptp(p['residue']['y']),
             np.ptp(p['residue']['z'])
         ) for p in task.proteins]
-        plot = px.histogram(x=x, nbins=100, title='Diameter (Angstrom)', labels={'x':'Residue Number', 'count':'Count'}, template='plotly_white')
+        plot = px.histogram(x=x, nbins=100, title='Diameter', labels={'x':'Diameter (Angstrom)', 'count':'Protein Count'}, template='plotly_white')
         plot.update_layout(yaxis_title="Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
         
         # SURFACE ACCESSIBLE AREA
         x = [np.mean(p['residue']['RSA']) for p in task.proteins]
-        plot = px.histogram(x=x, nbins=100, title='Average Relative Surface Accessible Area', labels={'x':'Residue Number', 'count':'Count'}, template='plotly_white')
+        plot = px.histogram(x=x, nbins=100, title='Surface Accessible Area', labels={'x':'Average Relative Surface Accessible Area', 'count':'Protein Count'}, template='plotly_white')
         plot.update_layout(yaxis_title="Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
@@ -148,20 +148,20 @@ with open(f'{OUT_DIR}/statistics.html','w') as file:
             else:
                 targets = [token_map[label] for label in targets]
             labels,counts = zip(*Counter(targets).most_common())
-            plot = px.bar(x=labels, y=counts, title='Label Distribution', labels={'x':'Target Label', 'y':'Count'}, template='plotly_white')
+            plot = px.bar(x=labels, y=counts, title='Label Distribution', labels={'x':'Target Label', 'y':'Protein Count'}, template='plotly_white')
             plot.update_xaxes(range=[-1, min(20, len(counts))])
         elif task.type == 'Binary Classification':
             if name == 'BindingSiteDetectionTask':
                 targets = [task.target(i) for i in task.proteins]
             counts = [np.array(t).sum() for t in targets]
-            plot = px.histogram(x=counts, nbins=100, title='Label Distribution', labels={'x':'Number of Residue Contacts', 'count':'Count'}, template='plotly_white')
+            plot = px.histogram(x=counts, nbins=100, title='Label Distribution', labels={'x':'Number of Residue Contacts', 'count':'Protein Count'}, template='plotly_white')
             plot.update_layout(yaxis_title="Count")
         elif task.type == 'Regression':
-            plot = px.histogram(x=targets, nbins=100, title='Label Distribution', labels={'x':'Target Value', 'count':'Count'}, template='plotly_white')
+            plot = px.histogram(x=targets, nbins=100, title='Label Distribution', labels={'x':'Target Value', 'count':'Protein Count'}, template='plotly_white')
             plot.update_layout(yaxis_title="Count")
         elif task.type == 'Retrieval':
             lengths = [len(t) for t in targets]
-            plot = px.histogram(x=lengths, nbins=100, title='Label Distribution', labels={'x':'Number of similar instances', 'count':'Count'}, template='plotly_white')
+            plot = px.histogram(x=lengths, nbins=100, title='Label Distribution', labels={'x':'Number of similar instances', 'count':'Protein Count'}, template='plotly_white')
             plot.update_layout(yaxis_title="Count")
         else:
             continue
