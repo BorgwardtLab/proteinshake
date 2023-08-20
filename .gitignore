@@ -2,13 +2,13 @@ debug.py
 setup.sh
 .proteinshake
 *TemporaryDirectory*/
-release/
 .DS_Store
 .tm_cache/
 plot.png
 plot.html
 data/
 draft.py
+release/data
 
 
 TMalign
@@ -16,7 +16,6 @@ data/
 data_transformed/
 ec_prediction/
 task_test/
-release/
 venv/
 docsvenv/
 test.py

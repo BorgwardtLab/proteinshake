@@ -59,51 +59,46 @@ class RCSBDataset(Dataset):
         if not self.from_list is None:
             ids = self.from_list
         else:
-            while total is None or total > i:
-                payload = {
-                    "query": {
-                        "type": "group",
-                        'logical_operator': 'and',
-                        'nodes': [
-                            {
-                                "type": "terminal",
-                                "service": "text",
-                                "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
-                            },
-                            {
-                                "type": "terminal",
-                                "service": "text",
-                                "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
-                            },
-                            *[
-                                {
-                                    "type": "terminal",
-                                    "service": "text",
-                                    "parameters": {k:v for k,v in zip(['attribute','operator','value'], q)}
-                                }
-                            for q in self.query],
-                        ],
-                    },
-                    "request_options": {
-                        "group_by": {
-                            "aggregation_method": "sequence_identity",
-                            "similarity_cutoff": 100,
+            payload = {
+                "query": {
+                    "type": "group",
+                    'logical_operator': 'and',
+                    'nodes': [
+                        {
+                            "type": "terminal",
+                            "service": "text",
+                            "parameters": {"operator": "exact_match", "value": "Protein (only)", "attribute": "rcsb_entry_info.selected_polymer_entity_types"}
                         },
-                        "group_by_return_type": "representatives",
-                        "paginate": {"start": i, "rows": i+batch_size}
+                        {
+                            "type": "terminal",
+                            "service": "text",
+                            "parameters": {"attribute": "rcsb_entry_info.deposited_polymer_entity_instance_count", "operator": "equals", "value": 1}
+                        },
+                        *[
+                            {
+                                "type": "terminal",
+                                "service": "text",
+                                "parameters": {k:v for k,v in zip(['attribute','operator','value'], q)}
+                            }
+                        for q in self.query],
+                    ],
+                },
+                "request_options": {
+                    "group_by": {
+                        "aggregation_method": "sequence_identity",
+                        "similarity_cutoff": 100,
                     },
-                    "return_type": "polymer_entity"
-                }
-                r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
-                try:
-                    response_dict = json.loads(r.text)
-                    ids.extend([x['identifier'].split('_')[0] for x in response_dict['result_set']])
-                except:
-                    error('An error occured when querying RCSB:\n'+r.text, verbosity=self.verbosity)
-                if total is None:
-                    total = response_dict['group_by_count']
-                i += batch_size
-
+                    "group_by_return_type": "representatives",
+                    "return_all_hits": True
+                },
+                "return_type": "polymer_entity"
+            }
+            r = requests.get(f'https://search.rcsb.org/rcsbsearch/v2/query?json={json.dumps(payload)}')
+            try:
+                response_dict = json.loads(r.text)
+                ids = [x['identifier'].split('_')[0] for x in response_dict['result_set']]
+            except:
+                error('An error occured when querying RCSB:\n'+r.text, verbosity=self.verbosity)
         ids = sorted(list(set(ids))) # filter identical ids
         random.seed(42)
         random.shuffle(ids) # for reproducible subsampling when using self.limit
