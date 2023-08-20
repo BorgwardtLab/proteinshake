@@ -1,0 +1,100 @@
+
+<html>
+<head>
+<style>
+table {
+  border-collapse: collapse;
+  font-family: Monaco;
+  font-size: 14px;
+  border-radius: 5px;
+  overflow:hidden;
+}
+tr {
+  background-color: #fff;
+}
+td {
+  text-align: left;
+  border: 3px solid #e3e8ef;
+  padding: 10px;
+  color:#111729;
+}
+th {
+  padding: 10px;
+  text-align: left;
+  background-color: #111729;
+  border: 3px solid #111729;
+  color:#fff;
+}
+tr:nth-child(even){
+  background-color: #F2F5F9;
+}
+</style>
+</head>
+<body>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Name</th>
+      <th>Type</th>
+      <th>Input</th>
+      <th>Output</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GeneOntologyTask</td>
+      <td>Multilabel Classification</td>
+      <td>Protein</td>
+      <td>Gene Ontology Terms</td>
+    </tr>
+    <tr>
+      <td>EnzymeClassTask</td>
+      <td>Multiclass Classification</td>
+      <td>Protein</td>
+      <td>Enzyme Commission Level 1</td>
+    </tr>
+    <tr>
+      <td>ProteinFamilyTask</td>
+      <td>Multiclass Classification</td>
+      <td>Protein</td>
+      <td>Protein Family (Pfam)</td>
+    </tr>
+    <tr>
+      <td>LigandAffinityTask</td>
+      <td>Regression</td>
+      <td>Protein and Molecule</td>
+      <td>Dissociation Constant Kd</td>
+    </tr>
+    <tr>
+      <td>BindingSiteDetectionTask</td>
+      <td>Binary Classification</td>
+      <td>Residue</td>
+      <td>Small Molecule Binding Residues</td>
+    </tr>
+    <tr>
+      <td>ProteinProteinInterfaceTask</td>
+      <td>Binary Classification</td>
+      <td>Protein and Protein</td>
+      <td>Protein Binding Interface Residues</td>
+    </tr>
+    <tr>
+      <td>StructuralClassTask</td>
+      <td>Multiclass Classification</td>
+      <td>Protein</td>
+      <td>SCOP Class</td>
+    </tr>
+    <tr>
+      <td>StructureSimilarityTask</td>
+      <td>Regression</td>
+      <td>Protein and Protein</td>
+      <td>Local Distance Difference Test</td>
+    </tr>
+    <tr>
+      <td>StructureSearchTask</td>
+      <td>Retrieval</td>
+      <td>Protein</td>
+      <td>Similar Proteins</td>
+    </tr>
+  </tbody>
+</table>
+</body></html>
