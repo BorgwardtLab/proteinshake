@@ -20,7 +20,9 @@ They work very similar to a :class:`~proteinshake.datasets.Dataset` in that they
   The latter two are based on sequence/structure similarity which we pre-compute for you.
   The split type influences how hard the generalization to the test set is for the model.
 
-  The ``split_similarity_threshold`` argument controls the maximum similarity between train and test.
+  The ``split_similarity_threshold`` argument controls the maximum similarity between train and test. It can be any of ``0.5, 0.6, 0.7, 0.8, 0.9``.
+
+  If you want more control over the similarity threshold you can pre-process the dataset yourself. Have a look at the `Release Repository <https://github.com/BorgwardtLab/proteinshake_release>`_.
 
 The task has a few attributes and methods that are specific to model training and evaluation.
 Let's look at our prediction targets.
