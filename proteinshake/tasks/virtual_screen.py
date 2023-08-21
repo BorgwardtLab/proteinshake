@@ -27,8 +27,7 @@ class VirtualScreenTask(Task):
 
         * **Input:** one protein, 
         * **Output:** list of molecules sorted by model
-        * **Evaluation:** Enrichment Factor (Chen, Hongming, et al. "On evaluating molecular-docking methods for pose prediction and enrichment factors." Journal of chemical information and modeling 46.1 (2006): 401-415. Note: to keep scores between 0 and 1 we use a normalized version of EF which is the mean rank of active compounds  
-)
+        * **Evaluation:** Enrichment Factor (Chen, Hongming, et al. "On evaluating molecular-docking methods for pose prediction and enrichment factors." Journal of chemical information and modeling 46.1 (2006): 401-415). Note: to keep scores between 0 and 1 we also return normalized version of EF which is the mean rank of active compounds  (``mean_active_rank`` in evaluation dictionary)
 
     """
 
