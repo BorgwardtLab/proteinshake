@@ -29,8 +29,83 @@ Statistics
 
     The plots below are interactive.
 
+GeneOntologyTask
+^^^^^^^^^^^^^^^^
+
 .. raw:: html
 
     <div style='display:flex; justify-content: center; align-items:center;'>
-        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/statistics.html" width="100%" height="3000px"></object>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/GeneOntologyTask.html" width="100%" height="1000px"></object>
+    </div>
+
+EnzymeClassTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/EnzymeClassTask.html" width="100%" height="1000px"></object>
+    </div>
+
+ProteinFamilyTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/ProteinFamilyTask.html" width="100%" height="1000px"></object>
+    </div>
+
+LigandAffinityTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/LigandAffinityTask.html" width="100%" height="1000px"></object>
+    </div>
+
+BindingSiteDetectionTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/BindingSiteDetectionTask.html" width="100%" height="1000px"></object>
+    </div>
+
+ProteinProteinInterfaceTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/ProteinProteinInterfaceTask.html" width="100%" height="1000px"></object>
+    </div>
+
+StructuralClassTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/StructuralClassTask.html" width="100%" height="1000px"></object>
+    </div>
+
+StructureSimilarityTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/StructureSimilarityTask.html" width="100%" height="1000px"></object>
+    </div>
+
+StructureSearchTask
+^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div style='display:flex; justify-content: center; align-items:center;'>
+        <object type="text/html" data="https://borgwardtlab.github.io/proteinshake/statistics/StructureSearchTask.html" width="100%" height="1000px"></object>
     </div>

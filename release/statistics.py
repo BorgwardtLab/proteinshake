@@ -11,7 +11,7 @@ from proteinshake.datasets.alphafold import AF_DATASET_NAMES
 
 ROOT = os.path.expandvars(f'release/data')
 OUT_DIR = 'docs/statistics'
-NJOBS = 20
+NJOBS = 1
 
 TASKS = [t for t in TASKS if not t in ['Task']]
 DATASETS = [d for d in DATASETS if not d in ['Dataset']]
@@ -99,13 +99,12 @@ with open(f'{OUT_DIR}/tasks.html','w') as file:
 '''
 
 # For each task: label distribution in train/test/val
-add_js = 'cdn'
-with open(f'{OUT_DIR}/statistics.html','w') as file:
-    file.write("<html><head></head><body>" + "\n")
-    for ax,name in enumerate(TASKS):
+
+for ax,name in enumerate(TASKS):
+    with open(f'{OUT_DIR}/{name}.html','w') as file:
         print(name)
-        
-        file.write(f'\n<h3>{name}</h3>\n')
+        file.write("<html><head></head><body>" + "\n")
+        add_js = 'cdn'
         
         task = get_task(ROOT, name, NJOBS)
         targets = list(task.train_targets) + list(task.test_targets) + list(task.val_targets)
@@ -167,4 +166,5 @@ with open(f'{OUT_DIR}/statistics.html','w') as file:
             continue
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
-    file.write("</body></html>" + "\n")
+        
+        file.write("</body></html>" + "\n")
