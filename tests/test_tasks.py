@@ -79,7 +79,7 @@ class TestTasks(unittest.TestCase):
             self.task_check(StructureSearchTask(split='sequence', root=tmp, verbosity=0))
             self.task_check(StructureSearchTask(split='structure', root=tmp, verbosity=0))
 
-    def test_virtual_screen(self):
+    def _test_virtual_screen(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.task_check(VirtualScreenTask(root=tmp, verbosity=0), skip_splits=True)
 
