@@ -30,7 +30,7 @@ Statistics
     The plots below are interactive.
 
 GeneOntologyTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -48,7 +48,7 @@ EnzymeClassTask
     </div>
 
 ProteinFamilyTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -57,7 +57,7 @@ ProteinFamilyTask
     </div>
 
 LigandAffinityTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -66,7 +66,8 @@ LigandAffinityTask
     </div>
 
 BindingSiteDetectionTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 .. raw:: html
 
@@ -75,7 +76,7 @@ BindingSiteDetectionTask
     </div>
 
 ProteinProteinInterfaceTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -84,7 +85,7 @@ ProteinProteinInterfaceTask
     </div>
 
 StructuralClassTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -93,7 +94,8 @@ StructuralClassTask
     </div>
 
 StructureSimilarityTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 .. raw:: html
 
@@ -102,7 +104,7 @@ StructureSimilarityTask
     </div>
 
 StructureSearchTask
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 

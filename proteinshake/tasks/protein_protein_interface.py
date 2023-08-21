@@ -5,12 +5,15 @@ from proteinshake.datasets import ProteinProteinInterfaceDataset
 from proteinshake.tasks import Task
 
 class ProteinProteinInterfaceTask(Task):
-    """ Identify the binding residues of a protein-protein complex. This is a residue-level binary classification.
+    """ Identify the binding interface of a protein-protein complex. Protein function is driven in large part by binding events between different protein chains to form 'complexes'. Understanding how proteins interact with each other has implications in unraveling complex biological mechanisms, and designing proteins with desirable interactions. The underlying data is taken from the PDBBind database. All pairs of residues belonging to different chains and coming from different protein chains within 6A of each other (Townshend et al., 2019)  are labeled as positive examples.
 
-    .. code-block:: python
+    .. admonition:: Task Summary 
 
-        >>> from proteinshake.tasks import ProteinProteinInterfaceTask
-        >>> ta = ProteinProteinInterfaceTask()
+        * **Input:** two protein chains
+        * **Output:** binary label for each residue in both chains (1 if residue belongs to interface 0 otherwise)
+        * **Evaluation:** AUROC (*Fout, Alex, et al. "Protein interface prediction using graph convolutional networks." Advances in neural information processing systems 30 (2017)*)
+
+
     """
 
     DatasetClass = ProteinProteinInterfaceDataset

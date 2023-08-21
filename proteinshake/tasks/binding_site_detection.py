@@ -4,7 +4,17 @@ from proteinshake.datasets import ProteinLigandInterfaceDataset
 from proteinshake.tasks import Task
 
 class BindingSiteDetectionTask(Task):
-    """ Identify the binding residues of a protein-small molecule binding site. This is a residue-level binary classification task.
+    """ Identify the binding residues (binding pocket) of a protein-small molecule binding site. An important step in drug discovery for proteins is to find 
+    potential cavities where small molecules can bind the protein based on the whole protein's structure. 
+ Pocket atoms/residues
+    taken directly from PDBBind annotations.
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** binary label for each atom/residue
+        * **Evaluation:** Matthews Correlation Coefficient (*Gallo Cassarino, Tiziano, Lorenza Bordoli, and Torsten Schwede. "Assessment of ligand binding site predictions in CASP10." Proteins: Structure, Function, and Bioinformatics 82 (2014): 154-163.*)
+
 
     """
     

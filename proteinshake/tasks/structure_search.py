@@ -11,11 +11,19 @@ from proteinshake.datasets import TMAlignDataset
 from proteinshake.tasks import Task
 
 class StructureSearchTask(Task):
-    """ Retrieve similar proteins to a query.
+    """ Retrieve similar proteins to a query based on structural similarity.
     Evaluation is cast in the setting of recommender systems where we wish
     to retrieve 'relevant' documents from a large pool of documents.
     Here, a protein is a document and the relevant ones are all proteins
     with a minimum similarity to the query protein.
+
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** list of similar proteins from dataset 
+        * **Evaluation:** precision@k (Aung, Zeyar, and Kian-Lee Tan. "Rapid 3D protein structure database searching using information retrieval techniques." Bioinformatics 20.7 (2004): 1045-1052.)
+
 
     """
 

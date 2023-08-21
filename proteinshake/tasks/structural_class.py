@@ -6,7 +6,13 @@ from proteinshake.datasets import SCOPDataset
 from proteinshake.tasks import Task
 
 class StructuralClassTask(Task):
-    """ Predict the SCOP class of a protein structure. This is a protein-level multi-class prediction.
+    """ Predict the SCOP class of a protein structure. SCOP labels proteins according to a hierarchy of structural and evolutionary information. The top level of the hierarchy ``SCOP_FA``, you can customize the task to use a different level setting ``scop_level`` to ``SCOP_{level}``, where level is any of TP=protein type, CL=protein class, CF=fold, SF=superfamily, FA=family. This is a protein-level multi-class prediction.
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** SCOP class (3042 classes)
+        * **Evaluation:** Accuracy (custom task)
 
     """
 
