@@ -12,7 +12,7 @@ class EnzymeClassTask(Task):
 
     This is a protein-level multi-class prediction.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** one protein
         * **Output:** enzyme class label (7 classes) 

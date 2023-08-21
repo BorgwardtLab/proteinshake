@@ -14,7 +14,7 @@ class StructureSimilarityTask(Task):
     the underlying dataset.
 
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** pair of proteins 
         * **Output:** Local Distance Difference Test score (lDDT)

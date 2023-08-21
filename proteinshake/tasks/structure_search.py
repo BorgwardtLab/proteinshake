@@ -18,7 +18,7 @@ class StructureSearchTask(Task):
     with a minimum similarity to the query protein.
 
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** one protein
         * **Output:** list of similar proteins from dataset 

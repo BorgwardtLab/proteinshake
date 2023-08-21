@@ -21,6 +21,7 @@ classes = ['Task',
            'StructuralClassTask',
            'StructureSimilarityTask',
            'StructureSearchTask',
+           'VirtualScreenTask'
            ]
 
 __all__ = classes

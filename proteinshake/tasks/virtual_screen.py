@@ -23,15 +23,12 @@ class VirtualScreenTask(Task):
         This is a zero-shot task so we use the whole dataset in
         evaluation. No train/test split.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** one protein, 
         * **Output:** list of molecules sorted by model
         * **Evaluation:** Enrichment Factor (Chen, Hongming, et al. "On evaluating molecular-docking methods for pose prediction and enrichment factors." Journal of chemical information and modeling 46.1 (2006): 401-415. Note: to keep scores between 0 and 1 we use a normalized version of EF which is the mean rank of active compounds  
 )
-
-
-
 
     """
 

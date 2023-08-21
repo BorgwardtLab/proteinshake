@@ -8,7 +8,7 @@ class LigandAffinityTask(Task):
     Small molecule ligand information is stored as ``dataset[i].smiles`` for a SMILES string, or as pre-computed molecular
     fingerprints ``dataset[i].fp_maccs``, ```dataset[i].fp_morgan_r2``.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** One protein and one ligand SMILES string
         * **Output:** predicted dissociation constant (scalar)

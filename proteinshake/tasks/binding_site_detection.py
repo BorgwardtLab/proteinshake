@@ -9,7 +9,7 @@ class BindingSiteDetectionTask(Task):
  Pocket atoms/residues
     taken directly from PDBBind annotations.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** one protein
         * **Output:** binary label for each atom/residue

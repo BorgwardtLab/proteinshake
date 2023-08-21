@@ -12,7 +12,7 @@ class GeneOntologyTask(Task):
     The prediction should be a n_samples x n_classes matrix, where the columns are ordered according to `self.classes`.
     If your model does not predict or handle a certain class, assign a zero value.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary
 
         * **Input:** one protein
         * **Output:** n_classes gene ontology terms 
