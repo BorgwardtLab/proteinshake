@@ -12,6 +12,15 @@ class StructureSimilarityTask(Task):
     """ Predict the structural similarity between two proteins. This is a pair-wise protein-level regression task.
     Ground truth is computed using the TMAlign software. Split indices are stored as tuples which contain two indices in
     the underlying dataset.
+
+
+    .. admonition:: Task Card
+
+        * **Input:** pair of proteins 
+        * **Output:** Local Distance Difference Test score (lDDT)
+        * **Evaluation:** Spearman correlation (custom task) 
+
+
     """
 
     DatasetClass = TMAlignDataset

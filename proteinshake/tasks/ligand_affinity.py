@@ -7,6 +7,13 @@ class LigandAffinityTask(Task):
     """ Predict the dissociation constant (Kd) for a protein and a small molecule. Accurate estimates of the binding strength between a protein and a small molecule ligand is a crucial step in understanding protein function regulation and in efficiently searching the massive space of small molecules new therapies. 
     Small molecule ligand information is stored as ``dataset[i].smiles`` for a SMILES string, or as pre-computed molecular
     fingerprints ``dataset[i].fp_maccs``, ```dataset[i].fp_morgan_r2``.
+
+    .. admonition:: Task Card
+
+        * **Input:** protein and small molecule (as SMILES string) 
+        * **Output:** dissociation constant (Kd) 
+        * **Evaluation:** Spearman correlation (Jiménez, José, et al. "K deep: protein–ligand absolute binding affinity prediction via 3d-convolutional neural networks." Journal of chemical information and modeling 58.2 (2018): 287-296.)
+
     """
     
     DatasetClass = ProteinLigandInterfaceDataset

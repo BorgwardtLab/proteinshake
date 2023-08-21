@@ -7,10 +7,18 @@ from proteinshake.datasets import GeneOntologyDataset
 from proteinshake.tasks import Task
 
 class GeneOntologyTask(Task):
-    """ Predict the Gene Ontology terms of a protein structure. This is a protein-level multi-label prediction.
+    """ Predict the Gene Ontology terms describing the functional roles of a given protein in the cell. This is a protein-level multi-label prediction.
 
     The prediction should be a n_samples x n_classes matrix, where the columns are ordered according to `self.classes`.
     If your model does not predict or handle a certain class, assign a zero value.
+
+    .. admonition:: Task Card
+
+        * **Input:** one protein
+        * **Output:** n_classes gene ontology terms 
+        * **Evaluation:** Fmax (Radivojac, Predrag, et al. "A large-scale evaluation of computational protein function prediction." Nature methods 10.3 (2013): 221-227.)
+
+
     """
 
     DatasetClass = GeneOntologyDataset
