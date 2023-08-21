@@ -39,7 +39,7 @@ GeneOntologyTask
     </div>
 
 EnzymeClassTask
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -68,6 +68,7 @@ LigandAffinityTask
 BindingSiteDetectionTask
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
 .. raw:: html
 
     <div style='display:flex; justify-content: center; align-items:center;'>
@@ -84,7 +85,7 @@ ProteinProteinInterfaceTask
     </div>
 
 StructuralClassTask
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
 
@@ -94,6 +95,7 @@ StructuralClassTask
 
 StructureSimilarityTask
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 .. raw:: html
 
