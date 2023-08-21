@@ -10,9 +10,9 @@ class LigandAffinityTask(Task):
 
     .. admonition:: Task Card
 
-        * **Input:** protein and small molecule (as SMILES string) 
-        * **Output:** dissociation constant (Kd) 
-        * **Evaluation:** Spearman correlation (Jiménez, José, et al. "K deep: protein–ligand absolute binding affinity prediction via 3d-convolutional neural networks." Journal of chemical information and modeling 58.2 (2018): 287-296.)
+        * **Input:** One protein and one ligand SMILES string
+        * **Output:** predicted dissociation constant (scalar)
+        * **Evaluation:** R2 score (*Stepniewska-Dziubinska, Marta M., Piotr Zielenkiewicz, and Pawel Siedlecki. "Development and evaluation of a deep learning model for protein–ligand binding affinity prediction." Bioinformatics 34.21 (2018): 3666-3674.*) 
 
     """
     

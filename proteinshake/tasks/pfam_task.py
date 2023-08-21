@@ -6,6 +6,7 @@ from proteinshake.datasets import ProteinFamilyDataset
 from proteinshake.tasks import Task
 
 class ProteinFamilyTask(Task):
+<<<<<<< HEAD
     """ Predict the protein family classification of a protein structure which groups proteins into evolutionarily-related families. This is a protein-level multi-class prediction.
 
     .. admonition:: Task Card
@@ -13,8 +14,6 @@ class ProteinFamilyTask(Task):
         * **Input:** one protein
         * **Output:** protein family class (5163 classes) 
         * **Evaluation:** Accuracy (custom task)
-
-
 
     """
 
