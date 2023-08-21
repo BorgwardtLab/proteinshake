@@ -112,7 +112,7 @@ for ax,name in enumerate(TASKS):
         # SEQUENCE LENGTH
         x = [len(p['protein']['sequence']) for p in task.proteins]
         plot = px.histogram(x=x, nbins=100, title='Sequence Length', labels={'x':'Sequence Length', 'count':'Protein Count'}, template='plotly_white')
-        plot.update_layout(yaxis_title="Count")
+        plot.update_layout(yaxis_title="Protein Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
         
@@ -126,14 +126,15 @@ for ax,name in enumerate(TASKS):
             np.ptp(p['residue']['z'])
         ) for p in task.proteins]
         plot = px.histogram(x=x, nbins=100, title='Diameter', labels={'x':'Diameter (Angstrom)', 'count':'Protein Count'}, template='plotly_white')
-        plot.update_layout(yaxis_title="Count")
+        plot.update_layout(yaxis_title="Protein Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
         
         # SURFACE ACCESSIBLE AREA
-        x = [np.mean(p['residue']['RSA']) for p in task.proteins]
+        x = np.array([np.mean(p['residue']['RSA']) for p in task.proteins])
+        x = x[x>=0]
         plot = px.histogram(x=x, nbins=100, title='Surface Accessible Area', labels={'x':'Average Relative Surface Accessible Area', 'count':'Protein Count'}, template='plotly_white')
-        plot.update_layout(yaxis_title="Count")
+        plot.update_layout(yaxis_title="Protein Count")
         plot.update_layout(height=300)
         file.write(plot.to_html(full_html=False, include_plotlyjs=add_js))
         
@@ -154,14 +155,14 @@ for ax,name in enumerate(TASKS):
                 targets = [task.target(i) for i in task.proteins]
             counts = [np.array(t).sum() for t in targets]
             plot = px.histogram(x=counts, nbins=100, title='Label Distribution', labels={'x':'Number of Residue Contacts', 'count':'Protein Count'}, template='plotly_white')
-            plot.update_layout(yaxis_title="Count")
+            plot.update_layout(yaxis_title="Protein Count")
         elif task.type == 'Regression':
             plot = px.histogram(x=targets, nbins=100, title='Label Distribution', labels={'x':'Target Value', 'count':'Protein Count'}, template='plotly_white')
-            plot.update_layout(yaxis_title="Count")
+            plot.update_layout(yaxis_title="Protein Count")
         elif task.type == 'Retrieval':
             lengths = [len(t) for t in targets]
             plot = px.histogram(x=lengths, nbins=100, title='Label Distribution', labels={'x':'Number of similar instances', 'count':'Protein Count'}, template='plotly_white')
-            plot.update_layout(yaxis_title="Count")
+            plot.update_layout(yaxis_title="Protein Count")
         else:
             continue
         plot.update_layout(height=300)
