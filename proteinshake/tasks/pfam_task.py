@@ -6,7 +6,16 @@ from proteinshake.datasets import ProteinFamilyDataset
 from proteinshake.tasks import Task
 
 class ProteinFamilyTask(Task):
-    """ Predict the protein family classification of a protein structure. This is a protein-level multi-class prediction.
+    """ Predict the protein family classification of a protein structure.  Pfam is a hierarchical
+    classification of proteins based on evolutionary and structural properties. Models that
+    are able to recognize biologically related proteins are necessary for large-scale
+    annotation, protein function prediction, and understanding structure-function relationships .
+
+    .. admonition:: Task Card
+
+        * **Input**: one protein
+        * **Output:** label for protein class
+        * **Evaluation:** AUPRC
 
     """
 
