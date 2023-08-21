@@ -59,7 +59,7 @@ class ProteinFamilyTask(Task):
 
     @property
     def default_metric(self):
-        return 'precision'
+        return 'accuracy'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """
