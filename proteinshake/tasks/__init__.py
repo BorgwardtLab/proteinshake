@@ -9,6 +9,7 @@ from .protein_protein_interface import ProteinProteinInterfaceTask
 from .structure_search import StructureSearchTask
 from .structural_class import StructuralClassTask
 from .gene_ontology import GeneOntologyTask
+from .virtual_screen import VirtualScreenTask
 
 classes = ['Task',
            'GeneOntologyTask',
