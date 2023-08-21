@@ -1,9 +1,9 @@
 @font-face {
-  font-family: "NTR";
-  src: url('fonts/NTR/NTR-Regular.ttf');
+  font-family: "Nunito";
+  src: url('fonts/Nunito/Nunito-VariableFont_wght.ttf');
 }
 body {
-    margin:0px;
+    margin:0;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -12,48 +12,47 @@ body {
     --blue: #03A9F4;
     --white: #fff;
     color: var(--darkgrey);
-    font-family: NTR;
-    font-size: 25px;
-    line-height:1.2em;
+    font-family: 'Nunito';
+    font-size: 1.6em;
+    line-height:1.3em;
 }
 a {
     text-decoration: none;
     color: var(--blue);
 }
 h1 {
-    font-size: 2em;
-    line-height: 1.1em;
-    font-weight: bold;
+    font-size: 1.6em;
+    line-height: 1.2em;
+    font-weight: 700;
 }
 h2 {
-    font-size: 1.1em;
-    line-height: 1.15em;
+    font-size: 1em;
+    line-height: 1.2em;
 }
 h3 {
-    font-size: 1.1em;
-    line-height: 1.15em;
+    font-size: 1em;
+    line-height: 1.2em;
 }
 div.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    margin-top: 1.5em;
+    width: 100%;
     display: flex;
-    box-shadow: 0px 5px 10px var(--lightgrey);
     background-color: var(--white);
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
     z-index:100;
+    font-weight: 500;
 }
 a.header-item {
     display: flex;
     align-items: center;
-    padding:5px;
-    margin: 10px;
-    height:1.1em;
+    padding:0.2em;
+    margin: 0.6em;
+    height:1.5em;
     text-decoration: none;
-    font-size: 0.8em;
+    font-size: 0.7em;
+    font-weight: 700;
     color: var(--blue);
     box-sizing: border-box;
     border-bottom: 2px solid transparent;
@@ -62,44 +61,39 @@ a.header-item:hover {
     border-bottom: 2px solid var(--blue);
 }
 div.footer {
-    width:100%;
-    height: 100px;
+    width: 100%;
+    height: 4em;
     background-color: var(--darkgrey);
     display:flex;
     justify-content: center;
     align-items: center;
     color: white;
     font-size: 0.8em;
+    font-weight: 700;
+    text-align: center;
 }
 div.main {
     width:100%;
-    max-width:1000px;
-    margin:50px 0px;
-    padding: 50px 0px;
+    max-width:40em;
+    margin:2em 0px;
+    padding: 3em 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-div.separator {
-    width: 150px;
-    height: 5px;
-    border-radius: 2px;
-    background-color: var(--blue);
-    margin:20px;
 }
 div.block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 30px;
+    margin: 2em;
     text-align: center;
 }
 div.install {
     background-color: var(--lightgrey);
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
     font-size: 0.7em;
-    width:400px;
-    height:50px;
+    width:20em;
+    height:3em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,36 +103,33 @@ div.install {
 }
 div.feature {
     border-radius: 5px;
-    width:200px;
-    font-size: 0.8em;
-    line-height: 1.2em;
-    margin:20px;
-    padding: 10px;
-}
-div.feature-description {
-
+    width:12em;
+    height:10em;
+    font-size: 0.65em;
+    line-height: 1.4em;
+    margin:1em;
+    padding: 0.5em;
 }
 img.feature-logo {
-    margin:10px;
-    width:80px;
-    height:80px;
+    margin:0.5em;
+    width:5em;
+    height:5em;
 }
 img.logo {
     width:100%;
-    max-width:600px;
+    max-width:25em;
 }
 div.line {
     display: inline-block;
     height: 5px;
-    width: 100px;
+    width: 5em;
     background-color: var(--blue);
     border-radius: 2px;
-    margin:0px 50px;
+    margin:0px 2em;
 }
 div.table {
     width:100%;
-    min-width: 670px;
-    max-width: 1000px;
+    min-width: 25em;
     background-color: #333;
     border-radius: 5px;
     overflow: hidden;
@@ -157,7 +148,7 @@ div.tab-item {
     flex: 1;
     background-color: #fff;
     color: var(--darkgrey);
-    height:45px;
+    height:3em;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -166,6 +157,9 @@ div.tab-item {
     box-sizing:border-box;
     border-radius: 5px;
     overflow: hidden;
+    font-family: Consolas, Monaco, 'Andale Mono';
+    font-weight: 700;
+    font-size: 0.8em;
 }
 div.tab-item.selected {
     color: var(--blue);
@@ -176,39 +170,43 @@ div.tab-item:hover {
 a.anchor {
     display: block;
     position: relative;
-    top: -40px;
+    top: -3em;
     visibility: hidden;
 }
 div.dropdown {
   position: relative;
   display: inline-block;
+  width:12em;
 }
 div.dropdown-content {
   display: none;
   position: absolute;
-  width:304px;
   z-index: 1;
   border-top: 1px solid #aaa;
   border: 2px solid var(--darkgrey);
-  border-top:none;
   box-sizing: border-box;
-  padding:10px 0px;
+  padding:0.5em 0px;
   background-color: var(--lightgrey);
+  border-radius: 5px;
+  top: 0px;
 }
 div.dropdown-item {
     cursor: pointer;
-    height:1.1em;
-    width:300px;
+    height:1.3em;
+    width:14.8em;
     background-color: var(--lightgrey);
-    line-height: 1.1em;
+    line-height: 1.3em;
     user-select: none;
-    font-size: 0.85em;
     text-align: center;
+    font-size: 0.8em;
+    font-weight: 700;
 }
 div.dropdown-label {
-    height:40px;
-    line-height: 40px;
-    width:304px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 0.8em;
+    line-height: 2em;
+    width:15em;
     display:flex;
     justify-content: center;
     cursor: pointer;
@@ -222,7 +220,7 @@ div.dropdown-label:after {
   content: "";
   top: 50%;
   margin-top: -3px;
-  right: 12px;
+  right: 0.6em;
   width: 0;
   height: 0;
   border: 6px solid transparent;
@@ -236,9 +234,10 @@ table {
   display: grid;
   border-collapse: collapse;
   min-width: 100%;
-  margin-top:20px;
+  margin-top:1.2em;
   border: 2px solid var(--darkgrey);
-  font-size: 0.7em;
+  font-size: 0.6em;
+  border-radius: 5px;
 }
 
 thead, tbody, tr {
@@ -246,7 +245,7 @@ thead, tbody, tr {
 }
 
 th, td {
-  padding: 10px 15px;
+  padding: 0.4em 0.7em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -275,11 +274,75 @@ tr:nth-child(even) td {
 img.copycode {
     display: none;
     position: absolute;
-    right: 10px;
-    width: 25px;
-    height: 25px;
+    right: 0.5em;
+    width: 1.5em;
+    height: 1.5em;
     cursor: pointer;
 }
 div.install:hover img.copycode {
     display: block;
+}
+
+
+@media only screen and (max-device-width: 480px) {
+    body {
+        line-height: 1.8em
+    }
+    h1 {
+        font-size: 2.4em;
+        font-weight: 500;
+    }
+    h2 {
+        font-size: 1.4em;
+        line-height: 1.6em;
+        font-weight: 500;
+    }
+    h3 {
+        font-size: 1.5em;
+        line-height: 1.5em;
+        font-weight: 500;
+    }
+    div.header {
+        font-size: 2em;
+    }
+    a.header-item {
+        font-weight: 500;
+    }
+    div.install {
+        width: 18em;
+        font-size: 1.7em;
+        font-weight: 500;
+    }
+    img.copycode {
+        right: 0.1em;
+    }
+    div.block {
+        margin: 2em;
+    }
+    div.feature {
+        font-size: 1.5em;
+        width: 9em;
+        margin: 1em;
+        height: 12em;
+        padding: 0em;
+    }
+    div.tab-item {
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+    div.footer {
+        height: 5em;
+        line-height: 1.5em;
+        font-size: 1.5em;
+        font-weight: 500;
+    }
+    img.logo {
+        max-width:32em;
+    }
+    div.dropdown-item {
+        font-weight: 500;
+    }
+    div.dropdown-label {
+        font-weight: 500;
+    }
 }

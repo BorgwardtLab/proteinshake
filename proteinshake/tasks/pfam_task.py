@@ -18,6 +18,10 @@ class ProteinFamilyTask(Task):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+    @property
+    def num_classes(self):
+        return len(self.token_map)
 
     @cached_property
     def token_map(self):
@@ -55,7 +59,7 @@ class ProteinFamilyTask(Task):
 
     @property
     def default_metric(self):
-        return 'precision'
+        return 'accuracy'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """

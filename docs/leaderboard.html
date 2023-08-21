@@ -6,12 +6,12 @@
     </head>
     <body>
         <div style='display:flex;flex-direction:row;'>
-            <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;'>Task:</div>
+            <div style='height:40px;line-height:40px;padding-right:20px;width:80px;text-align:right;font-size:0.8em;font-weight:700;'>Task:</div>
             <div class="dropdown" onmouseleave="hideDropdown();">
                 <div id='dropdownLabel' class='dropdown-label' onclick='showDropdown();' onmouseover="showDropdown();">Gene Ontology</div>
                 <div class='dropdown-content' id='dropdownContent'>
                     <div class='dropdown-item' onclick='leaderboard("gene_ontology");'>Gene Ontology</div>
-                    <div class='dropdown-item' onclick='leaderboard("enzyme_class");'>Enyme Class</div>
+                    <div class='dropdown-item' onclick='leaderboard("enzyme_class");'>Enzyme Class</div>
                     <div class='dropdown-item' onclick='leaderboard("protein_family");'>Protein Family</div>
                     <div class='dropdown-item' onclick='leaderboard("binding_site_detection");'>Binding Site Detection</div>
                     <div class='dropdown-item' onclick='leaderboard("ligand_affinity");'>Ligand Affinity</div>
