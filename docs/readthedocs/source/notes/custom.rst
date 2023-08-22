@@ -280,22 +280,29 @@ But first we need to make sure that the protein structure data of the test targe
     class CafaDataset(GeneOntologyDataset):
         
         def download(self):
+
             # Download the data from the parent class for training
             super().download()
+
             # Download the CAFA test set
             cafa_url = 'https://biofunctionprediction.org/cafa-targets/CAFA3_targets.tgz'
             download_url(cafa_url, f'{self.root}')
             extract_tar(f'{self.root}/CAFA3_targets.tgz', f'{self.root}/CAFA3_targets')
+
             # Extract the gene IDs. There are more mapping files,
             # but for the sake of the example we only use one here
             with open(f'{self.root}/CAFA3_targets/Mapping files/sp_species.273057.map','r') as file:
                 ids = [line.split()[1] for line in file.readlines()]
+
             # Map the gene IDs to PDB IDs using the UniProt API
             pdb_ids = uniprot_map(ids=ids, source='UniProtKB_AC-ID', target='PDB')
+
             # Filter targets not included in the database
             pdb_ids = [id for id in pdb_ids if not id is None]
+
             # Download them from RCSB PDB
             for pdb_id in pdb_ids: self.download_from_rcsb(pdb_id)
+
             # Save the test IDs for the task split
             save(pdb_ids, f'{self.root}/test_ids.json')
 
@@ -314,15 +321,19 @@ Next we create the task with our custom split. Again it is based on the ``GeneOn
         
         # Compute our own custom split
         def compute_custom_split(self, split):
+
             # Load the test IDs from the CafaDataset
             test_ids = load(f'{self.root}/test_ids.json')
-            train, test = [], []
+            
             # Split the proteins based on the test IDs
+            train, test = [], []
             for i,protein in enumerate(self.dataset.proteins()):
                 if protein['protein']['ID'] in test_ids: test.append(i)
                 else: train.append(i)
+
             # Randomly split the validation set from training data
             train, val = train_test_split(train, test_size=0.1)
+
             # Return the split indices
             return train, val, test
 
