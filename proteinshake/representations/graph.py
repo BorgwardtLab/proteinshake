@@ -8,8 +8,6 @@ from proteinshake.utils import tokenize, error
 class Graph():
     """ Graph representation of a protein.
 
-    Converts a protein object to a graph by using a k-nearest-neighbor or epsilon-neighborhood approach. Define either `k` or `eps` to determine which one is used.
-
     Parameters
     ----------
     protein: dict
@@ -44,6 +42,7 @@ class Graph():
 
 class GraphDataset():
     """ Graph representation of a protein structure dataset.
+    Converts a protein object to a graph by using a k-nearest-neighbor or epsilon-neighborhood approach. Define either `k` or `eps` to determine which one is used.
 
     Parameters
     ----------

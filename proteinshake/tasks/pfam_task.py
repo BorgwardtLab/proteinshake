@@ -6,7 +6,13 @@ from proteinshake.datasets import ProteinFamilyDataset
 from proteinshake.tasks import Task
 
 class ProteinFamilyTask(Task):
-    """ Predict the protein family classification of a protein structure. This is a protein-level multi-class prediction.
+    """ Predict the protein family classification of a protein structure which groups proteins into evolutionarily-related families. This is a protein-level multi-class prediction.
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** protein family class (5163 classes) 
+        * **Evaluation:** Accuracy (custom task)
 
     """
 
@@ -18,6 +24,10 @@ class ProteinFamilyTask(Task):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+    @property
+    def num_classes(self):
+        return len(self.token_map)
 
     @cached_property
     def token_map(self):
@@ -55,7 +65,7 @@ class ProteinFamilyTask(Task):
 
     @property
     def default_metric(self):
-        return 'precision'
+        return 'accuracy'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """

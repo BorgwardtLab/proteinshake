@@ -6,7 +6,13 @@ from proteinshake.datasets import SCOPDataset
 from proteinshake.tasks import Task
 
 class StructuralClassTask(Task):
-    """ Predict the SCOP class of a protein structure. This is a protein-level multi-class prediction.
+    """ Predict the SCOP class of a protein structure. SCOP labels proteins according to a hierarchy of structural and evolutionary information. The top level of the hierarchy ``SCOP_FA``, you can customize the task to use a different level setting ``scop_level`` to ``SCOP_{level}``, where level is any of TP=protein type, CL=protein class, CF=fold, SF=superfamily, FA=family. This is a protein-level multi-class prediction.
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** SCOP class (3042 classes)
+        * **Evaluation:** Accuracy (custom task)
 
     """
 
@@ -19,6 +25,10 @@ class StructuralClassTask(Task):
     def __init__(self, scop_level='SCOP-FA', *args, **kwargs):
         self.scop_level = scop_level
         super().__init__(*args, **kwargs)
+        
+    @property
+    def num_classes(self):
+        return len(self.token_map)
 
     @cached_property
     def token_map(self):
@@ -55,7 +65,7 @@ class StructuralClassTask(Task):
 
     @property
     def default_metric(self):
-        return 'precision'
+        return 'accuracy'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """

@@ -9,7 +9,7 @@ class BindingSiteDetectionTask(Task):
  Pocket atoms/residues
     taken directly from PDBBind annotations.
 
-    .. admonition:: Task Card
+    .. admonition:: Task Summary 
 
         * **Input:** one protein
         * **Output:** binary label for each atom/residue
@@ -23,6 +23,10 @@ class BindingSiteDetectionTask(Task):
     type = 'Binary Classification'
     input = 'Residue'
     output = 'Small Molecule Binding Residues'
+    
+    @property
+    def num_classes(self):
+        return 2
 
     @property
     def task_in(self):

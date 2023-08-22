@@ -7,7 +7,7 @@ from proteinshake.tasks import Task
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding interface of a protein-protein complex. Protein function is driven in large part by binding events between different protein chains to form 'complexes'. Understanding how proteins interact with each other has implications in unraveling complex biological mechanisms, and designing proteins with desirable interactions. The underlying data is taken from the PDBBind database. All pairs of residues belonging to different chains and coming from different protein chains within 6A of each other (Townshend et al., 2019)  are labeled as positive examples.
 
-    .. admonition:: Task card
+    .. admonition:: Task Summary 
 
         * **Input:** two protein chains
         * **Output:** binary label for each residue in both chains (1 if residue belongs to interface 0 otherwise)
@@ -21,6 +21,10 @@ class ProteinProteinInterfaceTask(Task):
     type = 'Binary Classification'
     input = 'Protein and Protein'
     output = 'Protein Binding Interface Residues'
+    
+    @property
+    def num_classes(self):
+        return 2
 
     @property
     def task_in(self):

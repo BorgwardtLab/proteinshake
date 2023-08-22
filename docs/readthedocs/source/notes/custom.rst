@@ -257,3 +257,78 @@ Again, you can use it like any other ProteinShake task, convert them to a repese
                 'Accuracy': sklearn.metrics.accuracy_score(y_true, y_pred),
                 'MCC': sklearn.metrics.matthews_corrcoef(y_true, y_pred),
             }
+
+
+Custom splits
+-------------
+
+The above examples demonstrate the basic usage of ProteinShake with custom datasets and tasks. But it can easily be used to integrate existing benchmarks in more complex scenarios.
+
+Let's create another dataset and task derived from the popular `CAFA benchmark <https://biofunctionprediction.org/cafa/>`_ for protein function prediction. It is very similar to the ProteinShake ``GeneOntologyTask``, but features a very different splitting procedure based on temporal holdouts. When the CAFA challenge is hosted, numerous protein targets with no known functional annotation are collected and predicted by the contestants. One may use any available data for training. After some period of time, the predictions are matched against new experimental annotations that have been added in the meantime.
+
+To accomodate such use cases, ProteinShake offers the ``compute_custom_split`` method to integrate your own splits. We will implement this method with the CAFA3 test targets as an example.
+
+But first we need to make sure that the protein structure data of the test targets is contained in the base dataset. The following code creates a custom dataset as above, but this time downloads the target IDs from the CAFA repository. We will use the ``GeneOntologyDataset`` as the parent class, so we can re-use some functionality.
+
+.. code:: python
+
+    from proteinshake.datasets import GeneOntologyDataset
+    from proteinshake.tasks import GeneOntologyTask
+    from proteinshake.utils import *
+    from sklearn.model_selection import train_test_split
+
+    class CafaDataset(GeneOntologyDataset):
+        
+        def download(self):
+            # Download the data from the parent class for training
+            super().download()
+            # Download the CAFA test set
+            cafa_url = 'https://biofunctionprediction.org/cafa-targets/CAFA3_targets.tgz'
+            download_url(cafa_url, f'{self.root}')
+            extract_tar(f'{self.root}/CAFA3_targets.tgz', f'{self.root}/CAFA3_targets')
+            # Extract the gene IDs. There are more mapping files,
+            # but for the sake of the example we only use one here
+            with open(f'{self.root}/CAFA3_targets/Mapping files/sp_species.273057.map','r') as file:
+                ids = [line.split()[1] for line in file.readlines()]
+            # Map the gene IDs to PDB IDs using the UniProt API
+            pdb_ids = uniprot_map(ids=ids, source='UniProtKB_AC-ID', target='PDB')
+            # Filter targets not included in the database
+            pdb_ids = [id for id in pdb_ids if not id is None]
+            # Download them from RCSB PDB
+            for pdb_id in pdb_ids: self.download_from_rcsb(pdb_id)
+            # Save the test IDs for the task split
+            save(pdb_ids, f'{self.root}/test_ids.json')
+
+.. note::
+
+    We only query RCSB PDB for target structures here, but not all targets will be included in this database. One could integrate AlphaFold predictions to increase the number of targets with a structure.
+
+Next we create the task with our custom split. Again it is based on the ``GeneOntologyTask`` to re-use some functionality, such as the metrics.
+
+.. code:: python
+
+    class CafaTask(GeneOntologyTask):
+    
+        # Declare our new CafaDataset as the base for this task
+        DatasetClass = CafaDataset
+        
+        # Compute our own custom split
+        def compute_custom_split(self, split):
+            # Load the test IDs from the CafaDataset
+            test_ids = load(f'{self.root}/test_ids.json')
+            train, test = [], []
+            # Split the proteins based on the test IDs
+            for i,protein in enumerate(self.dataset.proteins()):
+                if protein['protein']['ID'] in test_ids: test.append(i)
+                else: train.append(i)
+            # Randomly split the validation set from training data
+            train, val = train_test_split(train, test_size=0.1)
+            # Return the split indices
+            return train, val, test
+
+And we are done with the CAFA task! One can now use the new split by passing ``split="custom"`` to the task, otherwise it will use a random split by default.
+
+.. code:: python
+
+    task = CafaTask(split='custom')
+    metrics = task.evaluate(task.test_targets, task.dummy_output())

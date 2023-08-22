@@ -6,7 +6,18 @@ from proteinshake.datasets import EnzymeCommissionDataset
 from proteinshake.tasks import Task
 
 class EnzymeClassTask(Task):
-    """ Predict the enzyme commission classification of a protein structure. This is a protein-level multi-class prediction.
+    """ Predict the type of reaction catalyzed by the given protein as given by the Enzyme Commission databse. The Enzyme Commission
+    classification is hierarchically organized giving rise to one prediction task per level in the hierarchy. We default to the top-most
+    level which specifies the generic class of the enzyme, but this can be changed by setting ``ec_level`` when instantiating the task. 
+
+    This is a protein-level multi-class prediction.
+
+    .. admonition:: Task Summary 
+
+        * **Input:** one protein
+        * **Output:** enzyme class label (7 classes) 
+        * **Evaluation:** Accuracy (Ryu, Jae Yong, Hyun Uk Kim, and Sang Yup Lee. "Deep learning enables high-quality and high-throughput prediction of enzyme commission numbers." Proceedings of the National Academy of Sciences 116.28 (2019): 13996-14001.)
+
 
     """
 
@@ -59,7 +70,7 @@ class EnzymeClassTask(Task):
 
     @property
     def default_metric(self):
-        return 'precision'
+        return 'accuracy'
 
     def evaluate(self, y_true, y_pred):
         """ Using metrics from https://doi.org/10.1073/pnas.1821905116 """

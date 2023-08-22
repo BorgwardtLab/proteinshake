@@ -54,6 +54,8 @@ class Voxel():
 
 class VoxelDataset():
     """ Voxel representation of a protein structure dataset.
+    Voxelizes a protein structure by imposing a regular grid and determining the occupancy of a voxel with amino acids.
+    Voxel features are computed over one-hot encodings of occupying atom/amino acid identities using the `aggregation` function.
 
     Parameters
     ----------
