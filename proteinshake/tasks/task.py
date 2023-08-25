@@ -31,7 +31,7 @@ class Task:
     split: str, default='random'
         How to split the data. Can be 'random', 'sequence', or 'structure'.
     split_similarity_threshold: float
-        Maximum similarity to allow between train and test samples.
+        Maximum similarity to allow between train and test samples. Can be any of ``0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9`` for ``split="sequence"``, and ``0.5, 0.6, 0.7, 0.8, 0.9`` for ``split="structure"``.
     """
 
     DatasetClass = None
