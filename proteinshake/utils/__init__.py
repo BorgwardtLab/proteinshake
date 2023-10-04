@@ -15,7 +15,8 @@ __all__ = ['onehot',
            'unzip_file',
            'write_avro',
            'uniprot_query',
-           'uniprot_map'
+           'uniprot_map',
+           'protein_to_pdb'
            ]
 
 classes = __all__
