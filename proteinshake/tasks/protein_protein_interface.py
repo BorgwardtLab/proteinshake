@@ -3,6 +3,8 @@ from sklearn import metrics
 
 from proteinshake.datasets import ProteinProteinInterfaceDataset
 from proteinshake.tasks import Task
+from proteinshake.transforms.transforms import Compose
+from proteinshake.transforms.coords import CenterTransform, RandomRotateTransform
 
 class ProteinProteinInterfaceTask(Task):
     """ Identify the binding interface of a protein-protein complex. Protein function is driven in large part by binding events between different protein chains to form 'complexes'. Understanding how proteins interact with each other has implications in unraveling complex biological mechanisms, and designing proteins with desirable interactions. The underlying data is taken from the PDBBind database. All pairs of residues belonging to different chains and coming from different protein chains within 6A of each other (Townshend et al., 2019)  are labeled as positive examples.
