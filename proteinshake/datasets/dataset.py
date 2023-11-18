@@ -24,7 +24,7 @@ AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
 # maps the date-format release to Zenodo identifier
 RELEASES = {
-    'latest': '1212262',
+    'latest': '118',
 }
 
 class Dataset():
@@ -122,7 +122,7 @@ class Dataset():
             # random_rotate                  = True
             ):
         self.root = root
-        self.repository_url = f'https://sandbox.zenodo.org/record/{RELEASES[release]}/files'
+        self.repository_url = f'https://sandbox.zenodo.org/records/{RELEASES[release]}/files'
         self.n_jobs = n_jobs
         # self.random_rotate = random_rotate
         # self.center = center
