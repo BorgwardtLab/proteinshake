@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
 
 from proteinshake.datasets import ProteinLigandDecoysDataset
 from proteinshake.tasks import Task
@@ -13,7 +12,7 @@ class VirtualScreenTask(Task):
     that the protein and ligand will bind. This can be a docking score, energy calculation,
     or just a probability.
     Each protein's ligand library contains a certain number of active molecules (ligands)
-    and a certai (larger) number of decoys (non-binders).
+    and a certain (larger) number of decoys (non-binders).
     We use the predicted scores to sort the whole library and calculate the position of each
     active ligand in the sorted library.
     Ligands in the topi percentiles which are known to be active contribute a 1 to the score
