@@ -35,21 +35,29 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 
 </br>
 
-<div align="center">
+
   
 **Installation:**
+
+<div align="center">
 
 ```diff
 - This is a pre-release version. There may be unannounced changes to the API and datasets. -
 - We expect some bugs as well, please open an issue if you find one. -
 ```
 
+</div>
+
+<div align="center">
+
 ```diff
 + COMING SOON: Customization and transforms +
 + Build your own representations, splitters, and preprocessors! +
 ```
 
+</div>
 
+<div align="center">
   
 ```
 pip install proteinshake
