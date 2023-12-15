@@ -43,7 +43,8 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 ```
 
 ```diff
-+ COMING SOON: Customization and transforms. Build your own representations, splitters, and preprocessors! +
++ COMING SOON: Customization and transforms +
++ Build your own representations, splitters, and preprocessors! +
 ```
 
 <div align="center">
