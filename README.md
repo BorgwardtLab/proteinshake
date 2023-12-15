@@ -42,9 +42,17 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 - We expect some bugs as well, please open an issue if you find one. -
 ```
 
+```diff
++ COMING SOON: Customization and transforms. Build your own representations, splitters, and preprocessors! +
+```
+
+<div align="center">
+  
 ```
 pip install proteinshake
 ```
+
+</div>
 
 </br>
 
