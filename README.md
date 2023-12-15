@@ -35,6 +35,8 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 
 </br>
 
+<div align="center">
+  
 **Installation:**
 
 ```diff
@@ -47,7 +49,7 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
 + Build your own representations, splitters, and preprocessors! +
 ```
 
-<div align="center">
+
   
 ```
 pip install proteinshake
