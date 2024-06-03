@@ -19,7 +19,7 @@
 <a href="https://borgwardtlab.github.io/proteinshake/#quickstart">Quickstart</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://borgwardtlab.github.io/proteinshake">Website</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/?badge=latest">Documentation</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://proceedings.neurips.cc/paper_files/paper/2023/file/b6167294ed3d6fc61e11e1592ce5cb77-Paper-Datasets_and_Benchmarks.pdf">Paper</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notes/contribution.html">Contribute</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://borgwardtlab.github.io/proteinshake/#leaderboard">Leaderboard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://proteinshake.readthedocs.io/en/latest/notebooks/dataset.html">Tutorials</a>
