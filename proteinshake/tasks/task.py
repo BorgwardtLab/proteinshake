@@ -84,6 +84,7 @@ class Task:
             self.val_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'val'])
             self.test_index = np.array([i for i,p in enumerate(self.proteins) if p['protein'][split_name] == 'test'])
         else:
+            print('Could not find pre-computed split. Falling back to compute_custom_split, which by default is a random split.')
             self.train_index, self.val_index, self.test_index = self.compute_custom_split(self.split)
 
         self.update_index()
