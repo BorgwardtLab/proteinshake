@@ -1,12 +1,12 @@
 from setuptools import find_packages, setup
 
-__version__ = '0.3.14'
+__version__ = '0.3.15'
 URL = 'https://proteinshake.readthedocs.io/en/latest/index.html'
 
 install_requires = [
     'biopandas>=0.4.1',
     'pandas>=1.4.3',
-    'rdkit-pypi>=2022.3.3',
+    'rdkit-pypi>=2022.3.5',
     'tqdm>=4.64.0',
     'scikit-learn>=1.1.1',
     'joblib>=1.2.0',
