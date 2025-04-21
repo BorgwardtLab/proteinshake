@@ -9,6 +9,7 @@ plot.html
 data/
 draft.py
 release/data
+temp/
 
 
 TMalign
