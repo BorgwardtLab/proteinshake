@@ -45,7 +45,7 @@ class TestFrameworks(unittest.TestCase):
         def generator():
             for data, protein_dict in voxels:
                 yield data
-        loader = tf.data.Dataset.from_generator(generator, output_types=(tf.float32))
+        loader = tf.data.Dataset.from_generator(generator, output_signature=tf.TensorSpec(shape=None, dtype=tf.float32))
         x = next(iter(loader))
 
     def test_voxel_np(self):
@@ -69,7 +69,7 @@ class TestFrameworks(unittest.TestCase):
         def generator():
             for data, protein_dict in points:
                 yield data
-        loader = tf.data.Dataset.from_generator(generator, output_types=(tf.float32))
+        loader = tf.data.Dataset.from_generator(generator, output_signature=tf.TensorSpec(shape=None, dtype=tf.float32))
         x = next(iter(loader))
 
     def test_point_np(self):
