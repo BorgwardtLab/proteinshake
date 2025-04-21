@@ -1,3 +1,11 @@
+<p align="center"><b><i>
+$${\color{red}[!]}$$ Important note: ProteinShake has broadened its scope and is continued in other repositories $${\color{red}[!]}$$
+</i></b></p>
+<p align="center"><b><i>
+Check out our latest work on the <a href="https://www.bioverse.rsvp">bioverse</a> (all biomolecules) and <a href="https://rnaglib.org">rnaglib</a> (specific to RNA)
+</i></b></p>
+
+---
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/BorgwardtLab/proteinshake/main/docs/images/logo_subtitle.png#gh-light-mode-only" width="60%">
@@ -39,23 +47,6 @@ Find more information on the <a href="https://borgwardtlab.github.io/proteinshak
   
 **Installation:**
 
-<div align="center">
-
-```diff
-- This is a pre-release version. There may be unannounced changes to the API and datasets. -
-- We expect some bugs as well, please open an issue if you find one. -
-```
-
-</div>
-
-<div align="center">
-
-```diff
-+ COMING SOON: Customization and transforms +
-+ Build your own representations, splitters, and preprocessors! +
-```
-
-</div>
 
 <div align="center">
   
