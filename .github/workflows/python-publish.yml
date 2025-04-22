@@ -8,10 +8,7 @@
 
 name: Upload Python Package
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
 
 permissions:
   contents: read

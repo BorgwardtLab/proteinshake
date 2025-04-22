@@ -13,9 +13,6 @@ class NumpyVoxelDataset(FrameworkDataset):
     """ Voxel dataset for NumPy.
     """
 
-    def __init__(self, *args, transform=lambda x:x[0], **kwargs):
-        super().__init__(*args, transform=transform, **kwargs)
-
     def convert_to_framework(self, data_item):
         return data_item.data
 
@@ -23,9 +20,6 @@ class NumpyVoxelDataset(FrameworkDataset):
 class NumpyPointDataset(FrameworkDataset):
     """ Point dataset for NumPy.
     """
-
-    def __init__(self, *args, transform=lambda x:x[0], **kwargs):
-        super().__init__(*args, transform=transform, **kwargs)
 
     def convert_to_framework(self, data_item):
         return data_item.data
