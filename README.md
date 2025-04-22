@@ -1,8 +1,8 @@
 <p align="center"><b><i>
-$${\color{red}[!]}$$ Important note: ProteinShake has broadened its scope and is continued in other repositories $${\color{red}[!]}$$
+[!] Important note: ProteinShake has broadened its scope and is continued in other repositories [!]
 </i></b></p>
 <p align="center"><b><i>
-Check out our latest work on the <a href="https://www.bioverse.rsvp">bioverse</a> (all biomolecules) and <a href="https://rnaglib.org">rnaglib</a> (specific to RNA)
+Check out our latest work on the <a href="https://www.bioverse.rsvp">bioverse</a> (all biomolecules) and <a href="https://rnaglib.org">rnaglib</a> (for RNA)
 </i></b></p>
 
 ---
