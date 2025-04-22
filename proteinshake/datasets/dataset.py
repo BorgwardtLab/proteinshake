@@ -22,10 +22,6 @@ from proteinshake.utils import download_url, save, load, unzip_file, write_avro,
 AA_THREE_TO_ONE = {'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L', 'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R', 'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'}
 AA_ONE_TO_THREE = {v:k for k, v in AA_THREE_TO_ONE.items()}
 
-# maps the date-format release to Zenodo identifier
-RELEASES = {
-    'latest': '118',
-}
 
 class Dataset():
     """ Base dataset class.
@@ -122,7 +118,7 @@ class Dataset():
             # random_rotate                  = True
             ):
         self.root = root
-        self.repository_url = f'https://sandbox.zenodo.org/records/{RELEASES[release]}/files'
+        self.repository_url = f'https://zenodo.org/records/15259912/files'
         self.n_jobs = n_jobs
         # self.random_rotate = random_rotate
         # self.center = center
