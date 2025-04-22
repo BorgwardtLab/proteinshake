@@ -16,9 +16,9 @@ class TestDatasets(unittest.TestCase):
     #     with tempfile.TemporaryDirectory() as tmp:
     #         ds = ProteinProteinInterfaceDataset(root=tmp, verbosity=0).download_precomputed()
 
-    def test_tm(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            ds = TMAlignDataset(root=tmp, verbosity=0).download_precomputed()
+    # def test_tm(self):
+    #     with tempfile.TemporaryDirectory() as tmp:
+    #         ds = TMAlignDataset(root=tmp, verbosity=0).download_precomputed()
 
     # def test_go(self):
     #     with tempfile.TemporaryDirectory() as tmp:
@@ -45,9 +45,9 @@ class TestDatasets(unittest.TestCase):
     #     with tempfile.TemporaryDirectory() as tmp:
     #         ds = AlphaFoldDataset(root=tmp, organism=organism, verbosity=0).download_precomputed()
 
-    # def test_dude(self):
-    #     with tempfile.TemporaryDirectory() as tmp:
-    #         ds = ProteinLigandDecoysDataset(root=tmp, verbosity=0).download_precomputed()
+    def test_dude(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ds = ProteinLigandDecoysDataset(root=tmp, verbosity=0).download_precomputed()
 
 if __name__ == '__main__':
     unittest.main()
