@@ -3,6 +3,8 @@ Important note: ProteinShake has broadened its scope and is continued in other r
 </i></b></p>
 <p align="center"><b><i>
 Check out our latest work on the <a href="https://www.bioverse.rsvp">bioverse</a> (all biomolecules) and <a href="https://rnaglib.org">rnaglib</a> (for RNA)
+
+We will continue to maintain existing functionality in this repository, please submit issues or PRs with any bugs or suggestions.
 </i></b></p>
 
 ---
