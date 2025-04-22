@@ -23,12 +23,11 @@ class TestFrameworks(unittest.TestCase):
         loader = DataLoader(graphs)
         x = next(iter(loader))
 
-    # DGL install seems to be broken
-    # def test_graph_dgl(self):
-    #     from dgl.dataloading import GraphDataLoader as DataLoader
-    #     graphs = self.ds.to_graph(k=5).dgl()
-    #     loader = DataLoader(graphs)
-    #     x = next(iter(loader))
+    def test_graph_dgl(self):
+        from dgl.dataloading import GraphDataLoader as DataLoader
+        graphs = self.ds.to_graph(k=5).dgl()
+        loader = DataLoader(graphs)
+        x = next(iter(loader))
 
     def test_graph_nx(self):
         graphs = self.ds.to_graph(k=5).nx()
